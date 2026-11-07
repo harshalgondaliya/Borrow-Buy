@@ -1,0 +1,22 @@
+# =============================================================================
+# BorrowBuy – Example Terraform Variables (Local / Academic Demo Configuration)
+# =============================================================================
+
+aws_region         = "us-east-1"
+project_name       = "borrowbuy"
+environment        = "dev"
+vpc_cidr           = "10.0.0.0/16"
+availability_zones = ["us-east-1a", "us-east-1b"]
+
+# Database Configuration (Free-Tier Eligible)
+rds_instance_class = "db.t4g.micro"
+rds_multi_az       = false
+
+# Compute Configuration (Fargate Minimal Footprint)
+container_image    = "public.ecr.aws/docker/library/node:22-alpine"
+fargate_cpu        = 256
+fargate_memory     = 512
+desired_count      = 1
+
+# Security
+jwt_secret         = "change-me-to-a-very-secure-random-string-in-production-32chars"

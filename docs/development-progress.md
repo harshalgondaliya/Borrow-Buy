@@ -11,8 +11,8 @@
 | **Phase 6** | Notifications, Background Jobs & Admin | **COMPLETED** | In-App Alerts, Background Expired Hold Sweeper, Admin Analytics & Dispute Mediation (61/61 tests passing) |
 | **Phase 7** | Frontend Polish & UX States | **COMPLETED** | Interactive Toast Subsystem, Card/Table Skeletons, Mobile Slide-Over Drawer, Clean Production Build |
 | **Phase 8** | Comprehensive Testing & Local Sign-off| **COMPLETED** | Master 24-step E2E Integration Suite, 89/89 Tests Green across Monorepo, Tagged `v1.0.0-local` |
-| **Phase 9** | AWS Architecture, IaC & Costing | **NEXT** | Terraform Modules (VPC, RDS, S3, CloudFront, ECS, CloudWatch), Cost Estimation Models, Security Spec |
-| **Phase 10**| AWS Deployment & Verification | PENDING | Provisioned Cloud Resources, Real Endpoints, Cloud Verification |
+| **Phase 9** | AWS Architecture, IaC & Costing | **COMPLETED** | 7 Validated Terraform Modules (VPC, RDS, S3, CloudFront, ECS, CloudWatch, Security), [`cost-estimation.md`](file:///h:/CC%20Project/docs/cost-estimation.md), [`cloud-security.md`](file:///h:/CC%20Project/docs/cloud-security.md) |
+| **Phase 10**| AWS Deployment & Verification | **NEXT** | Provisioned Cloud Resources, Real Endpoints, Cloud Verification |
 | **Phase 11**| CI/CD Pipelines with OIDC | PENDING | GitHub Actions Workflows, PR Checks, Automated Deployments |
 | **Phase 12**| Academic Deliverables & Defense Prep | PENDING | Complete Documentation, Diagrams, Viva Q&A, Final Submission |
 
@@ -24,3 +24,9 @@
 - **Total Test Suite**: 89 / 89 passing (100% green)
 - **Production Builds**: Backend (tsc) and Frontend (Vite gzip 70.72 kB) build cleanly with 0 errors
 - **Zero Paid Dependencies**: Local PostgreSQL 16 Alpine container, local disk storage adapter, mock payment gateway, in-app notification bus.
+
+## Stage B Architecture Milestones (In Progress)
+- **Terraform v1.17.0 & AWS CLI v2.39.5**: Installed, validated, and added to user environment.
+- **7 Modular Infrastructure Components**: Multi-AZ VPC, Least-Privilege IAM/Security Groups, Encrypted S3, PostgreSQL 16 RDS, Fargate ECS with ALB, CloudFront Global CDN, and CloudWatch Alarms & Observability Dashboard.
+- **Academic Cost Analysis**: 3-tier model (Free-Tier $0-$5/mo, Demo $26-$75/mo, Prod $141-$205/mo) documented in `docs/cost-estimation.md`.
+- **Security & STRIDE Threat Model**: Least-privilege IAM, network isolation, and encryption in transit/at rest documented in `docs/cloud-security.md`.
