@@ -1,8 +1,9 @@
 import React, { useState } from 'react';
+import { motion, AnimatePresence } from 'framer-motion';
 import { Booking } from '../../services/bookings';
 import { reviewsService } from '../../services/reviews';
 import { useToast } from '../../features/toast/ToastContext';
-import { X, Star, AlertCircle } from 'lucide-react';
+import { X, Star, AlertCircle, ShieldCheck, Sparkles } from 'lucide-react';
 
 interface ReviewModalProps {
   booking: Booking | null;
@@ -10,6 +11,8 @@ interface ReviewModalProps {
   onClose: () => void;
   onReviewSuccess: () => void;
 }
+
+const RATING_LABELS = ['', 'Needs Improvement', 'Fair Experience', 'Good Quality', 'Great Service', 'Exceptional!'];
 
 export const ReviewModal: React.FC<ReviewModalProps> = ({
   booking,
@@ -48,87 +51,144 @@ export const ReviewModal: React.FC<ReviewModalProps> = ({
   };
 
   return (
-    <div className="fixed inset-0 z-50 overflow-y-auto bg-slate-900/60 backdrop-blur-sm flex items-center justify-center p-4">
-      <div className="relative bg-white rounded-3xl shadow-2xl max-w-md w-full p-6 sm:p-8 animate-in fade-in zoom-in-95 duration-200">
-        <button
+    <AnimatePresence>
+      <div className="fixed inset-0 z-50 overflow-y-auto flex items-center justify-center p-4 sm:p-6">
+        {/* Backdrop */}
+        <motion.div
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          exit={{ opacity: 0 }}
+          transition={{ duration: 0.2 }}
           onClick={onClose}
-          className="absolute top-5 right-5 text-slate-400 hover:text-slate-700 p-2 rounded-full hover:bg-slate-100 transition"
+          className="fixed inset-0 bg-charcoal-950/70 backdrop-blur-md"
+        />
+
+        {/* Modal Window */}
+        <motion.div
+          initial={{ opacity: 0, scale: 0.95, y: 10 }}
+          animate={{ opacity: 1, scale: 1, y: 0 }}
+          exit={{ opacity: 0, scale: 0.95, y: 10 }}
+          transition={{ type: 'spring', damping: 25, stiffness: 300 }}
+          className="relative bg-white rounded-3xl shadow-elevated border border-charcoal-100 max-w-md w-full p-6 sm:p-8 z-10"
         >
-          <X className="w-5 h-5" />
-        </button>
+          {/* Close Button */}
+          <button
+            onClick={onClose}
+            className="absolute top-5 right-5 text-charcoal-400 hover:text-charcoal-700 p-2 rounded-xl hover:bg-charcoal-100/70 transition-colors"
+            aria-label="Close dialog"
+          >
+            <X className="w-5 h-5" />
+          </button>
 
-        <div className="mb-6 text-center">
-          <div className="w-10 h-10 rounded-2xl bg-amber-100 text-amber-600 flex items-center justify-center mx-auto mb-2">
-            <Star className="w-5 h-5 fill-amber-500" />
+          {/* Header */}
+          <div className="text-center mb-6">
+            <div className="w-12 h-12 rounded-2xl bg-amber-50 text-amber-600 flex items-center justify-center mx-auto mb-2.5 border border-amber-200 shadow-sm">
+              <Star className="w-6 h-6 fill-amber-500 text-amber-500" />
+            </div>
+            <h2 className="text-xl font-display font-extrabold text-charcoal-900">
+              Rate Your Experience
+            </h2>
+            <p className="text-xs text-charcoal-500 mt-1 max-w-xs mx-auto">
+              How was your rental of <strong>{booking.product?.name}</strong> from{' '}
+              {booking.product?.owner?.fullName || 'the owner'}?
+            </p>
           </div>
-          <h2 className="text-xl font-bold text-slate-900">Rate Your Rental Experience</h2>
-          <p className="text-xs text-slate-500 mt-1">
-            Review for {booking.product?.name} ({booking.product?.owner?.fullName})
-          </p>
-        </div>
 
-        {error && (
-          <div className="mb-4 p-3 bg-rose-50 border border-rose-200 text-rose-700 rounded-xl text-xs flex items-center gap-2">
-            <AlertCircle className="w-4 h-4 shrink-0" />
-            <span>{error}</span>
-          </div>
-        )}
+          {/* Error Message */}
+          {error && (
+            <motion.div
+              initial={{ opacity: 0, y: -4 }}
+              animate={{ opacity: 1, y: 0 }}
+              className="mb-4 p-3.5 bg-rose-50 border border-rose-200 text-rose-700 rounded-2xl text-xs flex items-center gap-2"
+            >
+              <AlertCircle className="w-4 h-4 shrink-0 text-rose-600" />
+              <span>{error}</span>
+            </motion.div>
+          )}
 
-        <form onSubmit={handleSubmit} className="space-y-5">
-          {/* Star Rating Picker */}
-          <div className="flex justify-center items-center gap-2 py-2">
-            {[1, 2, 3, 4, 5].map((star) => (
+          <form onSubmit={handleSubmit} className="space-y-5">
+            {/* Star Rating Selector */}
+            <div className="text-center bg-charcoal-50/70 p-4 rounded-2xl border border-charcoal-200/60">
+              <div className="flex justify-center items-center gap-2 mb-2">
+                {[1, 2, 3, 4, 5].map((star) => (
+                  <button
+                    key={star}
+                    type="button"
+                    onMouseEnter={() => setHoverRating(star)}
+                    onMouseLeave={() => setHoverRating(rating)}
+                    onClick={() => setRating(star)}
+                    className="p-1 transition-transform hover:scale-125 focus:outline-none"
+                  >
+                    <Star
+                      className={`w-8 h-8 transition-colors ${
+                        (hoverRating || rating) >= star
+                          ? 'fill-amber-400 text-amber-400 drop-shadow-xs'
+                          : 'text-charcoal-200 fill-transparent'
+                      }`}
+                    />
+                  </button>
+                ))}
+              </div>
+              <span className="text-xs font-bold text-charcoal-700">
+                {RATING_LABELS[hoverRating || rating]}
+              </span>
+            </div>
+
+            {/* Comment / Feedback */}
+            <div>
+              <label className="block text-xs font-bold text-charcoal-700 mb-1.5">
+                Detailed Feedback & Experience *
+              </label>
+              <textarea
+                required
+                rows={4}
+                value={comment}
+                onChange={(e) => setComment(e.target.value)}
+                placeholder="How was the equipment condition? Was the owner punctual and helpful during pickup and return?"
+                className="w-full px-3.5 py-2.5 text-xs bg-white border border-charcoal-200 rounded-2xl focus:border-brand-500 focus:ring-4 focus:ring-brand-500/10 focus:outline-none transition-all placeholder:text-charcoal-400"
+              />
+            </div>
+
+            {/* Trust system note */}
+            <div className="flex items-center gap-2 p-3 bg-brand-50/70 border border-brand-100 rounded-2xl text-xs text-brand-900">
+              <ShieldCheck className="w-4 h-4 text-brand-600 shrink-0" />
+              <span className="text-[11px] leading-relaxed">
+                Your review helps calculate the owner's verified trust rating on BorrowBuy.
+              </span>
+            </div>
+
+            {/* Action Buttons */}
+            <div className="flex items-center justify-end gap-3 pt-1">
               <button
-                key={star}
                 type="button"
-                onMouseEnter={() => setHoverRating(star)}
-                onMouseLeave={() => setHoverRating(rating)}
-                onClick={() => setRating(star)}
-                className="p-1 transition transform hover:scale-110"
+                onClick={onClose}
+                className="px-4 py-2.5 text-xs font-bold text-charcoal-500 hover:text-charcoal-800 transition-colors"
               >
-                <Star
-                  className={`w-8 h-8 ${
-                    (hoverRating || rating) >= star
-                      ? 'fill-amber-400 text-amber-400'
-                      : 'text-slate-300'
-                  }`}
-                />
+                Cancel
               </button>
-            ))}
-          </div>
-
-          <div>
-            <label className="block text-xs font-semibold text-slate-700 mb-1">
-              Your Review & Feedback *
-            </label>
-            <textarea
-              required
-              rows={4}
-              value={comment}
-              onChange={(e) => setComment(e.target.value)}
-              placeholder="How was the equipment condition? Was the owner helpful and punctual?"
-              className="w-full px-3 py-2 text-xs border border-slate-300 rounded-xl focus:ring-2 focus:ring-sky-500 focus:outline-none"
-            />
-          </div>
-
-          <div className="flex items-center justify-end gap-3 pt-2">
-            <button
-              type="button"
-              onClick={onClose}
-              className="px-4 py-2.5 text-xs font-semibold text-slate-600 hover:text-slate-800"
-            >
-              Cancel
-            </button>
-            <button
-              type="submit"
-              disabled={loading || !comment.trim()}
-              className="flex-1 py-3 px-5 bg-sky-600 hover:bg-sky-700 text-white font-bold text-xs rounded-xl shadow-md transition disabled:opacity-50"
-            >
-              {loading ? 'Submitting Review...' : 'Post Verified Review'}
-            </button>
-          </div>
-        </form>
+              <motion.button
+                whileHover={{ scale: 1.01 }}
+                whileTap={{ scale: 0.99 }}
+                type="submit"
+                disabled={loading || !comment.trim()}
+                className="flex-1 py-3 px-5 bg-charcoal-900 hover:bg-charcoal-800 text-white font-bold text-xs rounded-xl shadow-card transition-all disabled:opacity-50 flex items-center justify-center gap-2"
+              >
+                {loading ? (
+                  <>
+                    <span className="inline-block w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" />
+                    <span>Publishing Review...</span>
+                  </>
+                ) : (
+                  <>
+                    <Sparkles className="w-4 h-4 text-amber-400" />
+                    <span>Publish Verified Review</span>
+                  </>
+                )}
+              </motion.button>
+            </div>
+          </form>
+        </motion.div>
       </div>
-    </div>
+    </AnimatePresence>
   );
 };

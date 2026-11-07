@@ -1,6 +1,6 @@
 import React from 'react';
 import { Category, ProductQueryParams } from '../../services/products';
-import { Search, SlidersHorizontal, RotateCcw } from 'lucide-react';
+import { Search, SlidersHorizontal, RotateCcw, Sparkles } from 'lucide-react';
 
 interface FilterSidebarProps {
   categories: Category[];
@@ -15,20 +15,27 @@ export const FilterSidebar: React.FC<FilterSidebarProps> = ({
   onFilterChange,
   onReset,
 }) => {
+  const conditions = [
+    { value: '', label: 'Any' },
+    { value: 'BRAND_NEW', label: 'Brand New' },
+    { value: 'LIKE_NEW', label: 'Like New' },
+    { value: 'GOOD', label: 'Good' },
+  ];
+
   return (
-    <div className="bg-white rounded-2xl border border-slate-200 p-5 shadow-sm space-y-6">
+    <div className="bg-white rounded-2xl border border-slate-200/90 p-5 shadow-card space-y-6">
       {/* Header */}
-      <div className="flex items-center justify-between pb-3 border-b border-slate-100">
-        <div className="flex items-center gap-2 text-slate-800 font-bold text-sm">
-          <SlidersHorizontal className="w-4 h-4 text-sky-600" />
+      <div className="flex items-center justify-between pb-3.5 border-b border-slate-100">
+        <div className="flex items-center gap-2 text-slate-900 font-display font-bold text-sm">
+          <SlidersHorizontal className="w-4 h-4 text-blue-600" />
           <span>Filters & Search</span>
         </div>
         <button
           onClick={onReset}
-          className="text-xs text-slate-500 hover:text-sky-600 flex items-center gap-1 font-medium transition"
+          className="group text-xs text-slate-500 hover:text-blue-600 flex items-center gap-1 font-medium transition"
         >
-          <RotateCcw className="w-3 h-3" />
-          Reset
+          <RotateCcw className="w-3 h-3 group-hover:-rotate-90 transition-transform duration-300" />
+          <span>Reset</span>
         </button>
       </div>
 
@@ -41,53 +48,68 @@ export const FilterSidebar: React.FC<FilterSidebarProps> = ({
             type="text"
             value={filters.search || ''}
             onChange={(e) => onFilterChange({ search: e.target.value, page: 1 })}
-            placeholder="Cameras, drills, MacBooks..."
-            className="w-full pl-9 pr-3 py-2 text-xs border border-slate-300 rounded-xl focus:ring-2 focus:ring-sky-500 focus:outline-none"
+            placeholder="Cameras, drones, tools, MacBooks..."
+            className="w-full pl-9 pr-3 py-2 text-xs bg-slate-50 border border-slate-200 rounded-xl focus:bg-white focus:ring-2 focus:ring-blue-500 focus:border-blue-500 focus:outline-none transition"
           />
         </div>
       </div>
 
       {/* Category Selection */}
       <div>
-        <label className="block text-xs font-semibold text-slate-700 mb-2">Category</label>
+        <div className="flex items-center justify-between mb-2">
+          <label className="text-xs font-semibold text-slate-700">Categories</label>
+          {filters.categoryId && (
+            <button
+              onClick={() => onFilterChange({ categoryId: undefined, page: 1 })}
+              className="text-[11px] text-blue-600 hover:underline font-medium"
+            >
+              Clear
+            </button>
+          )}
+        </div>
         <div className="space-y-1">
           <button
             onClick={() => onFilterChange({ categoryId: undefined, page: 1 })}
-            className={`w-full text-left px-3 py-1.5 rounded-lg text-xs font-medium flex items-center justify-between transition ${
+            className={`w-full text-left px-3 py-2 rounded-xl text-xs font-medium flex items-center justify-between transition ${
               !filters.categoryId
-                ? 'bg-sky-50 text-sky-700 font-bold'
+                ? 'bg-blue-50 text-blue-700 font-bold border border-blue-200/60'
                 : 'text-slate-600 hover:bg-slate-50'
             }`}
           >
             <span>All Categories</span>
           </button>
-          {categories.map((cat) => (
-            <button
-              key={cat.id}
-              onClick={() => onFilterChange({ categoryId: cat.id, page: 1 })}
-              className={`w-full text-left px-3 py-1.5 rounded-lg text-xs font-medium flex items-center justify-between transition ${
-                filters.categoryId === cat.id
-                  ? 'bg-sky-50 text-sky-700 font-bold'
-                  : 'text-slate-600 hover:bg-slate-50'
-              }`}
-            >
-              <span className="truncate">{cat.name}</span>
-              {cat._count?.products !== undefined && (
-                <span className="text-[10px] px-1.5 py-0.5 rounded-full bg-slate-100 text-slate-500">
-                  {cat._count.products}
-                </span>
-              )}
-            </button>
-          ))}
+          {categories.map((cat) => {
+            const isSelected = filters.categoryId === cat.id;
+            return (
+              <button
+                key={cat.id}
+                onClick={() => onFilterChange({ categoryId: cat.id, page: 1 })}
+                className={`w-full text-left px-3 py-2 rounded-xl text-xs font-medium flex items-center justify-between transition ${
+                  isSelected
+                    ? 'bg-blue-50 text-blue-700 font-bold border border-blue-200/60'
+                    : 'text-slate-600 hover:bg-slate-50'
+                }`}
+              >
+                <span className="truncate">{cat.name}</span>
+                {cat._count?.products !== undefined && (
+                  <span className={`text-[10px] px-2 py-0.5 rounded-full font-bold ${
+                    isSelected ? 'bg-blue-600 text-white' : 'bg-slate-100 text-slate-500'
+                  }`}>
+                    {cat._count.products}
+                  </span>
+                )}
+              </button>
+            );
+          })}
         </div>
       </div>
 
       {/* Daily Price Range */}
       <div>
-        <label className="block text-xs font-semibold text-slate-700 mb-2">Daily Price ($)</label>
+        <label className="block text-xs font-semibold text-slate-700 mb-2">Daily Price Range</label>
         <div className="grid grid-cols-2 gap-2">
-          <div>
-            <span className="text-[10px] text-slate-400 block mb-0.5">Min ($)</span>
+          <div className="relative">
+            <span className="absolute left-2.5 top-2 text-xs font-semibold text-slate-400">$</span>
             <input
               type="number"
               min="0"
@@ -98,12 +120,12 @@ export const FilterSidebar: React.FC<FilterSidebarProps> = ({
                   page: 1,
                 })
               }
-              placeholder="0"
-              className="w-full px-2.5 py-1.5 text-xs border border-slate-300 rounded-lg focus:outline-none focus:ring-1 focus:ring-sky-500"
+              placeholder="Min"
+              className="w-full pl-6 pr-2.5 py-1.5 text-xs bg-slate-50 border border-slate-200 rounded-xl focus:bg-white focus:outline-none focus:ring-2 focus:ring-blue-500 transition"
             />
           </div>
-          <div>
-            <span className="text-[10px] text-slate-400 block mb-0.5">Max ($)</span>
+          <div className="relative">
+            <span className="absolute left-2.5 top-2 text-xs font-semibold text-slate-400">$</span>
             <input
               type="number"
               min="0"
@@ -114,44 +136,56 @@ export const FilterSidebar: React.FC<FilterSidebarProps> = ({
                   page: 1,
                 })
               }
-              placeholder="200"
-              className="w-full px-2.5 py-1.5 text-xs border border-slate-300 rounded-lg focus:outline-none focus:ring-1 focus:ring-sky-500"
+              placeholder="Max"
+              className="w-full pl-6 pr-2.5 py-1.5 text-xs bg-slate-50 border border-slate-200 rounded-xl focus:bg-white focus:outline-none focus:ring-2 focus:ring-blue-500 transition"
             />
           </div>
         </div>
       </div>
 
-      {/* Condition Filter */}
+      {/* Condition Pills */}
       <div>
-        <label className="block text-xs font-semibold text-slate-700 mb-1.5">Condition</label>
-        <select
-          value={filters.condition || ''}
-          onChange={(e) => onFilterChange({ condition: e.target.value || undefined, page: 1 })}
-          className="w-full px-3 py-2 text-xs border border-slate-300 rounded-xl focus:ring-2 focus:ring-sky-500 focus:outline-none bg-white"
-        >
-          <option value="">Any Condition</option>
-          <option value="BRAND_NEW">Brand New</option>
-          <option value="LIKE_NEW">Like New</option>
-          <option value="GOOD">Good</option>
-          <option value="FAIR">Fair</option>
-        </select>
+        <label className="block text-xs font-semibold text-slate-700 mb-2">Item Condition</label>
+        <div className="grid grid-cols-2 gap-1.5">
+          {conditions.map((c) => {
+            const isSelected = (filters.condition || '') === c.value;
+            return (
+              <button
+                key={c.value}
+                onClick={() => onFilterChange({ condition: c.value || undefined, page: 1 })}
+                className={`py-1.5 px-2.5 text-[11px] font-semibold rounded-xl border transition text-center ${
+                  isSelected
+                    ? 'bg-blue-600 text-white border-blue-600 shadow-sm'
+                    : 'bg-slate-50 border-slate-200 text-slate-600 hover:bg-slate-100'
+                }`}
+              >
+                {c.label}
+              </button>
+            );
+          })}
+        </div>
       </div>
 
-      {/* Sort By */}
+      {/* Sort By Dropdown */}
       <div>
-        <label className="block text-xs font-semibold text-slate-700 mb-1.5">Sort Order</label>
+        <label className="block text-xs font-semibold text-slate-700 mb-1.5">Sort Listings</label>
         <select
           value={filters.sortBy || 'newest'}
           onChange={(e) => onFilterChange({ sortBy: e.target.value as any, page: 1 })}
-          className="w-full px-3 py-2 text-xs border border-slate-300 rounded-xl focus:ring-2 focus:ring-sky-500 focus:outline-none bg-white"
+          className="w-full px-3 py-2 text-xs bg-slate-50 border border-slate-200 rounded-xl focus:bg-white focus:ring-2 focus:ring-blue-500 focus:outline-none font-medium text-slate-800 transition"
         >
-          <option value="newest">Newest First</option>
+          <option value="newest">Featured & Newest</option>
           <option value="price_asc">Price: Low to High</option>
           <option value="price_desc">Price: High to Low</option>
           <option value="deposit_asc">Deposit: Low to High</option>
         </select>
       </div>
+
+      {/* Trust Guarantee Note */}
+      <div className="pt-3 border-t border-slate-100 text-[11px] text-slate-500 flex items-start gap-2">
+        <Sparkles className="w-3.5 h-3.5 text-blue-600 shrink-0 mt-0.5" />
+        <span>All rentals include automatic deposit escrow & pre-pickup condition photo verification.</span>
+      </div>
     </div>
   );
 };
-

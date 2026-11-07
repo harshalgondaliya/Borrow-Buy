@@ -247,12 +247,118 @@ async function main() {
       approvalStatus: ApprovalStatus.APPROVED,
       listingStatus: ListingStatus.ACTIVE,
       images: [
-        'https://images.unsplash.com/photo-1517336714731-489689fd1ca8?auto=format&fit=crop&w=800&q=80',
+        'https://images.unsplash.com/photo-1517336714731-489689fd1ca8?auto=format&fit=crop&w=1200&q=80',
+        'https://images.unsplash.com/photo-1541807084-5c52b6b3adef?auto=format&fit=crop&w=1200&q=80',
       ],
     },
   });
 
-  console.log('📦 Seeded 5 high-quality product listings.');
+  const prodDjiMavic3 = await prisma.product.create({
+    data: {
+      ownerId: ownerAlex.id,
+      categoryId: catCameras.id,
+      name: 'DJI Mavic 3 Pro Cine 5.1K Drone Package',
+      brand: 'DJI',
+      model: 'Mavic 3 Pro Cine with RC Pro Controller',
+      description: 'Triple-camera system with Apple ProRes 422 HQ recording, 43-minute flight time, and omnidirectional obstacle sensing. Includes Fly More combo with 3 batteries, ND filters set, and FAA compliant safety strobe.',
+      pricePerDay: 75.0,
+      securityDeposit: 450.0,
+      condition: ProductCondition.LIKE_NEW,
+      location: 'Capitol Hill, Seattle, WA',
+      approvalStatus: ApprovalStatus.APPROVED,
+      listingStatus: ListingStatus.ACTIVE,
+      images: [
+        'https://images.unsplash.com/photo-1508614589041-895b88991e3e?auto=format&fit=crop&w=1200&q=80',
+        'https://images.unsplash.com/photo-1527977966376-1c8408f9f108?auto=format&fit=crop&w=1200&q=80',
+      ],
+    },
+  });
+
+  const prodMilwaukeeKit = await prisma.product.create({
+    data: {
+      ownerId: ownerSarah.id,
+      categoryId: catTools.id,
+      name: 'Milwaukee M18 FUEL Brushless 4-Tool Cordless Combo Kit',
+      brand: 'Milwaukee',
+      model: 'M18 FUEL Gen 4',
+      description: 'Hammer drill, 1/4" hex impact driver, 7-1/4" circular saw, and LED work light. Includes two REDLITHIUM XC5.0 battery packs, multi-voltage rapid charger, and heavy-duty contractor bag.',
+      pricePerDay: 35.0,
+      securityDeposit: 180.0,
+      condition: ProductCondition.LIKE_NEW,
+      location: 'Bouldin Creek, Austin, TX',
+      approvalStatus: ApprovalStatus.APPROVED,
+      listingStatus: ListingStatus.ACTIVE,
+      images: [
+        'https://images.unsplash.com/photo-1581147036324-c17ac41dfa6c?auto=format&fit=crop&w=1200&q=80',
+        'https://images.unsplash.com/photo-1572981779307-38b8cabb2407?auto=format&fit=crop&w=1200&q=80',
+      ],
+    },
+  });
+
+  const prodRodeStudio = await prisma.product.create({
+    data: {
+      ownerId: ownerAlex.id,
+      categoryId: catAudioVideo.id,
+      name: 'Rødecaster Pro II Studio Podcast Production Package',
+      brand: 'Røde',
+      model: 'Rødecaster Pro II 4-Channel',
+      description: 'Complete broadcast-grade podcast kit with 2x Shure SM7B dynamic microphones, Cloudlifter CL-2, boom arms, studio headphones, and high-speed SanDisk 128GB microSD card.',
+      pricePerDay: 55.0,
+      securityDeposit: 300.0,
+      condition: ProductCondition.BRAND_NEW,
+      location: 'Downtown, Seattle, WA',
+      approvalStatus: ApprovalStatus.APPROVED,
+      listingStatus: ListingStatus.ACTIVE,
+      images: [
+        'https://images.unsplash.com/photo-1590602847861-f357a9332bbc?auto=format&fit=crop&w=1200&q=80',
+        'https://images.unsplash.com/photo-1598488035139-bdbb2231ce04?auto=format&fit=crop&w=1200&q=80',
+      ],
+    },
+  });
+
+  const prodMsrTent = await prisma.product.create({
+    data: {
+      ownerId: ownerSarah.id,
+      categoryId: catOutdoor.id,
+      name: 'MSR Hubba Hubba 3-Person Ultralight Backpacking Tent',
+      brand: 'MSR',
+      model: 'Hubba Hubba NX 3',
+      description: 'Ultra-compact, lightweight 3-season tent weighing only 3.7 lbs. Includes footprint ground tarp, rainfly, aluminum stakes, and compressible stuff sack. Perfect for Pacific Crest Trail expeditions.',
+      pricePerDay: 22.0,
+      securityDeposit: 100.0,
+      condition: ProductCondition.LIKE_NEW,
+      location: 'South Lamar, Austin, TX',
+      approvalStatus: ApprovalStatus.APPROVED,
+      listingStatus: ListingStatus.ACTIVE,
+      images: [
+        'https://images.unsplash.com/photo-1504280390367-361c6d9f38f4?auto=format&fit=crop&w=1200&q=80',
+        'https://images.unsplash.com/photo-1510312305653-8ed496efae75?auto=format&fit=crop&w=1200&q=80',
+      ],
+    },
+  });
+
+  const prodSonyTelephoto = await prisma.product.create({
+    data: {
+      ownerId: ownerAlex.id,
+      categoryId: catCameras.id,
+      name: 'Sony FE 70-200mm f/2.8 GM OSS II Telephoto Zoom Lens',
+      brand: 'Sony G Master',
+      model: 'SEL70200GM2',
+      description: 'Flagship sports and wildlife telephoto zoom lens with constant f/2.8 aperture, 4 XD linear motors, and optical SteadyShot stabilization. Includes lens hood, tripod collar, and weather-resistant pouch.',
+      pricePerDay: 42.0,
+      securityDeposit: 350.0,
+      condition: ProductCondition.LIKE_NEW,
+      location: 'Belltown, Seattle, WA',
+      approvalStatus: ApprovalStatus.APPROVED,
+      listingStatus: ListingStatus.ACTIVE,
+      images: [
+        'https://images.unsplash.com/photo-1502982720700-bfff97f2ecac?auto=format&fit=crop&w=1200&q=80',
+        'https://images.unsplash.com/photo-1617005082133-548c4dd27f35?auto=format&fit=crop&w=1200&q=80',
+      ],
+    },
+  });
+
+  console.log('📦 Seeded 10 high-quality product listings.');
 
   // 4. Seed an illustrative Completed Booking with Payment, Deposit, Inspection, and Review
   const pastStart = new Date(Date.now() - 10 * 24 * 60 * 60 * 1000);
