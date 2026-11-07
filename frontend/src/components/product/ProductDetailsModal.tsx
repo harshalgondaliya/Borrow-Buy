@@ -1,17 +1,15 @@
 import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Product } from '../../services/products';
-import { 
-  X, 
-  MapPin, 
-  ShieldCheck, 
-  Star, 
-  Tag, 
-  Info, 
+import { formatINR } from '../../utils/formatters';
+import {
+  X,
+  MapPin,
+  ShieldCheck,
+  Star,
   Calendar,
-  Lock,
-  QrCode,
-  ChevronRight
+  CheckCircle2,
+  UserCheck,
 } from 'lucide-react';
 
 interface ProductDetailsModalProps {
@@ -25,240 +23,316 @@ export const ProductDetailsModal: React.FC<ProductDetailsModalProps> = ({
   onClose,
   onBookNow,
 }) => {
-  const [selectedImgIndex, setSelectedImgIndex] = useState(0);
+  const [selectedImageIndex, setSelectedImageIndex] = useState(0);
+  const [activeTab, setActiveTab] = useState<'details' | 'rules' | 'reviews'>('details');
 
   if (!product) return null;
 
+  const images = product.images && product.images.length > 0
+    ? product.images
+    : ['https://images.unsplash.com/photo-1516035069371-29a1b244cc32?auto=format&fit=crop&w=1200&q=80'];
+
   const getImageUrl = (url: string) => {
-    if (!url) {
-      return 'https://images.unsplash.com/photo-1516035069371-29a1b244cc32?auto=format&fit=crop&w=1200&q=80';
+    if (url.startsWith('http://') || url.startsWith('https://')) {
+      return url;
     }
-    if (url.startsWith('http')) return url;
-    const base = import.meta.env.VITE_API_BASE_URL?.replace('/api', '') || 'http://localhost:5000';
+    const base = import.meta.env.VITE_API_URL || 'http://localhost:5000';
     return `${base}${url}`;
   };
 
-  const images = product.images && product.images.length > 0
-    ? product.images.map(getImageUrl)
-    : [getImageUrl('')];
+  const conditionLabels: Record<string, string> = {
+    BRAND_NEW: 'Brand New (Sealed/Pristine)',
+    LIKE_NEW: 'Like New (Mint Condition)',
+    GOOD: 'Good (Minor Cosmetic Wear)',
+    FAIR: 'Fair (Fully Functional)',
+  };
 
   return (
     <AnimatePresence>
-      <div className="fixed inset-0 z-50 overflow-y-auto bg-slate-950/60 backdrop-blur-md flex items-center justify-center p-3 sm:p-6">
+      <div className="fixed inset-0 z-50 overflow-y-auto flex items-center justify-center p-3 sm:p-6">
+        {/* Backdrop */}
         <motion.div
-          initial={{ opacity: 0, scale: 0.95, y: 20 }}
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          exit={{ opacity: 0 }}
+          transition={{ duration: 0.2 }}
+          onClick={onClose}
+          className="fixed inset-0 bg-slate-950/70 backdrop-blur-md"
+        />
+
+        {/* Modal Window */}
+        <motion.div
+          initial={{ opacity: 0, scale: 0.95, y: 15 }}
           animate={{ opacity: 1, scale: 1, y: 0 }}
-          exit={{ opacity: 0, scale: 0.95, y: 20 }}
-          transition={{ duration: 0.25, ease: 'easeOut' }}
-          className="relative bg-white rounded-3xl shadow-elevated max-w-4xl w-full max-h-[92vh] overflow-y-auto p-6 sm:p-8 border border-slate-200/80"
+          exit={{ opacity: 0, scale: 0.95, y: 15 }}
+          transition={{ type: 'spring', damping: 25, stiffness: 300 }}
+          className="relative bg-white rounded-3xl shadow-2xl border border-slate-200/80 max-w-4xl w-full max-h-[92vh] overflow-y-auto p-6 sm:p-8 z-10"
         >
           {/* Close Button */}
           <button
             onClick={onClose}
-            className="absolute top-5 right-5 text-slate-400 hover:text-slate-800 p-2 rounded-full hover:bg-slate-100 transition z-10"
-            title="Close modal"
+            className="absolute top-5 right-5 text-slate-400 hover:text-slate-700 p-2 rounded-xl hover:bg-slate-100 transition-colors z-20"
+            aria-label="Close dialog"
           >
             <X className="w-5 h-5" />
           </button>
 
-          <div className="grid md:grid-cols-2 gap-8 items-start">
-            {/* Left Column: Image Gallery & Trust Highlights */}
-            <div className="space-y-4">
-              <div className="aspect-[4/3] rounded-2xl overflow-hidden bg-slate-100 border border-slate-200 shadow-sm relative group">
+          {/* Grid Layout: Left Gallery + Right Information */}
+          <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
+            {/* LEFT: Image Gallery */}
+            <div className="lg:col-span-7 space-y-4">
+              <div className="relative aspect-[4/3] rounded-3xl overflow-hidden bg-slate-100 border border-slate-200 shadow-sm">
                 <img
-                  src={images[selectedImgIndex]}
+                  src={getImageUrl(images[selectedImageIndex])}
                   alt={product.name}
-                  className="w-full h-full object-cover transition-all duration-500 group-hover:scale-105"
+                  className="w-full h-full object-cover transition-all duration-300"
                 />
-                <div className="absolute top-3 left-3 flex gap-2">
-                  <span className="px-2.5 py-1 text-xs font-bold rounded-lg bg-slate-950/80 text-white backdrop-blur-md shadow-sm">
-                    {product.condition.replace('_', ' ')}
-                  </span>
+                <div className="absolute bottom-3 left-3 px-3 py-1 bg-white/90 backdrop-blur-md rounded-full text-xs font-bold text-slate-800 shadow-sm border border-white/70">
+                  {product.category?.name || 'Equipment'}
                 </div>
               </div>
 
+              {/* Thumbnail Selector */}
               {images.length > 1 && (
-                <div className="flex gap-2.5 overflow-x-auto pb-1">
-                  {images.map((img, idx) => (
+                <div className="flex gap-3 overflow-x-auto pb-1">
+                  {images.map((img, i) => (
                     <button
-                      key={idx}
-                      onClick={() => setSelectedImgIndex(idx)}
-                      className={`w-16 h-16 rounded-xl overflow-hidden border-2 shrink-0 transition ${
-                        selectedImgIndex === idx
-                          ? 'border-blue-600 ring-2 ring-blue-100 scale-105'
+                      key={i}
+                      type="button"
+                      onClick={() => setSelectedImageIndex(i)}
+                      className={`w-16 h-16 rounded-xl overflow-hidden border-2 shrink-0 transition-all ${
+                        selectedImageIndex === i
+                          ? 'border-brand-600 ring-2 ring-brand-500/20'
                           : 'border-slate-200 opacity-70 hover:opacity-100'
                       }`}
                     >
-                      <img src={img} alt="" className="w-full h-full object-cover" />
+                      <img src={getImageUrl(img)} alt="" className="w-full h-full object-cover" />
                     </button>
                   ))}
                 </div>
               )}
 
-              {/* Guarantees Grid */}
-              <div className="grid grid-cols-2 gap-3 pt-2">
-                <div className="p-3 bg-slate-50 border border-slate-200/80 rounded-xl">
-                  <div className="flex items-center gap-2 text-xs font-bold text-slate-800 mb-1">
-                    <Lock className="w-4 h-4 text-blue-600" />
-                    <span>Row Lock Safe</span>
-                  </div>
-                  <p className="text-[11px] text-slate-500 leading-tight">
-                    Zero double-booking guarantee via PostgreSQL pessimistic concurrency locks.
-                  </p>
+              {/* Trust & Escrow Guarantee Box */}
+              <div className="p-4 bg-slate-50 border border-slate-200 rounded-2xl space-y-2 text-xs">
+                <div className="font-bold text-slate-900 flex items-center gap-1.5">
+                  <ShieldCheck className="w-4 h-4 text-emerald-600" />
+                  <span>BorrowBuy Rental Guarantee</span>
                 </div>
-
-                <div className="p-3 bg-slate-50 border border-slate-200/80 rounded-xl">
-                  <div className="flex items-center gap-2 text-xs font-bold text-slate-800 mb-1">
-                    <QrCode className="w-4 h-4 text-emerald-600" />
-                    <span>Single-Use QR</span>
-                  </div>
-                  <p className="text-[11px] text-slate-500 leading-tight">
-                    Secure cryptographic handover with replay attack protection.
-                  </p>
-                </div>
-              </div>
-
-              {/* Refundable Deposit Notice */}
-              <div className="p-3.5 bg-blue-50/70 border border-blue-200/70 rounded-xl flex items-start gap-3">
-                <Info className="w-4 h-4 text-blue-600 shrink-0 mt-0.5" />
-                <div className="text-xs text-blue-950 leading-relaxed">
-                  <span className="font-bold">Refundable Security Deposit:</span> The <span className="font-bold text-blue-700">${product.securityDeposit}</span> deposit is held securely during the rental and released automatically upon clean post-rental inspection.
-                </div>
+                <p className="text-slate-600 leading-relaxed text-[11px]">
+                  • <strong>Refundable Deposit:</strong> The {formatINR(product.securityDeposit)} deposit is held safely during your rental and automatically returned upon inspection.
+                </p>
+                <p className="text-slate-600 leading-relaxed text-[11px]">
+                  • <strong>Digital Pass:</strong> Single-use QR pass prevents confusion at pickup and return.
+                </p>
               </div>
             </div>
 
-            {/* Right Column: Specifications & Sticky Booking Panel */}
-            <div className="flex flex-col justify-between space-y-6">
+            {/* RIGHT: Product Details & Booking Action */}
+            <div className="lg:col-span-5 flex flex-col justify-between space-y-6">
               <div>
-                {/* Category & Location Badges */}
-                <div className="flex items-center gap-2 flex-wrap mb-2">
-                  <span className="px-2.5 py-0.5 rounded-full text-xs font-semibold bg-blue-100 text-blue-800 flex items-center gap-1">
-                    <Tag className="w-3 h-3" />
-                    {product.category?.name || 'General Gear'}
-                  </span>
-                  <span className="flex items-center gap-1 text-xs text-slate-500 font-medium ml-auto">
+                {/* Location & Rating */}
+                <div className="flex items-center justify-between text-xs text-slate-500 mb-2">
+                  <div className="flex items-center gap-1">
                     <MapPin className="w-3.5 h-3.5 text-slate-400" />
-                    {product.location}
-                  </span>
+                    <span>{product.location}</span>
+                  </div>
+                  <div className="flex items-center gap-1 bg-amber-50 px-2 py-0.5 rounded-md border border-amber-200">
+                    <Star className="w-3.5 h-3.5 fill-amber-400 text-amber-400" />
+                    <span className="font-bold text-amber-900">
+                      {product.owner?.trustScore?.toFixed(1) || '5.0'}
+                    </span>
+                  </div>
                 </div>
 
-                <h1 className="font-display text-2xl font-black text-slate-900 tracking-tight leading-snug">
+                {/* Title */}
+                <h1 className="text-2xl font-display font-extrabold text-slate-900 leading-tight mb-2">
                   {product.name}
                 </h1>
 
+                {/* Brand & Model Pills */}
                 {(product.brand || product.model) && (
-                  <div className="text-xs text-slate-500 font-medium mt-1">
-                    {product.brand && <span className="font-bold text-slate-800">{product.brand}</span>}
-                    {product.brand && product.model && ' • '}
-                    {product.model && <span>{product.model}</span>}
-                  </div>
-                )}
-
-                {/* Price & Deposit Summary Box */}
-                <div className="my-5 p-4 bg-slate-50 border border-slate-200/90 rounded-2xl flex items-center justify-between">
-                  <div>
-                    <div className="text-xs text-slate-500 font-medium">Daily Rental Rate</div>
-                    <div className="font-display text-2xl font-black text-slate-900">
-                      ${product.pricePerDay} <span className="text-xs font-semibold text-slate-500">/ day</span>
-                    </div>
-                  </div>
-                  <div className="text-right">
-                    <div className="text-xs text-slate-500 font-medium">Refundable Deposit</div>
-                    <div className="font-display text-xl font-bold text-slate-800">
-                      ${product.securityDeposit}
-                    </div>
-                  </div>
-                </div>
-
-                {/* Description */}
-                <div className="mb-6">
-                  <h3 className="text-xs font-bold text-slate-900 uppercase tracking-wider mb-2">
-                    Equipment Overview
-                  </h3>
-                  <p className="text-xs text-slate-600 leading-relaxed whitespace-pre-line">
-                    {product.description}
-                  </p>
-                </div>
-
-                {/* Owner Information Card */}
-                {product.owner && (
-                  <div className="p-4 bg-white border border-slate-200 rounded-2xl mb-6 shadow-sm">
-                    <div className="flex items-center justify-between mb-2">
-                      <div className="flex items-center gap-3">
-                        <div className="w-10 h-10 rounded-full bg-blue-100 text-blue-700 font-bold flex items-center justify-center text-sm border border-blue-200">
-                          {product.owner.fullName.charAt(0)}
-                        </div>
-                        <div>
-                          <div className="text-sm font-bold text-slate-900 flex items-center gap-1.5">
-                            {product.owner.fullName}
-                            {product.owner.isVerifiedOwner && (
-                              <span title="Verified Lender Badge" className="text-blue-600">
-                                <ShieldCheck className="w-4 h-4" />
-                              </span>
-                            )}
-                          </div>
-                          <div className="text-xs text-slate-500">
-                            {product.owner.ownerAddress || product.location}
-                          </div>
-                        </div>
-                      </div>
-
-                      <div className="text-right">
-                        <div className="inline-flex items-center gap-1 px-2 py-0.5 bg-amber-500/10 text-amber-700 font-bold text-xs rounded-md border border-amber-500/20">
-                          <Star className="w-3.5 h-3.5 fill-amber-400 text-amber-400" />
-                          {product.owner.trustScore?.toFixed(1) || '5.0'} / 5.0
-                        </div>
-                        <div className="text-[10px] text-slate-400 font-medium mt-0.5">Trust Score</div>
-                      </div>
-                    </div>
-
-                    {product.owner.ownerBio && (
-                      <p className="text-xs text-slate-500 italic mt-2 border-t border-slate-100 pt-2">
-                        "{product.owner.ownerBio}"
-                      </p>
+                  <div className="flex items-center gap-2 mb-4">
+                    {product.brand && (
+                      <span className="px-2.5 py-0.5 bg-slate-100 text-slate-700 text-xs font-semibold rounded-lg border border-slate-200">
+                        {product.brand}
+                      </span>
+                    )}
+                    {product.model && (
+                      <span className="px-2.5 py-0.5 bg-slate-100 text-slate-700 text-xs font-mono rounded-lg border border-slate-200">
+                        {product.model}
+                      </span>
                     )}
                   </div>
                 )}
 
-                {/* Verified Customer Reviews */}
-                {product.reviews && product.reviews.length > 0 && (
-                  <div className="mb-6">
-                    <h3 className="text-xs font-bold text-slate-900 uppercase tracking-wider mb-3 flex items-center justify-between">
-                      <span>Verified Renter Reviews ({product.reviews.length})</span>
-                      <span className="text-amber-600 font-bold flex items-center gap-1 normal-case text-xs">
-                        <Star className="w-3.5 h-3.5 fill-amber-400" />
-                        {product.averageRating || '5.0'} / 5.0
+                {/* Pricing Box */}
+                <div className="p-4 bg-brand-50/60 border border-brand-100 rounded-2xl mb-5">
+                  <div className="flex items-baseline justify-between">
+                    <div>
+                      <span className="text-2xl font-display font-black text-brand-700">
+                        {formatINR(product.pricePerDay)}
                       </span>
-                    </h3>
-                    <div className="space-y-2.5 max-h-40 overflow-y-auto pr-1">
-                      {product.reviews.map((rev) => (
-                        <div key={rev.id} className="p-3 bg-slate-50 border border-slate-200/60 rounded-xl text-xs">
-                          <div className="flex items-center justify-between mb-1">
-                            <span className="font-bold text-slate-800">{rev.reviewer.fullName}</span>
-                            <span className="flex text-amber-400">
-                              {Array.from({ length: rev.rating }).map((_, i) => (
-                                <Star key={i} className="w-3 h-3 fill-amber-400" />
-                              ))}
-                            </span>
-                          </div>
-                          <p className="text-slate-600 italic">"{rev.comment}"</p>
-                        </div>
-                      ))}
+                      <span className="text-xs font-semibold text-slate-500 ml-1">/ day</span>
                     </div>
+                    <div className="text-right">
+                      <span className="text-xs text-slate-500 block">Security Deposit</span>
+                      <span className="text-sm font-bold text-slate-900 font-display">
+                        {formatINR(product.securityDeposit)}
+                      </span>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Tabs Switcher: Details vs Rules vs Reviews */}
+                <div className="flex p-1 bg-slate-100 rounded-2xl mb-4 text-xs font-semibold">
+                  <button
+                    type="button"
+                    onClick={() => setActiveTab('details')}
+                    className={`flex-1 py-1.5 rounded-xl transition-all ${
+                      activeTab === 'details'
+                        ? 'bg-white text-slate-900 shadow-sm font-bold'
+                        : 'text-slate-500 hover:text-slate-800'
+                    }`}
+                  >
+                    Overview
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => setActiveTab('rules')}
+                    className={`flex-1 py-1.5 rounded-xl transition-all ${
+                      activeTab === 'rules'
+                        ? 'bg-white text-slate-900 shadow-sm font-bold'
+                        : 'text-slate-500 hover:text-slate-800'
+                    }`}
+                  >
+                    Rental Rules
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => setActiveTab('reviews')}
+                    className={`flex-1 py-1.5 rounded-xl transition-all ${
+                      activeTab === 'reviews'
+                        ? 'bg-white text-slate-900 shadow-sm font-bold'
+                        : 'text-slate-500 hover:text-slate-800'
+                    }`}
+                  >
+                    Reviews
+                  </button>
+                </div>
+
+                {/* TAB CONTENT: Details */}
+                {activeTab === 'details' && (
+                  <div className="space-y-4 text-xs">
+                    <div>
+                      <span className="font-bold text-slate-800 block mb-1">Description</span>
+                      <p className="text-slate-600 leading-relaxed whitespace-pre-line">
+                        {product.description}
+                      </p>
+                    </div>
+
+                    <div className="pt-2 border-t border-slate-100 grid grid-cols-2 gap-2 text-[11px]">
+                      <div>
+                        <span className="text-slate-400 block">Condition</span>
+                        <span className="font-bold text-slate-800">
+                          {conditionLabels[product.condition] || product.condition}
+                        </span>
+                      </div>
+                      <div>
+                        <span className="text-slate-400 block">Location</span>
+                        <span className="font-bold text-slate-800">{product.location}</span>
+                      </div>
+                    </div>
+
+                    {/* Owner Card */}
+                    <div className="p-3 bg-slate-50 border border-slate-200/80 rounded-2xl flex items-center gap-3">
+                      <div className="w-10 h-10 rounded-full bg-brand-100 text-brand-700 flex items-center justify-center font-bold text-sm shrink-0">
+                        {product.owner?.fullName?.charAt(0) || 'O'}
+                      </div>
+                      <div className="min-w-0">
+                        <div className="font-bold text-slate-900 truncate">
+                          {product.owner?.fullName || 'Verified Lender'}
+                        </div>
+                        <div className="text-[11px] text-slate-500 flex items-center gap-1">
+                          <UserCheck className="w-3.5 h-3.5 text-emerald-600" />
+                          <span>Identity Verified • Gujarati Local</span>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                )}
+
+                {/* TAB CONTENT: Rental Rules */}
+                {activeTab === 'rules' && (
+                  <div className="space-y-2.5 text-xs text-slate-600">
+                    <div className="flex items-start gap-2">
+                      <CheckCircle2 className="w-4 h-4 text-brand-600 shrink-0 mt-0.5" />
+                      <span>Carry original government ID (Aadhaar / Driving License) during pickup for verification.</span>
+                    </div>
+                    <div className="flex items-start gap-2">
+                      <CheckCircle2 className="w-4 h-4 text-brand-600 shrink-0 mt-0.5" />
+                      <span>Take 2 minutes to inspect equipment and test battery/accessories with the owner at pickup.</span>
+                    </div>
+                    <div className="flex items-start gap-2">
+                      <CheckCircle2 className="w-4 h-4 text-brand-600 shrink-0 mt-0.5" />
+                      <span>Standard pickup window: 8:00 AM – 8:00 PM. Flexible by mutual chat.</span>
+                    </div>
+                    <div className="flex items-start gap-2">
+                      <CheckCircle2 className="w-4 h-4 text-brand-600 shrink-0 mt-0.5" />
+                      <span>Security deposit is released immediately upon return in original functional condition.</span>
+                    </div>
+                  </div>
+                )}
+
+                {/* TAB CONTENT: Reviews */}
+                {activeTab === 'reviews' && (
+                  <div className="space-y-3 text-xs max-h-48 overflow-y-auto">
+                    {product.bookings?.some((b: any) => b.reviews && b.reviews.length > 0) ? (
+                      product.bookings.flatMap((b: any) => b.reviews).map((r: any, idx: number) => (
+                        <div key={idx} className="p-3 bg-slate-50 rounded-xl border border-slate-200">
+                          <div className="flex items-center justify-between mb-1">
+                            <span className="font-bold text-slate-900">{r.reviewer?.fullName || 'Renter'}</span>
+                            <div className="flex items-center gap-0.5">
+                              {Array.from({ length: r.rating }).map((_, s) => (
+                                <Star key={s} className="w-3 h-3 fill-amber-400 text-amber-400" />
+                              ))}
+                            </div>
+                          </div>
+                          <p className="text-slate-600 text-[11px] leading-relaxed">"{r.comment}"</p>
+                        </div>
+                      ))
+                    ) : (
+                      <div className="text-center py-6 text-slate-400">
+                        <Star className="w-6 h-6 text-amber-400 mx-auto mb-1 fill-amber-400" />
+                        <span className="font-bold text-slate-800 block text-xs">5.0 Star Owner Rating</span>
+                        <span className="text-[11px] text-slate-400">Verified through previous local handovers</span>
+                      </div>
+                    )}
                   </div>
                 )}
               </div>
 
-              {/* Action Bar */}
-              <div className="pt-4 border-t border-slate-100 flex items-center gap-3">
-                <button
-                  onClick={() => onBookNow(product)}
-                  className="flex-1 py-3 px-6 bg-blue-600 hover:bg-blue-700 text-white font-bold rounded-2xl shadow-card hover:shadow-card-hover transition-all duration-200 flex items-center justify-center gap-2 text-sm"
+              {/* Bottom Sticky Action Bar */}
+              <div className="pt-4 border-t border-slate-100 flex items-center justify-between gap-3">
+                <div>
+                  <span className="text-[10px] text-slate-400 uppercase tracking-wider block">Daily Rent</span>
+                  <span className="text-xl font-display font-black text-slate-900">
+                    {formatINR(product.pricePerDay)}
+                  </span>
+                </div>
+
+                <motion.button
+                  whileHover={{ scale: 1.02 }}
+                  whileTap={{ scale: 0.98 }}
+                  type="button"
+                  onClick={() => {
+                    onClose();
+                    onBookNow(product);
+                  }}
+                  className="px-6 py-3 bg-brand-600 hover:bg-brand-700 text-white font-bold text-xs rounded-xl shadow-md transition-all flex items-center gap-2"
                 >
                   <Calendar className="w-4 h-4" />
-                  <span>Check Availability & Book</span>
-                  <ChevronRight className="w-4 h-4 ml-1" />
-                </button>
+                  <span>Choose Dates & Book</span>
+                </motion.button>
               </div>
             </div>
           </div>

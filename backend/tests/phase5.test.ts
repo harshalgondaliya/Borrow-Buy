@@ -15,16 +15,16 @@ describe('Phase 5 – Payments, QR Verification, Inspections & Reviews Tests', (
   let preInspectionId: string;
 
   beforeAll(async () => {
-    // 1. Login Customer (Emma)
+    // 1. Login Customer (Rohan)
     const cRes = await request(app)
       .post('/api/auth/login')
-      .send({ email: 'emma.customer@borrowbuy.com', password: 'Password123!' });
+      .send({ email: 'rohan.gupta@borrowbuy.in', password: 'Password123!' });
     customerToken = cRes.body.data.token;
 
-    // 2. Login Owner (Alex)
+    // 2. Login Owner (Amit)
     const oRes = await request(app)
       .post('/api/auth/login')
-      .send({ email: 'alex.owner@borrowbuy.com', password: 'Password123!' });
+      .send({ email: 'amit.owner@borrowbuy.in', password: 'Password123!' });
     ownerToken = oRes.body.data.token;
     ownerId = oRes.body.data.user.id;
 

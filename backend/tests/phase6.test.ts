@@ -17,22 +17,23 @@ describe('Phase 6 – Notifications, Background Jobs & Admin Dashboard Tests', (
 
   beforeAll(async () => {
     // 1. Login Admin
+    const adminPassword = process.env.ADMIN_INITIAL_PASSWORD || 'Harshal@Admin2026!';
     const adminRes = await request(app)
       .post('/api/auth/login')
-      .send({ email: 'admin@borrowbuy.com', password: 'AdminPassword123!' });
+      .send({ email: 'harshal07@gmail.com', password: adminPassword });
     adminToken = adminRes.body.data.token;
 
-    // 2. Login Customer (Emma)
+    // 2. Login Customer (Neha)
     const custRes = await request(app)
       .post('/api/auth/login')
-      .send({ email: 'emma.customer@borrowbuy.com', password: 'Password123!' });
+      .send({ email: 'neha.trivedi@borrowbuy.in', password: 'Password123!' });
     customerToken = custRes.body.data.token;
     customerId = custRes.body.data.user.id;
 
-    // 3. Login Owner (Alex)
+    // 3. Login Owner (Sneha)
     const ownerRes = await request(app)
       .post('/api/auth/login')
-      .send({ email: 'alex.owner@borrowbuy.com', password: 'Password123!' });
+      .send({ email: 'sneha.owner@borrowbuy.in', password: 'Password123!' });
     ownerToken = ownerRes.body.data.token;
 
     // 4. Create sample in-app notification for Emma

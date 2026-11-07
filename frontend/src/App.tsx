@@ -1,7 +1,6 @@
 import { useEffect, useState, useCallback, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { 
-  Package, 
   Sparkles, 
   ShieldCheck, 
   Wrench, 
@@ -18,7 +17,13 @@ import {
   Laptop,
   Volume2,
   Bike,
-  Compass
+  Compass,
+  Video,
+  Hammer,
+  Tent,
+  GraduationCap,
+  Sparkle,
+  MapPin
 } from 'lucide-react';
 import { AuthProvider, useAuth } from './features/auth/AuthContext';
 import { ToastProvider, useToast } from './features/toast/ToastContext';
@@ -38,6 +43,9 @@ import { AdminDashboard } from './components/dashboard/AdminDashboard';
 import { NotificationDropdown } from './components/layout/NotificationDropdown';
 import { DateRangePickerModal } from './components/booking/DateRangePickerModal';
 import { CustomerBookingsModal } from './components/booking/CustomerBookingsModal';
+import { BorrowBuyLogo } from './components/common/BorrowBuyLogo';
+import { StartupSplash } from './components/common/StartupSplash';
+import { formatINR } from './utils/formatters';
 
 function MainContent() {
   const { user, isAuthenticated, logout } = useAuth();
@@ -106,7 +114,7 @@ function MainContent() {
 
   const handleResetFilters = () => {
     setFilters({ sortBy: 'newest', page: 1 });
-    info('Filters reset to default listings', 'Catalog Reset');
+    info('Filters reset to show all listings', 'Catalog Reset');
   };
 
   const handleInitiateBooking = (product: Product) => {
@@ -128,59 +136,51 @@ function MainContent() {
 
   // Category visual icons mapping
   const getCategoryIcon = (slug?: string) => {
-    if (slug?.includes('camera')) return <Camera className="w-5 h-5" />;
-    if (slug?.includes('tool')) return <Wrench className="w-5 h-5" />;
-    if (slug?.includes('audio') || slug?.includes('projector')) return <Volume2 className="w-5 h-5" />;
-    if (slug?.includes('outdoor') || slug?.includes('bike')) return <Bike className="w-5 h-5" />;
+    if (slug?.includes('camera') || slug?.includes('photography')) return <Camera className="w-5 h-5" />;
+    if (slug?.includes('tool') || slug?.includes('workshop')) return <Hammer className="w-5 h-5" />;
+    if (slug?.includes('audio') || slug?.includes('dj')) return <Volume2 className="w-5 h-5" />;
+    if (slug?.includes('projector') || slug?.includes('display')) return <Video className="w-5 h-5" />;
+    if (slug?.includes('outdoor') || slug?.includes('camping')) return <Tent className="w-5 h-5" />;
+    if (slug?.includes('mobility') || slug?.includes('bike')) return <Bike className="w-5 h-5" />;
     return <Laptop className="w-5 h-5" />;
   };
 
   return (
-    <div className="min-h-screen flex flex-col bg-[#FBFBFC] text-slate-900 antialiased selection:bg-blue-600 selection:text-white">
+    <div className="min-h-screen flex flex-col bg-[#F8FAFC] text-slate-900 antialiased selection:bg-brand-600 selection:text-white font-sans">
+      {/* Startup Splash Animation */}
+      <StartupSplash />
+
       {/* Top Navigation */}
-      <header className="sticky top-0 z-40 bg-white/80 backdrop-blur-md border-b border-slate-200/80 transition-all">
+      <header className="sticky top-0 z-40 bg-white/90 backdrop-blur-md border-b border-slate-200/80 transition-all shadow-xs">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-20 flex items-center justify-between">
           {/* Brand Logo */}
           <div 
             onClick={() => { setViewMode('marketplace'); window.scrollTo({ top: 0, behavior: 'smooth' }); }} 
-            className="flex items-center space-x-3 cursor-pointer group"
+            className="cursor-pointer group flex items-center"
           >
-            <div className="w-11 h-11 rounded-2xl bg-gradient-to-tr from-blue-700 via-blue-600 to-indigo-500 text-white flex items-center justify-center shadow-card group-hover:shadow-glow transition-all duration-300 transform group-hover:scale-105">
-              <Package className="h-6 w-6" />
-            </div>
-            <div>
-              <span className="font-display text-2xl font-black tracking-tight text-slate-950">
-                Borrow<span className="text-blue-600">Buy</span>
-              </span>
-              <div className="flex items-center gap-1.5 -mt-1">
-                <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" />
-                <span className="text-[10px] font-bold text-slate-400 tracking-wider uppercase">
-                  P2P Rental Marketplace
-                </span>
-              </div>
-            </div>
+            <BorrowBuyLogo size="md" variant="full" />
           </div>
 
           {/* Desktop Navigation Links */}
           <div className="hidden lg:flex items-center space-x-2">
             <button
               onClick={() => { setViewMode('marketplace'); window.scrollTo({ top: 0, behavior: 'smooth' }); }}
-              className={`px-4 py-2 rounded-xl text-xs font-bold transition ${
+              className={`px-4 py-2 rounded-xl text-xs font-semibold transition ${
                 viewMode === 'marketplace'
-                  ? 'bg-slate-100 text-slate-950 shadow-sm'
+                  ? 'bg-slate-100 text-slate-950 shadow-xs'
                   : 'text-slate-600 hover:text-slate-900 hover:bg-slate-50'
               }`}
             >
-              Explore Gear
+              Explore Products
             </button>
 
             {/* Role Dashboards */}
             {(user?.role === 'OWNER' || user?.role === 'ADMIN') && (
               <button
                 onClick={() => setViewMode('owner-dashboard')}
-                className={`px-4 py-2 rounded-xl text-xs font-bold transition flex items-center gap-1.5 ${
+                className={`px-4 py-2 rounded-xl text-xs font-semibold transition flex items-center gap-1.5 ${
                   viewMode === 'owner-dashboard'
-                    ? 'bg-blue-50 text-blue-700 shadow-sm border border-blue-200/60'
+                    ? 'bg-blue-50 text-blue-700 shadow-xs border border-blue-200/60'
                     : 'text-slate-600 hover:text-slate-900 hover:bg-slate-50'
                 }`}
               >
@@ -192,9 +192,9 @@ function MainContent() {
             {user?.role === 'ADMIN' && (
               <button
                 onClick={() => setViewMode('admin-dashboard')}
-                className={`px-4 py-2 rounded-xl text-xs font-bold transition flex items-center gap-1.5 ${
+                className={`px-4 py-2 rounded-xl text-xs font-semibold transition flex items-center gap-1.5 ${
                   viewMode === 'admin-dashboard'
-                    ? 'bg-rose-50 text-rose-700 shadow-sm border border-rose-200/60'
+                    ? 'bg-rose-50 text-rose-700 shadow-xs border border-rose-200/60'
                     : 'text-slate-600 hover:text-slate-900 hover:bg-slate-50'
                 }`}
               >
@@ -207,7 +207,7 @@ function MainContent() {
             {isAuthenticated && (
               <button
                 onClick={() => setCustomerBookingsOpen(true)}
-                className="px-4 py-2 text-xs font-bold text-slate-700 hover:text-slate-900 hover:bg-slate-100/80 rounded-xl transition flex items-center gap-1.5"
+                className="px-4 py-2 text-xs font-semibold text-slate-700 hover:text-slate-900 hover:bg-slate-100/80 rounded-xl transition flex items-center gap-1.5"
               >
                 <CalendarDays className="w-4 h-4 text-blue-600" />
                 <span>My Bookings</span>
@@ -224,7 +224,7 @@ function MainContent() {
             {isAuthenticated && user ? (
               <div className="flex items-center space-x-3 pl-3 border-l border-slate-200">
                 <div className="text-right">
-                  <div className="text-xs font-bold text-slate-900">{user.fullName}</div>
+                  <div className="text-xs font-bold text-slate-900 font-display">{user.fullName}</div>
                   <div className="text-[11px] font-semibold text-blue-600 flex items-center justify-end gap-1">
                     <span>{user.role}</span>
                     <span className="text-slate-300">•</span>
@@ -232,7 +232,7 @@ function MainContent() {
                   </div>
                 </div>
 
-                <div className="w-9 h-9 rounded-full bg-gradient-to-tr from-blue-600 to-indigo-600 text-white font-bold flex items-center justify-center text-xs shadow-sm">
+                <div className="w-9 h-9 rounded-full bg-gradient-to-tr from-blue-600 to-indigo-600 text-white font-bold flex items-center justify-center text-xs shadow-xs">
                   {user.fullName.charAt(0)}
                 </div>
 
@@ -248,15 +248,15 @@ function MainContent() {
               <div className="flex items-center space-x-2.5">
                 <button
                   onClick={() => { setAuthTab('login'); setAuthModalOpen(true); }}
-                  className="px-4 py-2 text-xs font-bold text-slate-700 hover:text-slate-900 hover:bg-slate-100 rounded-xl transition"
+                  className="px-4 py-2 text-xs font-semibold text-slate-700 hover:text-slate-900 hover:bg-slate-100 rounded-xl transition"
                 >
                   Sign In
                 </button>
                 <button
                   onClick={() => { setAuthTab('register'); setAuthModalOpen(true); }}
-                  className="px-5 py-2 text-xs font-bold text-white bg-blue-600 hover:bg-blue-700 rounded-xl shadow-card hover:shadow-card-hover transition-all duration-200 transform hover:scale-[1.02] active:scale-[0.98]"
+                  className="px-5 py-2 text-xs font-semibold text-white bg-blue-600 hover:bg-blue-700 rounded-xl shadow-xs hover:shadow-card transition-all duration-200 transform hover:scale-[1.02] active:scale-[0.98]"
                 >
-                  Get Started
+                  List a Product
                 </button>
               </div>
             )}
@@ -286,7 +286,7 @@ function MainContent() {
               {isAuthenticated && user && (
                 <div className="p-3.5 bg-slate-50 border border-slate-200/80 rounded-2xl flex items-center justify-between">
                   <div>
-                    <div className="text-xs font-bold text-slate-900">{user.fullName}</div>
+                    <div className="text-xs font-bold text-slate-900 font-display">{user.fullName}</div>
                     <div className="text-[11px] text-blue-600 font-semibold">{user.role} • Trust Score: {user.trustScore.toFixed(1)}/5.0</div>
                   </div>
                   <button
@@ -298,14 +298,14 @@ function MainContent() {
                 </div>
               )}
 
-              <div className="space-y-1 text-xs font-bold">
+              <div className="space-y-1 text-xs font-semibold">
                 <button
                   onClick={() => { setViewMode('marketplace'); setMobileMenuOpen(false); }}
                   className={`w-full text-left px-3.5 py-2.5 rounded-xl transition ${
-                    viewMode === 'marketplace' ? 'bg-blue-50 text-blue-700' : 'text-slate-700 hover:bg-slate-50'
+                    viewMode === 'marketplace' ? 'bg-blue-50 text-blue-700 font-bold' : 'text-slate-700 hover:bg-slate-50'
                   }`}
                 >
-                  Explore Marketplace Catalog
+                  Explore Products
                 </button>
 
                 {isAuthenticated && (
@@ -313,7 +313,7 @@ function MainContent() {
                     onClick={() => { setCustomerBookingsOpen(true); setMobileMenuOpen(false); }}
                     className="w-full text-left px-3.5 py-2.5 rounded-xl text-slate-700 hover:bg-slate-50 transition"
                   >
-                    My Bookings & QR Handover Passes
+                    My Bookings & Digital Passes
                   </button>
                 )}
 
@@ -321,11 +321,11 @@ function MainContent() {
                   <button
                     onClick={() => { setViewMode('owner-dashboard'); setMobileMenuOpen(false); }}
                     className={`w-full text-left px-3.5 py-2.5 rounded-xl transition flex items-center gap-2 ${
-                      viewMode === 'owner-dashboard' ? 'bg-blue-50 text-blue-700' : 'text-slate-700 hover:bg-slate-50'
+                      viewMode === 'owner-dashboard' ? 'bg-blue-50 text-blue-700 font-bold' : 'text-slate-700 hover:bg-slate-50'
                     }`}
                   >
                     <Wrench className="w-4 h-4 text-blue-600" />
-                    <span>Owner Portal & Scanner</span>
+                    <span>Owner Portal</span>
                   </button>
                 )}
 
@@ -333,11 +333,11 @@ function MainContent() {
                   <button
                     onClick={() => { setViewMode('admin-dashboard'); setMobileMenuOpen(false); }}
                     className={`w-full text-left px-3.5 py-2.5 rounded-xl transition flex items-center gap-2 ${
-                      viewMode === 'admin-dashboard' ? 'bg-rose-50 text-rose-700' : 'text-slate-700 hover:bg-slate-50'
+                      viewMode === 'admin-dashboard' ? 'bg-rose-50 text-rose-700 font-bold' : 'text-slate-700 hover:bg-slate-50'
                     }`}
                   >
                     <Shield className="w-4 h-4 text-rose-600" />
-                    <span>Administrator Console</span>
+                    <span>Admin Console</span>
                   </button>
                 )}
               </div>
@@ -352,7 +352,7 @@ function MainContent() {
                   </button>
                   <button
                     onClick={() => { setAuthTab('register'); setAuthModalOpen(true); setMobileMenuOpen(false); }}
-                    className="flex-1 py-2.5 text-xs font-bold text-white bg-blue-600 rounded-xl shadow-sm"
+                    className="flex-1 py-2.5 text-xs font-bold text-white bg-blue-600 rounded-xl shadow-xs"
                   >
                     Get Started
                   </button>
@@ -393,15 +393,15 @@ function MainContent() {
 
               <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
                 <div className="text-center max-w-3xl mx-auto">
-                  {/* Badge */}
+                  {/* Natural Badge */}
                   <motion.div
                     initial={{ opacity: 0, y: -10 }}
                     animate={{ opacity: 1, y: 0 }}
                     transition={{ duration: 0.4 }}
-                    className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-white/10 backdrop-blur-md border border-white/15 text-xs font-semibold text-blue-200 mb-6 shadow-sm"
+                    className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-white/10 backdrop-blur-md border border-white/15 text-xs font-semibold text-blue-200 mb-6 shadow-xs"
                   >
                     <Sparkles className="w-3.5 h-3.5 text-blue-400" />
-                    <span>Peer-to-Peer Rental Ecosystem • Guaranteed Single-Use QR Handover</span>
+                    <span>Trusted Equipment Rental Across Gujarat & India</span>
                   </motion.div>
 
                   {/* Headline */}
@@ -409,7 +409,7 @@ function MainContent() {
                     initial={{ opacity: 0, y: 15 }}
                     animate={{ opacity: 1, y: 0 }}
                     transition={{ duration: 0.5, delay: 0.1 }}
-                    className="font-display text-4xl sm:text-6xl lg:text-7xl font-black tracking-tight leading-[1.08] text-white"
+                    className="font-display text-4xl sm:text-6xl lg:text-7xl font-extrabold tracking-tight leading-[1.08] text-white"
                   >
                     Why Buy When You Can <span className="bg-gradient-to-r from-blue-400 via-sky-300 to-indigo-300 bg-clip-text text-transparent">Borrow?</span>
                   </motion.h1>
@@ -421,7 +421,7 @@ function MainContent() {
                     transition={{ duration: 0.5, delay: 0.2 }}
                     className="text-base sm:text-lg text-slate-300 mt-6 leading-relaxed font-normal"
                   >
-                    Access high-end cinema cameras, drones, heavy-duty workshop tools, and workstation gear exactly when you need them. Rent safely with atomic date locking, simulated escrow deposits, and single-use QR handover.
+                    Rent cameras, laptops, projectors, power tools, and gear from verified people near you in Gujarat and across India. Book easily, pick up with a secure pass, and return hassle-free.
                   </motion.p>
 
                   {/* Hero CTAs */}
@@ -433,9 +433,9 @@ function MainContent() {
                   >
                     <button
                       onClick={scrollToCatalog}
-                      className="w-full sm:w-auto px-8 py-3.5 bg-blue-600 hover:bg-blue-500 text-white font-bold rounded-2xl shadow-glow hover:shadow-card-hover transition-all duration-200 flex items-center justify-center gap-2 text-sm"
+                      className="w-full sm:w-auto px-8 py-3.5 bg-blue-600 hover:bg-blue-500 text-white font-bold rounded-2xl shadow-glow hover:shadow-card transition-all duration-200 flex items-center justify-center gap-2 text-sm"
                     >
-                      <span>Explore Equipment</span>
+                      <span>Explore Products</span>
                       <ArrowRight className="w-4 h-4" />
                     </button>
 
@@ -450,7 +450,7 @@ function MainContent() {
                       }}
                       className="w-full sm:w-auto px-8 py-3.5 bg-white/10 hover:bg-white/15 text-white font-bold rounded-2xl backdrop-blur-md border border-white/20 transition-all duration-200 text-sm"
                     >
-                      List Your Gear
+                      List Your Product
                     </button>
                   </motion.div>
 
@@ -463,19 +463,19 @@ function MainContent() {
                   >
                     <div className="flex flex-col items-center">
                       <div className="text-xl sm:text-2xl font-black font-display text-white">100%</div>
-                      <div className="text-[11px] text-slate-400 font-medium">Refundable Deposits</div>
+                      <div className="text-[11px] text-slate-400 font-medium">Refundable Deposit</div>
                     </div>
                     <div className="flex flex-col items-center">
-                      <div className="text-xl sm:text-2xl font-black font-display text-blue-400">Zero</div>
-                      <div className="text-[11px] text-slate-400 font-medium">Double-Bookings</div>
+                      <div className="text-xl sm:text-2xl font-black font-display text-blue-400">Instant</div>
+                      <div className="text-[11px] text-slate-400 font-medium">Date Reservation</div>
                     </div>
                     <div className="flex flex-col items-center">
-                      <div className="text-xl sm:text-2xl font-black font-display text-emerald-400">QR Code</div>
-                      <div className="text-[11px] text-slate-400 font-medium">Cryptographic Handover</div>
+                      <div className="text-xl sm:text-2xl font-black font-display text-emerald-400">Digital Pass</div>
+                      <div className="text-[11px] text-slate-400 font-medium">Contactless Pickup</div>
                     </div>
                     <div className="flex flex-col items-center">
-                      <div className="text-xl sm:text-2xl font-black font-display text-amber-400">5.0 ★</div>
-                      <div className="text-[11px] text-slate-400 font-medium">Verified Owner Trust</div>
+                      <div className="text-xl sm:text-2xl font-black font-display text-amber-400">4.9 ★</div>
+                      <div className="text-[11px] text-slate-400 font-medium">Community Trust Score</div>
                     </div>
                   </motion.div>
                 </div>
@@ -486,8 +486,8 @@ function MainContent() {
             <section className="bg-white border-y border-slate-200/80 py-8">
               <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
                 <div className="flex items-center justify-between mb-4">
-                  <h3 className="text-xs font-bold text-slate-400 uppercase tracking-wider">
-                    Browse Popular Rental Categories
+                  <h3 className="text-xs font-bold text-slate-400 uppercase tracking-wider font-display">
+                    Popular Rental Categories
                   </h3>
                   {filters.categoryId && (
                     <button
@@ -499,7 +499,7 @@ function MainContent() {
                   )}
                 </div>
 
-                <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-3.5">
+                <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-3">
                   {categories.map((cat) => {
                     const isSelected = filters.categoryId === cat.id;
                     return (
@@ -509,13 +509,13 @@ function MainContent() {
                           handleFilterChange({ categoryId: isSelected ? undefined : cat.id });
                           scrollToCatalog();
                         }}
-                        className={`p-4 rounded-2xl border text-left transition-all duration-200 group flex flex-col justify-between ${
+                        className={`p-3.5 rounded-2xl border text-left transition-all duration-200 group flex flex-col justify-between ${
                           isSelected
                             ? 'bg-blue-600 text-white border-blue-600 shadow-card'
-                            : 'bg-[#FBFBFC] border-slate-200 hover:border-blue-400 hover:bg-white hover:shadow-card'
+                            : 'bg-[#FBFBFC] border-slate-200 hover:border-blue-400 hover:bg-white hover:shadow-xs'
                         }`}
                       >
-                        <div className={`w-10 h-10 rounded-xl flex items-center justify-center mb-3 transition ${
+                        <div className={`w-9 h-9 rounded-xl flex items-center justify-center mb-2.5 transition ${
                           isSelected ? 'bg-white/20 text-white' : 'bg-blue-50 text-blue-600 group-hover:scale-110'
                         }`}>
                           {getCategoryIcon(cat.slug)}
@@ -525,7 +525,7 @@ function MainContent() {
                             {cat.name}
                           </div>
                           <div className={`text-[10px] mt-0.5 ${isSelected ? 'text-blue-100' : 'text-slate-400'}`}>
-                            {cat._count?.products || 0} items listed
+                            {cat._count?.products || 0} available
                           </div>
                         </div>
                       </button>
@@ -535,16 +535,90 @@ function MainContent() {
               </div>
             </section>
 
+            {/* POPULAR LOCAL USE CASES (India / Gujarat Context) */}
+            <section className="bg-slate-50/60 py-12 border-b border-slate-200/60">
+              <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                <div className="flex flex-col md:flex-row md:items-end justify-between mb-8 gap-4">
+                  <div>
+                    <div className="flex items-center gap-1.5 text-xs font-bold text-blue-600 uppercase tracking-wider mb-1 font-display">
+                      <Sparkle className="w-3.5 h-3.5" />
+                      <span>Rent for What You Need</span>
+                    </div>
+                    <h2 className="font-display text-2xl sm:text-3xl font-extrabold text-slate-900 tracking-tight">
+                      Made for Your Needs & Projects
+                    </h2>
+                  </div>
+                  <p className="text-xs text-slate-500 max-w-md">
+                    From college presentations to wedding shoots, Navratri garba rehearsals to weekend home repairs — rent without the burden of buying.
+                  </p>
+                </div>
+
+                <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-4">
+                  {/* Case 1 */}
+                  <div className="p-5 rounded-2xl bg-white border border-slate-200 shadow-xs hover:border-blue-300 transition">
+                    <div className="w-10 h-10 rounded-xl bg-indigo-50 text-indigo-600 flex items-center justify-center mb-3">
+                      <GraduationCap className="w-5 h-5" />
+                    </div>
+                    <h3 className="font-display font-bold text-sm text-slate-900 mb-1">
+                      College Projects & Fests
+                    </h3>
+                    <p className="text-xs text-slate-500 leading-relaxed">
+                      MacBook Pros, Arduino kits, external monitors, and high-lumen projectors for hackathons and presentations.
+                    </p>
+                  </div>
+
+                  {/* Case 2 */}
+                  <div className="p-5 rounded-2xl bg-white border border-slate-200 shadow-xs hover:border-blue-300 transition">
+                    <div className="w-10 h-10 rounded-xl bg-rose-50 text-rose-600 flex items-center justify-center mb-3">
+                      <Camera className="w-5 h-5" />
+                    </div>
+                    <h3 className="font-display font-bold text-sm text-slate-900 mb-1">
+                      Shoots & Family Events
+                    </h3>
+                    <p className="text-xs text-slate-500 leading-relaxed">
+                      Cinema cameras, portrait primes, DJI gimbals, and wireless mics for weddings, baby showers, and YouTube creators.
+                    </p>
+                  </div>
+
+                  {/* Case 3 */}
+                  <div className="p-5 rounded-2xl bg-white border border-slate-200 shadow-xs hover:border-blue-300 transition">
+                    <div className="w-10 h-10 rounded-xl bg-amber-50 text-amber-600 flex items-center justify-center mb-3">
+                      <Hammer className="w-5 h-5" />
+                    </div>
+                    <h3 className="font-display font-bold text-sm text-slate-900 mb-1">
+                      Home Repairs & DIY
+                    </h3>
+                    <p className="text-xs text-slate-500 leading-relaxed">
+                      Bosch hammer drills, pressure washers, laser levels, and orbital sanders for quick weekend home upgrades.
+                    </p>
+                  </div>
+
+                  {/* Case 4 */}
+                  <div className="p-5 rounded-2xl bg-white border border-slate-200 shadow-xs hover:border-blue-300 transition">
+                    <div className="w-10 h-10 rounded-xl bg-emerald-50 text-emerald-600 flex items-center justify-center mb-3">
+                      <Tent className="w-5 h-5" />
+                    </div>
+                    <h3 className="font-display font-bold text-sm text-slate-900 mb-1">
+                      Weekend Trips & Treks
+                    </h3>
+                    <p className="text-xs text-slate-500 leading-relaxed">
+                      GoPro action cameras, waterproof dome tents, hiking backpacks, and portable power stations for outdoor travel.
+                    </p>
+                  </div>
+                </div>
+              </div>
+            </section>
+
             {/* MARKETPLACE SECTION (Filters + Product Grid) */}
             <section ref={catalogRef} className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-14">
               <div className="flex flex-col sm:flex-row sm:items-end justify-between mb-8 gap-4 pb-4 border-b border-slate-200">
                 <div>
-                  <div className="flex items-center gap-2 text-xs font-bold text-blue-600 uppercase tracking-wider mb-1">
+                  <div className="flex items-center gap-2 text-xs font-bold text-blue-600 uppercase tracking-wider mb-1 font-display">
                     <Compass className="w-4 h-4" />
-                    <span>Real-Time Catalog</span>
+                    <span>Live Listings</span>
                   </div>
-                  <h2 className="font-display text-3xl font-black text-slate-950 tracking-tight">
-                    Featured Rental Equipment
+                  <h2 className="font-display text-3xl font-extrabold text-slate-950 tracking-tight">
+                    Explore Rental Equipment
                   </h2>
                 </div>
 
@@ -578,17 +652,17 @@ function MainContent() {
                       ))}
                     </div>
                   ) : products.length === 0 ? (
-                    <div className="bg-white rounded-3xl border border-slate-200 p-12 text-center shadow-card">
+                    <div className="bg-white rounded-3xl border border-slate-200 p-12 text-center shadow-xs">
                       <div className="w-16 h-16 bg-blue-50 text-blue-600 rounded-2xl flex items-center justify-center mx-auto mb-4">
                         <SearchX className="w-8 h-8" />
                       </div>
                       <h3 className="font-display text-lg font-bold text-slate-900">No matching equipment found</h3>
                       <p className="text-xs text-slate-500 mt-1.5 max-w-sm mx-auto leading-relaxed">
-                        Try clearing your price filters, selecting another category, or searching for broader gear keywords.
+                        Try resetting your price filter, selecting another city or category, or searching with broader keywords.
                       </p>
                       <button
                         onClick={handleResetFilters}
-                        className="mt-6 px-5 py-2.5 bg-blue-600 text-white text-xs font-bold rounded-xl shadow-card hover:bg-blue-700 transition"
+                        className="mt-6 px-5 py-2.5 bg-blue-600 text-white text-xs font-bold rounded-xl shadow-xs hover:bg-blue-700 transition"
                       >
                         Reset All Filters
                       </button>
@@ -612,66 +686,66 @@ function MainContent() {
             <section className="bg-white border-y border-slate-200 py-20">
               <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
                 <div className="text-center max-w-2xl mx-auto mb-16">
-                  <div className="text-xs font-bold text-blue-600 uppercase tracking-wider mb-2">
-                    Simple & Secure Process
+                  <div className="text-xs font-bold text-blue-600 uppercase tracking-wider mb-2 font-display">
+                    Simple & Safe Process
                   </div>
-                  <h2 className="font-display text-3xl sm:text-4xl font-black text-slate-950 tracking-tight">
+                  <h2 className="font-display text-3xl sm:text-4xl font-extrabold text-slate-950 tracking-tight">
                     How Renting on BorrowBuy Works
                   </h2>
                   <p className="text-sm text-slate-500 mt-3 leading-relaxed">
-                    Designed from the ground up for mutual confidence, guaranteed reservation locking, and frictionless handovers.
+                    Designed for simple handovers, clear pricing, and complete peace of mind.
                   </p>
                 </div>
 
                 <div className="grid md:grid-cols-3 gap-8">
                   {/* Step 1 */}
                   <div className="p-8 rounded-3xl bg-[#FBFBFC] border border-slate-200/90 relative group hover:shadow-card transition-all duration-300">
-                    <div className="w-12 h-12 rounded-2xl bg-blue-600 text-white font-display font-extrabold text-lg flex items-center justify-center mb-6 shadow-sm">
+                    <div className="w-12 h-12 rounded-2xl bg-blue-600 text-white font-display font-extrabold text-lg flex items-center justify-center mb-6 shadow-xs">
                       1
                     </div>
                     <h3 className="font-display font-bold text-lg text-slate-900 mb-2">
-                      Find & Reserve Equipment
+                      Find & Choose Dates
                     </h3>
                     <p className="text-xs text-slate-600 leading-relaxed">
-                      Search local equipment and select rental dates. PostgreSQL row-level locks protect your dates for 15 minutes while you checkout.
+                      Search equipment near you in Ahmedabad, Surat, or Gandhinagar. Pick your rental start and return dates with instant hold while you review.
                     </p>
                     <div className="mt-6 flex items-center gap-1.5 text-xs font-bold text-blue-600">
                       <Lock className="w-3.5 h-3.5" />
-                      <span>Zero collision guarantee</span>
+                      <span>Instant date reservation</span>
                     </div>
                   </div>
 
                   {/* Step 2 */}
                   <div className="p-8 rounded-3xl bg-[#FBFBFC] border border-slate-200/90 relative group hover:shadow-card transition-all duration-300">
-                    <div className="w-12 h-12 rounded-2xl bg-slate-900 text-white font-display font-extrabold text-lg flex items-center justify-center mb-6 shadow-sm">
+                    <div className="w-12 h-12 rounded-2xl bg-slate-900 text-white font-display font-extrabold text-lg flex items-center justify-center mb-6 shadow-xs">
                       2
                     </div>
                     <h3 className="font-display font-bold text-lg text-slate-900 mb-2">
-                      Pickup with Single-Use QR
+                      Collect with Digital Pass
                     </h3>
                     <p className="text-xs text-slate-600 leading-relaxed">
-                      Meet the verified owner and present your unique cryptographic QR code. Pre-rental inspection photos are recorded on the spot.
+                      Meet the owner locally. Show your single-use pass on your phone, inspect the item together, and take it with you.
                     </p>
                     <div className="mt-6 flex items-center gap-1.5 text-xs font-bold text-slate-800">
                       <QrCode className="w-3.5 h-3.5" />
-                      <span>Replay-attack safe</span>
+                      <span>Fast, contactless check-in</span>
                     </div>
                   </div>
 
                   {/* Step 3 */}
                   <div className="p-8 rounded-3xl bg-[#FBFBFC] border border-slate-200/90 relative group hover:shadow-card transition-all duration-300">
-                    <div className="w-12 h-12 rounded-2xl bg-emerald-600 text-white font-display font-extrabold text-lg flex items-center justify-center mb-6 shadow-sm">
+                    <div className="w-12 h-12 rounded-2xl bg-emerald-600 text-white font-display font-extrabold text-lg flex items-center justify-center mb-6 shadow-xs">
                       3
                     </div>
                     <h3 className="font-display font-bold text-lg text-slate-900 mb-2">
-                      Return & Instant Refund
+                      Return & Deposit Release
                     </h3>
                     <p className="text-xs text-slate-600 leading-relaxed">
-                      Scan the return token to end the rental. The security deposit is automatically refunded, and both parties submit verified trust reviews.
+                      Return the item on the due date. The owner verifies the return pass and your security deposit is released back immediately.
                     </p>
                     <div className="mt-6 flex items-center gap-1.5 text-xs font-bold text-emerald-600">
                       <CheckCircle2 className="w-3.5 h-3.5" />
-                      <span>Instant deposit release</span>
+                      <span>Immediate deposit release</span>
                     </div>
                   </div>
                 </div>
@@ -683,15 +757,15 @@ function MainContent() {
               <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
                 <div className="grid lg:grid-cols-2 gap-12 items-center">
                   <div>
-                    <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-blue-500/10 text-blue-400 text-xs font-bold mb-4 border border-blue-500/20">
+                    <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-blue-500/10 text-blue-400 text-xs font-bold mb-4 border border-blue-500/20 font-display">
                       <ShieldCheck className="w-4 h-4" />
-                      <span>Enterprise-Grade Security Architecture</span>
+                      <span>Trusted Platform Protection</span>
                     </div>
-                    <h2 className="font-display text-3xl sm:text-4xl font-black tracking-tight leading-tight">
-                      Built for Absolute Confidence Between Owners and Renters.
+                    <h2 className="font-display text-3xl sm:text-4xl font-extrabold tracking-tight leading-tight">
+                      Designed for Trust Between Neighbors & Creators.
                     </h2>
-                    <p className="text-sm text-slate-300 mt-4 leading-relaxed">
-                      BorrowBuy replaces verbal agreements with cryptographic handovers, automated deposit escrow, and comprehensive inspection audits.
+                    <p className="text-sm text-slate-300 mt-4 leading-relaxed font-normal">
+                      BorrowBuy replaces informal lending with secure verification, refundable deposit protection, and clear return policies.
                     </p>
 
                     <div className="mt-8 space-y-4">
@@ -700,8 +774,8 @@ function MainContent() {
                           <CheckCircle2 className="w-4 h-4" />
                         </div>
                         <div>
-                          <div className="text-xs font-bold text-white">Verified Owner Credentials</div>
-                          <div className="text-xs text-slate-400 mt-0.5">Every lender undergoes phone and identity verification with public trust score ratings.</div>
+                          <div className="text-xs font-bold text-white font-display">Verified Local Members</div>
+                          <div className="text-xs text-slate-400 mt-0.5">Every lender and borrower is verified with phone confirmation and community ratings.</div>
                         </div>
                       </div>
 
@@ -710,8 +784,8 @@ function MainContent() {
                           <CheckCircle2 className="w-4 h-4" />
                         </div>
                         <div>
-                          <div className="text-xs font-bold text-white">Pre & Post Condition Photo Records</div>
-                          <div className="text-xs text-slate-400 mt-0.5">High-resolution condition logs prevent unfair dispute claims on existing minor wear.</div>
+                          <div className="text-xs font-bold text-white font-display">Condition Photos at Handover</div>
+                          <div className="text-xs text-slate-400 mt-0.5">Photos taken at pickup ensure clarity on existing condition and protect both parties.</div>
                         </div>
                       </div>
 
@@ -720,8 +794,8 @@ function MainContent() {
                           <CheckCircle2 className="w-4 h-4" />
                         </div>
                         <div>
-                          <div className="text-xs font-bold text-white">PostgreSQL Concurrency Serialization</div>
-                          <div className="text-xs text-slate-400 mt-0.5">Two customers can never double-book the same piece of equipment for overlapping days.</div>
+                          <div className="text-xs font-bold text-white font-display">Transparent Pricing & Refundable Deposits</div>
+                          <div className="text-xs text-slate-400 mt-0.5">No hidden charges. Daily rental fee, refundable security deposit, and exact return dates are agreed upfront.</div>
                         </div>
                       </div>
                     </div>
@@ -730,22 +804,22 @@ function MainContent() {
                   {/* Interactive Visual Graphic */}
                   <div className="p-8 rounded-3xl bg-slate-900 border border-slate-800 shadow-2xl space-y-4">
                     <div className="flex items-center justify-between pb-4 border-b border-slate-800">
-                      <div className="text-xs font-bold text-slate-400 uppercase tracking-wider">
-                        Security Escrow Protocol
+                      <div className="text-xs font-bold text-slate-400 uppercase tracking-wider font-display">
+                        Refundable Security Deposit
                       </div>
                       <span className="px-2.5 py-0.5 rounded-full text-[10px] font-bold bg-emerald-500/20 text-emerald-400 border border-emerald-500/30">
-                        ACTIVE ESCROW
+                        PROTECTED IN ESCROW
                       </span>
                     </div>
 
                     <div className="p-4 rounded-2xl bg-slate-950/60 border border-slate-800 flex items-center justify-between">
                       <div>
-                        <div className="text-xs text-slate-400">Total Held in Escrow</div>
-                        <div className="font-display text-2xl font-black text-white mt-0.5">$500.00</div>
+                        <div className="text-xs text-slate-400">Held in Escrow</div>
+                        <div className="font-display text-2xl font-black text-white mt-0.5">{formatINR(2500)}</div>
                       </div>
                       <div className="text-right">
-                        <div className="text-xs text-emerald-400 font-semibold">100% Protected</div>
-                        <div className="text-[10px] text-slate-500">Auto-Release on Return</div>
+                        <div className="text-xs text-emerald-400 font-semibold">100% Refundable</div>
+                        <div className="text-[10px] text-slate-500">Released upon return</div>
                       </div>
                     </div>
 
@@ -755,8 +829,8 @@ function MainContent() {
                           QR
                         </div>
                         <div>
-                          <div className="text-xs font-bold text-white">Single-Use Token Validated</div>
-                          <div className="text-[10px] text-slate-400">PK-A8F29C... • Replay Attack Blocked</div>
+                          <div className="text-xs font-bold text-white font-display">Digital Handover Pass</div>
+                          <div className="text-[10px] text-slate-400">Pass #BB-2026-GUJ • Verified for Pickup</div>
                         </div>
                       </div>
                       <CheckCircle2 className="w-5 h-5 text-emerald-400" />
@@ -775,73 +849,67 @@ function MainContent() {
           <div className="grid grid-cols-2 md:grid-cols-5 gap-8 pb-12 border-b border-slate-200">
             {/* Col 1: Brand Info */}
             <div className="col-span-2">
-              <div className="flex items-center space-x-2.5 mb-4">
-                <div className="w-8 h-8 rounded-xl bg-blue-600 text-white flex items-center justify-center font-bold shadow-sm">
-                  <Package className="h-4 w-4" />
-                </div>
-                <span className="font-display text-xl font-black text-slate-950 tracking-tight">
-                  Borrow<span className="text-blue-600">Buy</span>
-                </span>
+              <div className="mb-4">
+                <BorrowBuyLogo size="md" variant="full" />
               </div>
               <p className="text-xs text-slate-500 max-w-sm leading-relaxed mb-4">
-                BorrowBuy is a peer-to-peer product rental marketplace connecting equipment owners with local creators, makers, and enthusiasts.
+                BorrowBuy is India's trusted product rental platform connecting equipment owners with creators, students, and local professionals.
               </p>
-              <div className="inline-flex items-center gap-2 px-3 py-1 bg-slate-100 rounded-lg text-[11px] font-semibold text-slate-700">
-                <span>Stage A Local Verification</span>
-                <span className="w-1.5 h-1.5 rounded-full bg-emerald-500" />
-                <span className="text-emerald-700">89/89 Tests Passing</span>
+              <div className="flex items-center gap-2 text-xs text-slate-600 font-medium">
+                <MapPin className="w-3.5 h-3.5 text-blue-600 shrink-0" />
+                <span>Serving Ahmedabad, Gandhinagar, Surat, Vadodara & across Gujarat</span>
               </div>
             </div>
 
             {/* Col 2: Categories */}
             <div>
-              <div className="text-xs font-bold text-slate-900 uppercase tracking-wider mb-3">
+              <div className="text-xs font-bold text-slate-900 uppercase tracking-wider mb-3 font-display">
                 Categories
               </div>
               <ul className="space-y-2 text-xs text-slate-600">
                 <li><button onClick={() => scrollToCatalog()} className="hover:text-blue-600">Cameras & Lenses</button></li>
                 <li><button onClick={() => scrollToCatalog()} className="hover:text-blue-600">Power Tools & Workshop</button></li>
                 <li><button onClick={() => scrollToCatalog()} className="hover:text-blue-600">Audio & Projectors</button></li>
-                <li><button onClick={() => scrollToCatalog()} className="hover:text-blue-600">Computers & Workstations</button></li>
-                <li><button onClick={() => scrollToCatalog()} className="hover:text-blue-600">Outdoor & Camping</button></li>
+                <li><button onClick={() => scrollToCatalog()} className="hover:text-blue-600">Laptops & Workstations</button></li>
+                <li><button onClick={() => scrollToCatalog()} className="hover:text-blue-600">Camping & Outdoors</button></li>
               </ul>
             </div>
 
-            {/* Col 3: Architecture & Security */}
+            {/* Col 3: Trust & Safety */}
             <div>
-              <div className="text-xs font-bold text-slate-900 uppercase tracking-wider mb-3">
-                Architecture
+              <div className="text-xs font-bold text-slate-900 uppercase tracking-wider mb-3 font-display">
+                Trust & Safety
               </div>
               <ul className="space-y-2 text-xs text-slate-600">
-                <li><span className="text-slate-500">PostgreSQL Row Locks</span></li>
-                <li><span className="text-slate-500">Hexagonal Ports & Adapters</span></li>
-                <li><span className="text-slate-500">Single-Use QR Tokens</span></li>
-                <li><span className="text-slate-500">AWS Terraform IaC</span></li>
-                <li><span className="text-slate-500">Zero Paid Dependencies</span></li>
+                <li><span className="text-slate-600 hover:text-blue-600 cursor-pointer">Verified Owners</span></li>
+                <li><span className="text-slate-600 hover:text-blue-600 cursor-pointer">Refundable Deposits</span></li>
+                <li><span className="text-slate-600 hover:text-blue-600 cursor-pointer">Digital QR Passes</span></li>
+                <li><span className="text-slate-600 hover:text-blue-600 cursor-pointer">Condition Verification</span></li>
+                <li><span className="text-slate-600 hover:text-blue-600 cursor-pointer">Dispute Resolution</span></li>
               </ul>
             </div>
 
             {/* Col 4: Platform */}
             <div>
-              <div className="text-xs font-bold text-slate-900 uppercase tracking-wider mb-3">
+              <div className="text-xs font-bold text-slate-900 uppercase tracking-wider mb-3 font-display">
                 Platform
               </div>
               <ul className="space-y-2 text-xs text-slate-600">
-                <li><button onClick={() => { setAuthTab('login'); setAuthModalOpen(true); }} className="hover:text-blue-600">User Sign In</button></li>
-                <li><button onClick={() => { setAuthTab('register'); setAuthModalOpen(true); }} className="hover:text-blue-600">Register as Lender</button></li>
-                <li><span className="text-slate-500">Academic Project 2026</span></li>
-                <li><span className="text-slate-500">v1.0.0-local Stable</span></li>
+                <li><button onClick={() => { setAuthTab('login'); setAuthModalOpen(true); }} className="hover:text-blue-600">Sign In</button></li>
+                <li><button onClick={() => { setAuthTab('register'); setAuthModalOpen(true); }} className="hover:text-blue-600">List Your Equipment</button></li>
+                <li><span className="text-slate-500">Support: support@borrowbuy.in</span></li>
+                <li><span className="text-slate-500">Made with ❤️ in Gujarat</span></li>
               </ul>
             </div>
           </div>
 
-          <div className="pt-8 flex flex-col sm:flex-row items-center justify-between text-xs text-slate-400 gap-4">
+          <div className="pt-8 flex flex-col sm:flex-row items-center justify-between text-xs text-slate-500 gap-4">
             <div>
-              BorrowBuy Platform &copy; 2026 – Academic Cloud Computing Project. All rights reserved.
+              BorrowBuy Platform &copy; 2026. All rights reserved.
             </div>
             <div className="flex gap-6">
               <span className="text-slate-500">Licensed photography via Unsplash</span>
-              <span className="text-slate-500">PostgreSQL 16 Engine</span>
+              <span className="text-slate-500">Secure Indian Digital Checkout</span>
             </div>
           </div>
         </div>
@@ -854,7 +922,7 @@ function MainContent() {
         onBookNow={(p) => handleInitiateBooking(p)}
       />
 
-      {/* Date Range Picker & Atomic Reservation Modal */}
+      {/* Date Range Picker Modal */}
       <DateRangePickerModal
         product={bookingProduct}
         isOpen={!!bookingProduct}

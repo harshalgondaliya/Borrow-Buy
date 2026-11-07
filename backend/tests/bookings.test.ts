@@ -11,22 +11,22 @@ describe('Rental Availability Engine & Booking Concurrency Tests', () => {
   let createdBookingId: string;
 
   beforeAll(async () => {
-    // 1. Login Customer 1 (Emma)
+    // 1. Login Customer 1 (Priya)
     const c1Res = await request(app)
       .post('/api/auth/login')
-      .send({ email: 'emma.customer@borrowbuy.com', password: 'Password123!' });
+      .send({ email: 'priya.customer@borrowbuy.in', password: 'Password123!' });
     customer1Token = c1Res.body.data.token;
 
-    // 2. Login Customer 2 (John)
+    // 2. Login Customer 2 (Parth)
     const c2Res = await request(app)
       .post('/api/auth/login')
-      .send({ email: 'john.customer@borrowbuy.com', password: 'Password123!' });
+      .send({ email: 'parth.dave@borrowbuy.in', password: 'Password123!' });
     customer2Token = c2Res.body.data.token;
 
-    // 3. Login Owner (Alex)
+    // 3. Login Owner (Rajesh)
     const oRes = await request(app)
       .post('/api/auth/login')
-      .send({ email: 'alex.owner@borrowbuy.com', password: 'Password123!' });
+      .send({ email: 'rajesh.owner@borrowbuy.in', password: 'Password123!' });
     ownerToken = oRes.body.data.token;
 
     // 4. Fetch an active category to create a fresh isolated test product
@@ -43,11 +43,11 @@ describe('Rental Availability Engine & Booking Concurrency Tests', () => {
       .field('pricePerDay', '50')
       .field('securityDeposit', '200')
       .field('condition', 'LIKE_NEW')
-      .field('location', 'Downtown, Seattle, WA');
+      .field('location', 'Satellite, Ahmedabad, Gujarat');
 
     expect(prodRes.status).toBe(201);
     testProductId = prodRes.body.data.id;
-  });
+  }, 25000);
 
   afterAll(async () => {
     if (testProductId) {

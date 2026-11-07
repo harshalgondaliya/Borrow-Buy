@@ -9,20 +9,20 @@ describe('Products & Marketplace Module Tests', () => {
   let createdProductId: string;
 
   beforeAll(async () => {
-    // Login as seeded owner
+    // Login as seeded owner (Rajesh)
     const ownerRes = await request(app)
       .post('/api/auth/login')
       .send({
-        email: 'alex.owner@borrowbuy.com',
+        email: 'rajesh.owner@borrowbuy.in',
         password: 'Password123!',
       });
     ownerToken = ownerRes.body.data.token;
 
-    // Login as seeded customer
+    // Login as seeded customer (Priya)
     const customerRes = await request(app)
       .post('/api/auth/login')
       .send({
-        email: 'emma.customer@borrowbuy.com',
+        email: 'priya.customer@borrowbuy.in',
         password: 'Password123!',
       });
     customerToken = customerRes.body.data.token;

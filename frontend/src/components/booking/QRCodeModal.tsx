@@ -61,7 +61,7 @@ export const QRCodeModal: React.FC<QRCodeModalProps> = ({
           exit={{ opacity: 0 }}
           transition={{ duration: 0.2 }}
           onClick={onClose}
-          className="fixed inset-0 bg-charcoal-950/70 backdrop-blur-md"
+          className="fixed inset-0 bg-slate-950/70 backdrop-blur-md"
         />
 
         {/* Modal Window */}
@@ -70,12 +70,12 @@ export const QRCodeModal: React.FC<QRCodeModalProps> = ({
           animate={{ opacity: 1, scale: 1, y: 0 }}
           exit={{ opacity: 0, scale: 0.95, y: 10 }}
           transition={{ type: 'spring', damping: 25, stiffness: 300 }}
-          className="relative bg-white rounded-3xl shadow-elevated border border-charcoal-100 max-w-sm w-full p-6 sm:p-8 z-10 text-center"
+          className="relative bg-white rounded-3xl shadow-2xl border border-slate-200 max-w-sm w-full p-6 sm:p-8 z-10 text-center"
         >
           {/* Close Button */}
           <button
             onClick={onClose}
-            className="absolute top-5 right-5 text-charcoal-400 hover:text-charcoal-700 p-2 rounded-xl hover:bg-charcoal-100/70 transition-colors"
+            className="absolute top-5 right-5 text-slate-400 hover:text-slate-700 p-2 rounded-xl hover:bg-slate-100 transition-colors"
             aria-label="Close dialog"
           >
             <X className="w-5 h-5" />
@@ -86,23 +86,23 @@ export const QRCodeModal: React.FC<QRCodeModalProps> = ({
             <div className="w-12 h-12 rounded-2xl bg-brand-50 text-brand-600 flex items-center justify-center mx-auto mb-2.5 border border-brand-100 shadow-sm">
               <QrCode className="w-6 h-6" />
             </div>
-            <h2 className="text-xl font-display font-extrabold text-charcoal-900">
+            <h2 className="text-xl font-display font-extrabold text-slate-900">
               Digital Handover Pass
             </h2>
-            <p className="text-xs text-charcoal-500 font-mono mt-0.5">
+            <p className="text-xs text-slate-500 font-mono mt-0.5">
               Ref: {booking.bookingNumber}
             </p>
           </div>
 
           {/* Tab Switcher: Pickup vs Return */}
-          <div className="flex p-1 bg-charcoal-100/80 rounded-2xl mb-5">
+          <div className="flex p-1 bg-slate-100 rounded-2xl mb-5">
             <button
               type="button"
               onClick={() => setActiveTab('pickup')}
               className={`flex-1 py-2 text-xs font-semibold rounded-xl transition-all duration-200 ${
                 activeTab === 'pickup'
-                  ? 'bg-white text-charcoal-900 shadow-sm'
-                  : 'text-charcoal-500 hover:text-charcoal-800'
+                  ? 'bg-white text-slate-900 shadow-sm'
+                  : 'text-slate-500 hover:text-slate-800'
               }`}
             >
               Pickup Pass
@@ -112,8 +112,8 @@ export const QRCodeModal: React.FC<QRCodeModalProps> = ({
               onClick={() => setActiveTab('return')}
               className={`flex-1 py-2 text-xs font-semibold rounded-xl transition-all duration-200 ${
                 activeTab === 'return'
-                  ? 'bg-white text-charcoal-900 shadow-sm'
-                  : 'text-charcoal-500 hover:text-charcoal-800'
+                  ? 'bg-white text-slate-900 shadow-sm'
+                  : 'text-slate-500 hover:text-slate-800'
               }`}
             >
               Return Pass
@@ -121,32 +121,32 @@ export const QRCodeModal: React.FC<QRCodeModalProps> = ({
           </div>
 
           {/* High-Contrast QR Code Card */}
-          <div className="p-5 bg-charcoal-50/80 border border-charcoal-200/70 rounded-2xl mb-5">
+          <div className="p-5 bg-slate-50 border border-slate-200 rounded-2xl mb-5">
             {loading ? (
-              <div className="aspect-square flex flex-col items-center justify-center text-xs text-charcoal-400 gap-2">
+              <div className="aspect-square flex flex-col items-center justify-center text-xs text-slate-400 gap-2">
                 <span className="inline-block w-6 h-6 border-2 border-brand-500/30 border-t-brand-600 rounded-full animate-spin" />
-                <span>Generating tamper-proof token...</span>
+                <span>Loading digital pass...</span>
               </div>
             ) : currentQrImage ? (
               <div className="flex flex-col items-center justify-center">
-                <div className="p-3 bg-white rounded-2xl shadow-sm border border-charcoal-200/80">
+                <div className="p-3 bg-white rounded-2xl shadow-sm border border-slate-200">
                   <img
                     src={currentQrImage}
-                    alt="Verification QR Code"
+                    alt="Handover QR Code"
                     className="w-48 h-48 mx-auto rounded-lg"
                   />
                 </div>
 
                 {/* Token string badge with 1-click copy */}
                 <div className="mt-3.5 flex items-center justify-center gap-2">
-                  <span className="font-mono text-xs font-bold text-charcoal-900 bg-white px-3 py-1.5 rounded-xl border border-charcoal-200 shadow-xs">
+                  <span className="font-mono text-xs font-bold text-slate-900 bg-white px-3 py-1.5 rounded-xl border border-slate-200 shadow-xs">
                     {currentCode}
                   </span>
                   <button
                     type="button"
                     onClick={handleCopy}
                     title="Copy verification code"
-                    className="p-2 text-charcoal-400 hover:text-charcoal-700 bg-white hover:bg-charcoal-100 rounded-xl border border-charcoal-200 transition-colors shadow-xs"
+                    className="p-2 text-slate-400 hover:text-slate-700 bg-white hover:bg-slate-100 rounded-xl border border-slate-200 transition-colors shadow-xs"
                   >
                     {copied ? (
                       <Check className="w-3.5 h-3.5 text-emerald-600" />
@@ -157,8 +157,8 @@ export const QRCodeModal: React.FC<QRCodeModalProps> = ({
                 </div>
               </div>
             ) : (
-              <div className="aspect-square flex flex-col items-center justify-center text-xs text-charcoal-400 p-4">
-                <ShieldAlert className="w-6 h-6 text-charcoal-300 mb-2" />
+              <div className="aspect-square flex flex-col items-center justify-center text-xs text-slate-400 p-4">
+                <ShieldAlert className="w-6 h-6 text-slate-300 mb-2" />
                 <span>Pass is not active for the current rental status.</span>
               </div>
             )}
@@ -169,8 +169,8 @@ export const QRCodeModal: React.FC<QRCodeModalProps> = ({
             <ShieldCheck className="w-4 h-4 text-brand-600 shrink-0 mt-0.5" />
             <span className="leading-relaxed">
               {activeTab === 'pickup'
-                ? 'Present this QR pass to the owner during physical handoff. Single-use token prevents replay fraud.'
-                : 'Present this QR pass to the owner upon equipment return to complete inspection and release deposit.'}
+                ? 'Show this QR pass to the equipment owner during in-person pickup. Once verified, your rental starts immediately.'
+                : 'Show this QR pass upon return. The owner verifies the equipment condition and triggers your instant deposit release.'}
             </span>
           </div>
         </motion.div>

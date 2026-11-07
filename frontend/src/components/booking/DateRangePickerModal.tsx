@@ -3,14 +3,15 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { Product } from '../../services/products';
 import { BookingCalendarInterval, bookingsService } from '../../services/bookings';
 import { useToast } from '../../features/toast/ToastContext';
+import { formatINR, formatDateIN } from '../../utils/formatters';
 import {
   X,
   Calendar,
   AlertCircle,
   CheckCircle2,
   Clock,
-  Lock,
   ArrowRight,
+  ShieldCheck,
 } from 'lucide-react';
 
 interface DateRangePickerModalProps {
@@ -70,7 +71,7 @@ export const DateRangePickerModal: React.FC<DateRangePickerModalProps> = ({
       .then((res) => {
         setIsAvailable(res.available);
         if (!res.available) {
-          setError('Selected dates overlap with an existing confirmed reservation.');
+          setError('Selected dates are already reserved by another customer.');
         }
       })
       .catch((err) => {
@@ -99,11 +100,11 @@ export const DateRangePickerModal: React.FC<DateRangePickerModalProps> = ({
         startDate: new Date(startDate).toISOString(),
         endDate: new Date(endDate).toISOString(),
       });
-      success('15-minute reservation hold secured! Complete simulated checkout to confirm.', 'Dates Reserved');
+      success('Dates held for 15 minutes! Please proceed to payment to confirm.', 'Dates Reserved');
       onBookingSuccess();
       onClose();
     } catch (err: any) {
-      setError(err.message || 'Failed to lock reservation dates. Dates may have been taken.');
+      setError(err.message || 'Failed to reserve booking. These dates may have just been booked.');
     } finally {
       setBookingLoading(false);
     }
@@ -119,7 +120,7 @@ export const DateRangePickerModal: React.FC<DateRangePickerModalProps> = ({
           exit={{ opacity: 0 }}
           transition={{ duration: 0.2 }}
           onClick={onClose}
-          className="fixed inset-0 bg-charcoal-950/70 backdrop-blur-md"
+          className="fixed inset-0 bg-slate-950/70 backdrop-blur-md"
         />
 
         {/* Modal Window */}
@@ -128,12 +129,12 @@ export const DateRangePickerModal: React.FC<DateRangePickerModalProps> = ({
           animate={{ opacity: 1, scale: 1, y: 0 }}
           exit={{ opacity: 0, scale: 0.95, y: 10 }}
           transition={{ type: 'spring', damping: 25, stiffness: 300 }}
-          className="relative bg-white rounded-3xl shadow-elevated border border-charcoal-100 max-w-lg w-full p-6 sm:p-8 z-10"
+          className="relative bg-white rounded-3xl shadow-2xl border border-slate-200/80 max-w-lg w-full p-6 sm:p-8 z-10"
         >
           {/* Close button */}
           <button
             onClick={onClose}
-            className="absolute top-5 right-5 text-charcoal-400 hover:text-charcoal-700 p-2 rounded-xl hover:bg-charcoal-100/70 transition-colors"
+            className="absolute top-5 right-5 text-slate-400 hover:text-slate-700 p-2 rounded-xl hover:bg-slate-100 transition-colors"
             aria-label="Close dialog"
           >
             <X className="w-5 h-5" />
@@ -147,18 +148,18 @@ export const DateRangePickerModal: React.FC<DateRangePickerModalProps> = ({
                 'https://images.unsplash.com/photo-1516035069371-29a1b244cc32?auto=format&fit=crop&w=150&q=80'
               }
               alt={product.name}
-              className="w-16 h-16 rounded-2xl object-cover border border-charcoal-100 shadow-sm shrink-0"
+              className="w-16 h-16 rounded-2xl object-cover border border-slate-200 shadow-sm shrink-0"
             />
             <div className="min-w-0 pr-6">
               <span className="inline-flex items-center gap-1 text-[11px] font-bold text-brand-600 uppercase tracking-wider mb-0.5">
                 <Calendar className="w-3.5 h-3.5" />
-                Select Rental Schedule
+                Select Rental Dates
               </span>
-              <h2 className="text-lg font-display font-extrabold text-charcoal-900 truncate">
+              <h2 className="text-lg font-display font-extrabold text-slate-900 truncate">
                 {product.name}
               </h2>
-              <p className="text-xs text-charcoal-500 mt-0.5">
-                ${product.pricePerDay} / day • ${product.securityDeposit} refundable deposit
+              <p className="text-xs text-slate-500 mt-0.5">
+                {formatINR(product.pricePerDay)}/day • {formatINR(product.securityDeposit)} refundable deposit
               </p>
             </div>
           </div>
@@ -175,21 +176,20 @@ export const DateRangePickerModal: React.FC<DateRangePickerModalProps> = ({
             </motion.div>
           )}
 
-          {/* Existing Bookings Notice */}
+          {/* Booked Dates Notice */}
           {calendarDates.length > 0 && (
             <div className="mb-5 p-3.5 bg-amber-50/70 border border-amber-200/80 rounded-2xl text-xs">
               <div className="font-bold text-amber-900 mb-1 flex items-center gap-1.5">
                 <Clock className="w-3.5 h-3.5 text-amber-600" />
-                Reserved Dates on this equipment:
+                Already Booked On These Dates:
               </div>
               <div className="flex flex-wrap gap-1.5 mt-1.5">
                 {calendarDates.map((c, i) => (
                   <span
                     key={i}
-                    className="inline-flex items-center px-2.5 py-0.5 bg-white border border-amber-200 text-amber-900 rounded-lg text-[11px] font-mono font-medium"
+                    className="inline-flex items-center px-2.5 py-0.5 bg-white border border-amber-200 text-amber-900 rounded-lg text-[11px] font-medium"
                   >
-                    {new Date(c.startDate).toLocaleDateString([], { month: 'short', day: 'numeric' })} –{' '}
-                    {new Date(c.endDate).toLocaleDateString([], { month: 'short', day: 'numeric' })}
+                    {formatDateIN(c.startDate)} – {formatDateIN(c.endDate)}
                   </span>
                 ))}
               </div>
@@ -198,8 +198,8 @@ export const DateRangePickerModal: React.FC<DateRangePickerModalProps> = ({
 
           {/* Date Range Inputs */}
           <div className="grid grid-cols-2 gap-3 mb-5">
-            <div className="bg-charcoal-50/80 p-3 rounded-2xl border border-charcoal-200/70">
-              <label className="block text-[11px] font-bold text-charcoal-600 uppercase tracking-wider mb-1">
+            <div className="bg-slate-50 p-3 rounded-2xl border border-slate-200">
+              <label className="block text-[11px] font-bold text-slate-600 uppercase tracking-wider mb-1">
                 Pickup Date
               </label>
               <input
@@ -207,12 +207,12 @@ export const DateRangePickerModal: React.FC<DateRangePickerModalProps> = ({
                 min={todayStr}
                 value={startDate}
                 onChange={(e) => setStartDate(e.target.value)}
-                className="w-full bg-white px-3 py-2 text-xs font-semibold text-charcoal-900 border border-charcoal-200 rounded-xl focus:border-brand-500 focus:ring-2 focus:ring-brand-500/20 focus:outline-none transition-all cursor-pointer"
+                className="w-full bg-white px-3 py-2 text-xs font-semibold text-slate-900 border border-slate-200 rounded-xl focus:border-brand-500 focus:ring-2 focus:ring-brand-500/20 focus:outline-none transition-all cursor-pointer"
               />
             </div>
 
-            <div className="bg-charcoal-50/80 p-3 rounded-2xl border border-charcoal-200/70">
-              <label className="block text-[11px] font-bold text-charcoal-600 uppercase tracking-wider mb-1">
+            <div className="bg-slate-50 p-3 rounded-2xl border border-slate-200">
+              <label className="block text-[11px] font-bold text-slate-600 uppercase tracking-wider mb-1">
                 Return Date
               </label>
               <input
@@ -220,23 +220,23 @@ export const DateRangePickerModal: React.FC<DateRangePickerModalProps> = ({
                 min={startDate || todayStr}
                 value={endDate}
                 onChange={(e) => setEndDate(e.target.value)}
-                className="w-full bg-white px-3 py-2 text-xs font-semibold text-charcoal-900 border border-charcoal-200 rounded-xl focus:border-brand-500 focus:ring-2 focus:ring-brand-500/20 focus:outline-none transition-all cursor-pointer"
+                className="w-full bg-white px-3 py-2 text-xs font-semibold text-slate-900 border border-slate-200 rounded-xl focus:border-brand-500 focus:ring-2 focus:ring-brand-500/20 focus:outline-none transition-all cursor-pointer"
               />
             </div>
           </div>
 
           {/* Availability Status Indicator */}
-          <div className="mb-5 flex items-center justify-between px-3.5 py-2.5 bg-charcoal-50 border border-charcoal-100 rounded-2xl text-xs">
-            <span className="text-charcoal-500 font-medium">Availability Status:</span>
+          <div className="mb-5 flex items-center justify-between px-3.5 py-2.5 bg-slate-50 border border-slate-100 rounded-2xl text-xs">
+            <span className="text-slate-500 font-medium">Availability:</span>
             {checkingAvailability ? (
               <span className="text-amber-600 font-bold flex items-center gap-1.5 animate-pulse">
                 <span className="w-2 h-2 rounded-full bg-amber-500 animate-ping" />
-                Verifying schedule...
+                Checking calendar...
               </span>
             ) : isAvailable ? (
               <span className="text-emerald-700 font-bold flex items-center gap-1.5">
                 <CheckCircle2 className="w-4 h-4 text-emerald-600" />
-                Open & Ready to Reserve
+                Available to Book
               </span>
             ) : (
               <span className="text-rose-600 font-bold flex items-center gap-1.5">
@@ -246,46 +246,46 @@ export const DateRangePickerModal: React.FC<DateRangePickerModalProps> = ({
             )}
           </div>
 
-          {/* Itemized Pricing Breakdown */}
-          <div className="p-4 bg-charcoal-50/80 border border-charcoal-200/60 rounded-2xl space-y-2.5 text-xs mb-5">
-            <div className="flex justify-between text-charcoal-600">
+          {/* Pricing Breakdown */}
+          <div className="p-4 bg-slate-50 border border-slate-200/80 rounded-2xl space-y-2.5 text-xs mb-5">
+            <div className="flex justify-between text-slate-600">
               <span>Rental Duration</span>
-              <span className="font-bold text-charcoal-900 font-display">
+              <span className="font-bold text-slate-900 font-display">
                 {diffDays} {diffDays === 1 ? 'day' : 'days'}
               </span>
             </div>
 
-            <div className="flex justify-between text-charcoal-600">
-              <span>Daily Rate (${product.pricePerDay} × {diffDays} days)</span>
-              <span className="font-bold text-charcoal-900">${rentalTotal.toFixed(2)}</span>
+            <div className="flex justify-between text-slate-600">
+              <span>Rental Charge ({formatINR(product.pricePerDay)} × {diffDays} days)</span>
+              <span className="font-bold text-slate-900">{formatINR(rentalTotal)}</span>
             </div>
 
-            <div className="flex justify-between text-charcoal-600">
+            <div className="flex justify-between text-slate-600">
               <span className="flex items-center gap-1">
-                Security Deposit
+                <span>Security Deposit</span>
                 <span className="text-[10px] text-emerald-700 font-bold bg-emerald-50 px-1.5 py-0.5 rounded border border-emerald-200">
                   Refundable
                 </span>
               </span>
-              <span className="font-bold text-charcoal-900">${securityDeposit.toFixed(2)}</span>
+              <span className="font-bold text-slate-900">{formatINR(securityDeposit)}</span>
             </div>
 
-            <div className="pt-2.5 border-t border-charcoal-200/80 flex justify-between items-baseline text-charcoal-900">
+            <div className="pt-2.5 border-t border-slate-200 flex justify-between items-baseline text-slate-900">
               <div>
                 <span className="font-bold text-sm block">Total Payable Now</span>
-                <span className="text-[10px] text-charcoal-500">Includes rental + full refundable deposit</span>
+                <span className="text-[10px] text-slate-500">Includes rental charge + refundable deposit</span>
               </div>
-              <span className="text-xl font-display font-black text-brand-600">
-                ${totalAmount.toFixed(2)}
+              <span className="text-xl font-display font-extrabold text-brand-600">
+                {formatINR(totalAmount)}
               </span>
             </div>
           </div>
 
-          {/* 15-Minute Concurrency Guarantee Badge */}
+          {/* 15-Minute Hold Notice */}
           <div className="flex items-center gap-2 p-3 bg-brand-50/70 border border-brand-100 rounded-2xl mb-6 text-xs text-brand-900">
-            <Lock className="w-4 h-4 text-brand-600 shrink-0" />
+            <ShieldCheck className="w-4 h-4 text-brand-600 shrink-0" />
             <span className="text-[11px] leading-relaxed">
-              Reserving secures a <strong>15-minute temporary lock</strong> backed by PostgreSQL concurrency control.
+              Reserving holds these dates exclusively for <strong>15 minutes</strong> while you complete checkout.
             </span>
           </div>
 
@@ -294,7 +294,7 @@ export const DateRangePickerModal: React.FC<DateRangePickerModalProps> = ({
             <button
               type="button"
               onClick={onClose}
-              className="px-4 py-2.5 text-xs font-bold text-charcoal-500 hover:text-charcoal-800 transition-colors"
+              className="px-4 py-2.5 text-xs font-bold text-slate-500 hover:text-slate-800 transition-colors"
             >
               Cancel
             </button>
@@ -304,16 +304,16 @@ export const DateRangePickerModal: React.FC<DateRangePickerModalProps> = ({
               type="button"
               disabled={!isAvailable || checkingAvailability || bookingLoading}
               onClick={handleReserve}
-              className="flex-1 py-3 px-5 bg-charcoal-900 hover:bg-charcoal-800 text-white font-bold text-xs rounded-xl shadow-card transition-all disabled:opacity-40 flex items-center justify-center gap-2"
+              className="flex-1 py-3 px-5 bg-slate-900 hover:bg-slate-800 text-white font-bold text-xs rounded-xl shadow-md transition-all disabled:opacity-40 flex items-center justify-center gap-2"
             >
               {bookingLoading ? (
                 <>
                   <span className="inline-block w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" />
-                  <span>Securing Atomic Lock...</span>
+                  <span>Holding Dates...</span>
                 </>
               ) : (
                 <>
-                  <span>Lock Reservation Dates</span>
+                  <span>Reserve & Proceed to Payment</span>
                   <ArrowRight className="w-4 h-4" />
                 </>
               )}

@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Booking, bookingsService } from '../../services/bookings';
+import { formatINR, formatDateIN } from '../../utils/formatters';
 import {
   X,
   Calendar,
@@ -69,23 +70,23 @@ export const CustomerBookingsModal: React.FC<CustomerBookingsModalProps> = ({
   const statusBadge = (status: string) => {
     switch (status) {
       case 'RESERVED':
-        return 'bg-amber-50 text-amber-800 border-amber-200 ring-1 ring-amber-500/20';
+        return 'bg-amber-50 text-amber-800 border-amber-200';
       case 'CONFIRMED':
       case 'READY_FOR_PICKUP':
-        return 'bg-brand-50 text-brand-700 border-brand-200 ring-1 ring-brand-500/20';
+        return 'bg-brand-50 text-brand-700 border-brand-200';
       case 'ACTIVE':
-        return 'bg-emerald-50 text-emerald-800 border-emerald-200 ring-1 ring-emerald-500/20';
+        return 'bg-emerald-50 text-emerald-800 border-emerald-200';
       case 'RETURN_REQUESTED':
       case 'RETURNED':
-        return 'bg-teal-50 text-teal-800 border-teal-200 ring-1 ring-teal-500/20';
+        return 'bg-teal-50 text-teal-800 border-teal-200';
       case 'COMPLETED':
-        return 'bg-charcoal-100 text-charcoal-800 border-charcoal-200';
+        return 'bg-slate-100 text-slate-800 border-slate-200';
       case 'CANCELLED':
         return 'bg-rose-50 text-rose-700 border-rose-200';
       case 'DISPUTED':
         return 'bg-red-50 text-red-700 border-red-200';
       default:
-        return 'bg-charcoal-100 text-charcoal-700 border-charcoal-200';
+        return 'bg-slate-100 text-slate-700 border-slate-200';
     }
   };
 
@@ -106,7 +107,7 @@ export const CustomerBookingsModal: React.FC<CustomerBookingsModalProps> = ({
           exit={{ opacity: 0 }}
           transition={{ duration: 0.2 }}
           onClick={onClose}
-          className="fixed inset-0 bg-charcoal-950/70 backdrop-blur-md"
+          className="fixed inset-0 bg-slate-950/70 backdrop-blur-md"
         />
 
         {/* Modal Window */}
@@ -115,35 +116,35 @@ export const CustomerBookingsModal: React.FC<CustomerBookingsModalProps> = ({
           animate={{ opacity: 1, scale: 1, y: 0 }}
           exit={{ opacity: 0, scale: 0.95, y: 10 }}
           transition={{ type: 'spring', damping: 25, stiffness: 300 }}
-          className="relative bg-white rounded-3xl shadow-elevated border border-charcoal-100 max-w-3xl w-full max-h-[90vh] overflow-y-auto p-6 sm:p-8 z-10"
+          className="relative bg-white rounded-3xl shadow-2xl border border-slate-200 max-w-3xl w-full max-h-[90vh] overflow-y-auto p-6 sm:p-8 z-10"
         >
           {/* Close button */}
           <button
             onClick={onClose}
-            className="absolute top-5 right-5 text-charcoal-400 hover:text-charcoal-700 p-2 rounded-xl hover:bg-charcoal-100/70 transition-colors"
+            className="absolute top-5 right-5 text-slate-400 hover:text-slate-700 p-2 rounded-xl hover:bg-slate-100 transition-colors"
             aria-label="Close dialog"
           >
             <X className="w-5 h-5" />
           </button>
 
           {/* Header */}
-          <div className="flex flex-col sm:flex-row sm:items-center justify-between pb-6 border-b border-charcoal-100 gap-4">
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between pb-6 border-b border-slate-100 gap-4">
             <div>
               <div className="flex items-center gap-2 mb-1">
                 <div className="w-8 h-8 rounded-xl bg-brand-50 text-brand-600 flex items-center justify-center border border-brand-100 shadow-sm">
                   <Calendar className="w-4 h-4" />
                 </div>
-                <h2 className="text-xl font-display font-extrabold text-charcoal-900">
-                  My Rental Bookings
+                <h2 className="text-xl font-display font-extrabold text-slate-900">
+                  My Equipment Rentals
                 </h2>
               </div>
-              <p className="text-xs text-charcoal-500">
-                Track active reservations, temporary locks, and single-use digital handover passes.
+              <p className="text-xs text-slate-500">
+                Track active reservations, payment status, and single-use QR handover passes.
               </p>
             </div>
 
             {/* Filter Pills */}
-            <div className="flex p-1 bg-charcoal-100/80 rounded-xl text-xs font-semibold self-start sm:self-auto">
+            <div className="flex p-1 bg-slate-100 rounded-xl text-xs font-semibold self-start sm:self-auto">
               {(['ALL', 'ACTIVE', 'RESERVED', 'COMPLETED'] as const).map((tab) => (
                 <button
                   key={tab}
@@ -151,8 +152,8 @@ export const CustomerBookingsModal: React.FC<CustomerBookingsModalProps> = ({
                   onClick={() => setFilter(tab)}
                   className={`px-3 py-1.5 rounded-lg transition-all capitalize ${
                     filter === tab
-                      ? 'bg-white text-charcoal-900 shadow-sm'
-                      : 'text-charcoal-500 hover:text-charcoal-800'
+                      ? 'bg-white text-slate-900 shadow-sm'
+                      : 'text-slate-500 hover:text-slate-800'
                   }`}
                 >
                   {tab.toLowerCase()}
@@ -172,20 +173,20 @@ export const CustomerBookingsModal: React.FC<CustomerBookingsModalProps> = ({
           {/* Main Bookings List */}
           <div className="mt-6">
             {loading ? (
-              <div className="py-16 text-center text-xs text-charcoal-400 space-y-2">
+              <div className="py-16 text-center text-xs text-slate-400 space-y-2">
                 <span className="inline-block w-6 h-6 border-2 border-brand-500/30 border-t-brand-600 rounded-full animate-spin" />
                 <div>Loading your rental history...</div>
               </div>
             ) : filteredBookings.length === 0 ? (
               <div className="py-16 text-center">
-                <div className="w-14 h-14 bg-charcoal-50 text-charcoal-400 rounded-2xl flex items-center justify-center mx-auto mb-3 border border-charcoal-100">
-                  <Package className="w-7 h-7 text-charcoal-300" />
+                <div className="w-14 h-14 bg-slate-50 text-slate-400 rounded-2xl flex items-center justify-center mx-auto mb-3 border border-slate-200">
+                  <Package className="w-7 h-7 text-slate-300" />
                 </div>
-                <h4 className="text-sm font-bold text-charcoal-800">No bookings in this view</h4>
-                <p className="text-xs text-charcoal-500 mt-1 max-w-sm mx-auto">
+                <h4 className="text-sm font-bold text-slate-800">No rentals found</h4>
+                <p className="text-xs text-slate-500 mt-1 max-w-sm mx-auto">
                   {filter === 'ALL'
-                    ? "You haven't rented any equipment yet. Explore our curated catalog of cameras, tech, and gear."
-                    : `No bookings found matching filter "${filter.toLowerCase()}".`}
+                    ? "You haven't rented any equipment yet. Explore our curated listings to borrow gear near you."
+                    : `No bookings found under "${filter.toLowerCase()}".`}
                 </p>
               </div>
             ) : (
@@ -195,16 +196,16 @@ export const CustomerBookingsModal: React.FC<CustomerBookingsModalProps> = ({
                     key={booking.id}
                     initial={{ opacity: 0, y: 8 }}
                     animate={{ opacity: 1, y: 0 }}
-                    className="p-5 rounded-2xl border border-charcoal-200/80 bg-white hover:border-charcoal-300 transition-all shadow-card hover:shadow-card-hover space-y-3.5"
+                    className="p-5 rounded-2xl border border-slate-200/80 bg-white hover:border-slate-300 transition-all shadow-card hover:shadow-card-hover space-y-3.5"
                   >
                     {/* Top Row: Ref number, booked date, status pill */}
                     <div className="flex items-center justify-between">
                       <div className="flex items-center gap-2.5">
-                        <span className="font-mono text-xs font-bold text-charcoal-900 bg-charcoal-50 px-2 py-0.5 rounded-lg border border-charcoal-200">
+                        <span className="font-mono text-xs font-bold text-slate-900 bg-slate-50 px-2 py-0.5 rounded-lg border border-slate-200">
                           {booking.bookingNumber}
                         </span>
-                        <span className="text-[11px] text-charcoal-400">
-                          Booked {new Date(booking.createdAt).toLocaleDateString([], { month: 'short', day: 'numeric', year: 'numeric' })}
+                        <span className="text-[11px] text-slate-400">
+                          Booked on {formatDateIN(booking.createdAt)}
                         </span>
                       </div>
 
@@ -218,7 +219,7 @@ export const CustomerBookingsModal: React.FC<CustomerBookingsModalProps> = ({
                     </div>
 
                     {/* Middle Row: Product info and schedule */}
-                    <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pt-2 border-t border-charcoal-100">
+                    <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pt-2 border-t border-slate-100">
                       <div className="flex items-center gap-3.5">
                         <img
                           src={
@@ -226,38 +227,37 @@ export const CustomerBookingsModal: React.FC<CustomerBookingsModalProps> = ({
                             'https://images.unsplash.com/photo-1516035069371-29a1b244cc32?auto=format&fit=crop&w=120&q=80'
                           }
                           alt={booking.product?.name || 'Equipment'}
-                          className="w-14 h-14 rounded-2xl object-cover border border-charcoal-100 shadow-sm shrink-0"
+                          className="w-14 h-14 rounded-2xl object-cover border border-slate-200 shadow-sm shrink-0"
                         />
                         <div className="min-w-0">
-                          <div className="text-sm font-bold text-charcoal-900 truncate">
+                          <div className="text-sm font-bold text-slate-900 truncate">
                             {booking.product?.name}
                           </div>
-                          <div className="text-xs text-charcoal-500 mt-0.5">
-                            Lender: <span className="text-charcoal-700 font-semibold">{booking.product?.owner?.fullName || 'Verified Owner'}</span>
+                          <div className="text-xs text-slate-500 mt-0.5">
+                            Lender: <span className="text-slate-700 font-semibold">{booking.product?.owner?.fullName || 'Verified Owner'}</span>
                           </div>
                         </div>
                       </div>
 
-                      <div className="text-xs sm:text-right bg-charcoal-50/80 p-3 rounded-2xl border border-charcoal-100">
-                        <div className="font-bold text-charcoal-900 font-display">
-                          {new Date(booking.startDate).toLocaleDateString([], { month: 'short', day: 'numeric' })} →{' '}
-                          {new Date(booking.endDate).toLocaleDateString([], { month: 'short', day: 'numeric' })}
+                      <div className="text-xs sm:text-right bg-slate-50 p-3 rounded-2xl border border-slate-200/80">
+                        <div className="font-bold text-slate-900 font-display">
+                          {formatDateIN(booking.startDate)} → {formatDateIN(booking.endDate)}
                         </div>
-                        <div className="text-[11px] text-charcoal-500 mt-0.5">
-                          {booking.totalDays} {booking.totalDays === 1 ? 'day' : 'days'} duration
+                        <div className="text-[11px] text-slate-500 mt-0.5">
+                          {booking.totalDays} {booking.totalDays === 1 ? 'day' : 'days'} rental
                         </div>
                       </div>
                     </div>
 
-                    {/* Bottom Row: Financial ledger & contextual actions */}
-                    <div className="pt-2.5 border-t border-charcoal-100 flex flex-wrap items-center justify-between gap-3 text-xs">
+                    {/* Bottom Row: Financial summary & contextual actions */}
+                    <div className="pt-2.5 border-t border-slate-100 flex flex-wrap items-center justify-between gap-3 text-xs">
                       <div>
-                        <span className="text-charcoal-500">Total: </span>
-                        <span className="font-display font-extrabold text-charcoal-900 text-sm">
-                          ${booking.totalAmount.toFixed(2)}
+                        <span className="text-slate-500">Total: </span>
+                        <span className="font-display font-extrabold text-slate-900 text-sm">
+                          {formatINR(booking.totalAmount)}
                         </span>
-                        <span className="text-[11px] text-charcoal-400 ml-1.5">
-                          (Rate: ${booking.rentalTotal} + Escrow Deposit: ${booking.securityDeposit})
+                        <span className="text-[11px] text-slate-400 ml-1.5">
+                          (Rent: {formatINR(booking.rentalTotal)} + Deposit: {formatINR(booking.securityDeposit)})
                         </span>
                       </div>
 
@@ -271,7 +271,7 @@ export const CustomerBookingsModal: React.FC<CustomerBookingsModalProps> = ({
                             className="inline-flex items-center gap-1.5 px-3.5 py-1.5 bg-emerald-600 hover:bg-emerald-700 text-white font-bold rounded-xl text-xs shadow-sm transition-all"
                           >
                             <CreditCard className="w-3.5 h-3.5" />
-                            <span>Confirm & Pay (${booking.totalAmount.toFixed(2)})</span>
+                            <span>Confirm & Pay ({formatINR(booking.totalAmount)})</span>
                           </motion.button>
                         )}
 
@@ -283,7 +283,7 @@ export const CustomerBookingsModal: React.FC<CustomerBookingsModalProps> = ({
                             whileHover={{ scale: 1.02 }}
                             whileTap={{ scale: 0.98 }}
                             onClick={() => setQrBooking(booking)}
-                            className="inline-flex items-center gap-1.5 px-3.5 py-1.5 bg-charcoal-900 hover:bg-charcoal-800 text-white font-bold rounded-xl text-xs shadow-sm transition-all"
+                            className="inline-flex items-center gap-1.5 px-3.5 py-1.5 bg-slate-900 hover:bg-slate-800 text-white font-bold rounded-xl text-xs shadow-sm transition-all"
                           >
                             <QrCode className="w-3.5 h-3.5" />
                             <span>View QR Pass</span>

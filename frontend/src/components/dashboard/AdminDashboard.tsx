@@ -6,17 +6,18 @@ import {
   AdminDispute,
   adminService,
 } from '../../services/admin';
+import { formatINR, formatDateIN } from '../../utils/formatters';
 import {
   ShieldAlert,
   Users,
   Package,
-  DollarSign,
   CheckCircle2,
   Scale,
   ShieldCheck,
   CalendarDays,
   AlertCircle,
   X,
+  IndianRupee,
 } from 'lucide-react';
 
 export const AdminDashboard: React.FC = () => {
@@ -48,7 +49,7 @@ export const AdminDashboard: React.FC = () => {
       setDisputes(disputesRes.data);
       setBookings(bookingsRes.data);
     } catch (err: any) {
-      setError(err.message || 'Failed to load administrator data');
+      setError(err.message || 'Failed to load administrator console');
     } finally {
       setLoading(false);
     }
@@ -94,38 +95,40 @@ export const AdminDashboard: React.FC = () => {
   };
 
   return (
-    <div className="bg-white rounded-3xl border border-charcoal-200/80 p-6 sm:p-8 shadow-card mb-12">
+    <div className="bg-white rounded-3xl border border-slate-200/80 p-6 sm:p-8 shadow-card mb-12">
       {/* Header */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between pb-6 border-b border-charcoal-100 gap-4">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between pb-6 border-b border-slate-100 gap-4">
         <div>
           <div className="flex items-center gap-2 mb-1">
             <div className="w-8 h-8 rounded-xl bg-rose-50 text-rose-600 flex items-center justify-center border border-rose-200 shadow-sm">
               <ShieldAlert className="w-4 h-4" />
             </div>
-            <h2 className="text-xl font-display font-extrabold text-charcoal-900">
-              Platform Governance Console
+            <h2 className="text-xl font-display font-extrabold text-slate-900">
+              Platform Administration Console
             </h2>
           </div>
-          <p className="text-xs text-charcoal-500">
-            Audit system operations, simulate financial escrow ledger, moderate users, and resolve damage claims.
+          <p className="text-xs text-slate-500">
+            Platform governance, financial escrow ledger, member moderation, and damage claim resolution.
           </p>
         </div>
 
-        <span className="px-3 py-1 bg-rose-50 text-rose-700 text-xs font-bold rounded-xl border border-rose-200 self-start sm:self-auto flex items-center gap-1.5">
-          <span className="w-2 h-2 rounded-full bg-rose-500 animate-pulse" />
-          <span>Admin Root Session</span>
-        </span>
+        <div className="flex items-center gap-2 self-start sm:self-auto">
+          <span className="px-3 py-1 bg-rose-50 text-rose-700 text-xs font-bold rounded-xl border border-rose-200 flex items-center gap-1.5">
+            <span className="w-2 h-2 rounded-full bg-rose-500 animate-pulse" />
+            <span>Admin: harshal07@gmail.com</span>
+          </span>
+        </div>
       </div>
 
       {/* Tabs */}
-      <div className="flex p-1 bg-charcoal-100/80 rounded-2xl my-5 text-xs font-semibold overflow-x-auto">
+      <div className="flex p-1 bg-slate-100 rounded-2xl my-5 text-xs font-semibold overflow-x-auto">
         <button
           type="button"
           onClick={() => setActiveTab('stats')}
           className={`flex-1 py-2 px-3 rounded-xl transition-all whitespace-nowrap ${
             activeTab === 'stats'
-              ? 'bg-white text-charcoal-900 shadow-sm font-bold'
-              : 'text-charcoal-500 hover:text-charcoal-800'
+              ? 'bg-white text-slate-900 shadow-sm font-bold'
+              : 'text-slate-500 hover:text-slate-800'
           }`}
         >
           Platform Analytics
@@ -135,8 +138,8 @@ export const AdminDashboard: React.FC = () => {
           onClick={() => setActiveTab('users')}
           className={`flex-1 py-2 px-3 rounded-xl transition-all whitespace-nowrap ${
             activeTab === 'users'
-              ? 'bg-white text-charcoal-900 shadow-sm font-bold'
-              : 'text-charcoal-500 hover:text-charcoal-800'
+              ? 'bg-white text-slate-900 shadow-sm font-bold'
+              : 'text-slate-500 hover:text-slate-800'
           }`}
         >
           Users & Verification ({users.length})
@@ -146,8 +149,8 @@ export const AdminDashboard: React.FC = () => {
           onClick={() => setActiveTab('disputes')}
           className={`flex-1 py-2 px-3 rounded-xl transition-all whitespace-nowrap flex items-center justify-center gap-1.5 ${
             activeTab === 'disputes'
-              ? 'bg-white text-charcoal-900 shadow-sm font-bold'
-              : 'text-charcoal-500 hover:text-charcoal-800'
+              ? 'bg-white text-slate-900 shadow-sm font-bold'
+              : 'text-slate-500 hover:text-slate-800'
           }`}
         >
           <Scale className="w-3.5 h-3.5" />
@@ -158,12 +161,12 @@ export const AdminDashboard: React.FC = () => {
           onClick={() => setActiveTab('bookings')}
           className={`flex-1 py-2 px-3 rounded-xl transition-all whitespace-nowrap flex items-center justify-center gap-1.5 ${
             activeTab === 'bookings'
-              ? 'bg-white text-charcoal-900 shadow-sm font-bold'
-              : 'text-charcoal-500 hover:text-charcoal-800'
+              ? 'bg-white text-slate-900 shadow-sm font-bold'
+              : 'text-slate-500 hover:text-slate-800'
           }`}
         >
           <CalendarDays className="w-3.5 h-3.5" />
-          <span>Ledger History ({bookings.length})</span>
+          <span>Rental Ledger ({bookings.length})</span>
         </button>
       </div>
 
@@ -176,7 +179,7 @@ export const AdminDashboard: React.FC = () => {
       )}
 
       {loading ? (
-        <div className="py-16 text-center text-xs text-charcoal-400 space-y-2">
+        <div className="py-16 text-center text-xs text-slate-400 space-y-2">
           <span className="inline-block w-6 h-6 border-2 border-brand-500/30 border-t-brand-600 rounded-full animate-spin" />
           <div>Syncing administration database...</div>
         </div>
@@ -186,66 +189,64 @@ export const AdminDashboard: React.FC = () => {
           {activeTab === 'stats' && stats && (
             <div className="space-y-6">
               <div className="grid grid-cols-2 lg:grid-cols-4 gap-3.5">
-                <div className="p-4 bg-charcoal-50/70 border border-charcoal-200/70 rounded-2xl">
-                  <div className="flex items-center justify-between text-charcoal-500 text-xs mb-1">
+                <div className="p-4 bg-slate-50 border border-slate-200 rounded-2xl">
+                  <div className="flex items-center justify-between text-slate-500 text-xs mb-1">
                     <span className="font-bold">Total Accounts</span>
                     <Users className="w-4 h-4 text-brand-600" />
                   </div>
-                  <div className="text-2xl font-display font-extrabold text-charcoal-900">
+                  <div className="text-2xl font-display font-extrabold text-slate-900">
                     {stats.users.total}
                   </div>
-                  <div className="text-[11px] text-charcoal-500 mt-0.5">
-                    {stats.users.owners} Owners • {stats.users.customers} Renters
+                  <div className="text-[11px] text-slate-500 mt-0.5">
+                    {stats.users.owners} Lenders • {stats.users.customers} Renters
                   </div>
                 </div>
 
-                <div className="p-4 bg-charcoal-50/70 border border-charcoal-200/70 rounded-2xl">
-                  <div className="flex items-center justify-between text-charcoal-500 text-xs mb-1">
-                    <span className="font-bold">Equipment Catalog</span>
+                <div className="p-4 bg-slate-50 border border-slate-200 rounded-2xl">
+                  <div className="flex items-center justify-between text-slate-500 text-xs mb-1">
+                    <span className="font-bold">Catalog Listings</span>
                     <Package className="w-4 h-4 text-indigo-600" />
                   </div>
-                  <div className="text-2xl font-display font-extrabold text-charcoal-900">
+                  <div className="text-2xl font-display font-extrabold text-slate-900">
                     {stats.products.total}
                   </div>
-                  <div className="text-[11px] text-charcoal-500 mt-0.5">
-                    {stats.products.pendingApproval} Pending Verification
+                  <div className="text-[11px] text-slate-500 mt-0.5">
+                    {stats.products.pendingApproval} Pending Review
                   </div>
                 </div>
 
-                <div className="p-4 bg-charcoal-50/70 border border-charcoal-200/70 rounded-2xl">
-                  <div className="flex items-center justify-between text-charcoal-500 text-xs mb-1">
+                <div className="p-4 bg-slate-50 border border-slate-200 rounded-2xl">
+                  <div className="flex items-center justify-between text-slate-500 text-xs mb-1">
                     <span className="font-bold">Rental Volume</span>
                     <CalendarDays className="w-4 h-4 text-emerald-600" />
                   </div>
-                  <div className="text-2xl font-display font-extrabold text-charcoal-900">
+                  <div className="text-2xl font-display font-extrabold text-slate-900">
                     {stats.bookings.completed + stats.bookings.active}
                   </div>
                   <div className="text-[11px] text-emerald-700 font-semibold mt-0.5">
-                    {stats.bookings.active} In Hand • {stats.bookings.completed} Returned
+                    {stats.bookings.active} Active • {stats.bookings.completed} Completed
                   </div>
                 </div>
 
-                <div className="p-4 bg-charcoal-50/70 border border-charcoal-200/70 rounded-2xl">
-                  <div className="flex items-center justify-between text-charcoal-500 text-xs mb-1">
-                    <span className="font-bold">Simulated Gross</span>
-                    <DollarSign className="w-4 h-4 text-brand-600" />
+                <div className="p-4 bg-slate-50 border border-slate-200 rounded-2xl">
+                  <div className="flex items-center justify-between text-slate-500 text-xs mb-1">
+                    <span className="font-bold">Gross Volume</span>
+                    <IndianRupee className="w-4 h-4 text-brand-600" />
                   </div>
-                  <div className="text-2xl font-display font-extrabold text-charcoal-900">
-                    ${stats.financials.grossSimulatedVolume.toFixed(2)}
+                  <div className="text-2xl font-display font-extrabold text-slate-900">
+                    {formatINR(stats.financials.grossSimulatedVolume)}
                   </div>
-                  <div className="text-[11px] text-charcoal-500 mt-0.5">
-                    Deposits Held: ${stats.financials.depositsHeld.toFixed(2)}
+                  <div className="text-[11px] text-slate-500 mt-0.5">
+                    Escrow Held: {formatINR(stats.financials.depositsHeld)}
                   </div>
                 </div>
               </div>
 
-              {/* Obsidian Ledger Card */}
-              <div className="p-6 bg-gradient-to-tr from-charcoal-950 via-charcoal-900 to-brand-950 text-white rounded-3xl shadow-elevated border border-charcoal-800 relative overflow-hidden">
-                <div className="absolute top-0 right-0 w-64 h-64 bg-brand-500/10 rounded-full blur-3xl pointer-events-none" />
-
+              {/* Financial Ledger Card */}
+              <div className="p-6 bg-gradient-to-tr from-slate-950 via-slate-900 to-slate-950 text-white rounded-3xl shadow-xl border border-slate-800 relative overflow-hidden">
                 <div className="flex items-center justify-between mb-5">
                   <h3 className="text-sm font-display font-extrabold tracking-tight flex items-center gap-2 text-white">
-                    <DollarSign className="w-4 h-4 text-brand-400" />
+                    <IndianRupee className="w-4 h-4 text-brand-400" />
                     <span>Simulated Escrow Financial Ledger</span>
                   </h3>
                   <span className="text-[10px] text-brand-300 font-mono uppercase tracking-widest px-2.5 py-1 bg-white/10 rounded-lg">
@@ -255,27 +256,27 @@ export const AdminDashboard: React.FC = () => {
 
                 <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 text-xs">
                   <div className="p-3 bg-white/5 rounded-2xl border border-white/10">
-                    <span className="text-charcoal-400 block text-[11px] mb-1">Gross Rental Fees</span>
+                    <span className="text-slate-400 block text-[11px] mb-1">Total Rental Fees</span>
                     <span className="text-lg font-display font-extrabold text-brand-300">
-                      ${stats.financials.totalRentalFees.toFixed(2)}
+                      {formatINR(stats.financials.totalRentalFees)}
                     </span>
                   </div>
                   <div className="p-3 bg-white/5 rounded-2xl border border-white/10">
-                    <span className="text-charcoal-400 block text-[11px] mb-1">Active Escrow Deposits</span>
+                    <span className="text-slate-400 block text-[11px] mb-1">Active Escrow Deposits</span>
                     <span className="text-lg font-display font-extrabold text-amber-300">
-                      ${stats.financials.depositsHeld.toFixed(2)}
+                      {formatINR(stats.financials.depositsHeld)}
                     </span>
                   </div>
                   <div className="p-3 bg-white/5 rounded-2xl border border-white/10">
-                    <span className="text-charcoal-400 block text-[11px] mb-1">Refunded Deposits</span>
+                    <span className="text-slate-400 block text-[11px] mb-1">Refunded Deposits</span>
                     <span className="text-lg font-display font-extrabold text-emerald-300">
-                      ${stats.financials.depositsRefunded.toFixed(2)}
+                      {formatINR(stats.financials.depositsRefunded)}
                     </span>
                   </div>
                   <div className="p-3 bg-white/5 rounded-2xl border border-white/10">
-                    <span className="text-charcoal-400 block text-[11px] mb-1">Damage Deductions</span>
+                    <span className="text-slate-400 block text-[11px] mb-1">Damage Deductions</span>
                     <span className="text-lg font-display font-extrabold text-rose-300">
-                      ${stats.financials.damageDeductions.toFixed(2)}
+                      {formatINR(stats.financials.damageDeductions)}
                     </span>
                   </div>
                 </div>
@@ -288,7 +289,7 @@ export const AdminDashboard: React.FC = () => {
             <div className="overflow-x-auto">
               <table className="w-full text-left text-xs">
                 <thead>
-                  <tr className="border-b border-charcoal-200 text-charcoal-400 font-bold uppercase tracking-wider text-[10px]">
+                  <tr className="border-b border-slate-200 text-slate-400 font-bold uppercase tracking-wider text-[10px]">
                     <th className="pb-3 pl-2">User Persona</th>
                     <th className="pb-3">Role</th>
                     <th className="pb-3">Account Status</th>
@@ -297,15 +298,15 @@ export const AdminDashboard: React.FC = () => {
                     <th className="pb-3 text-right pr-2">Moderation</th>
                   </tr>
                 </thead>
-                <tbody className="divide-y divide-charcoal-100">
+                <tbody className="divide-y divide-slate-100">
                   {users.map((u) => (
-                    <tr key={u.id} className="hover:bg-charcoal-50/70 transition-colors">
+                    <tr key={u.id} className="hover:bg-slate-50 transition-colors">
                       <td className="py-3.5 pl-2">
-                        <div className="font-bold text-charcoal-900">{u.fullName}</div>
-                        <div className="text-[11px] text-charcoal-400 font-mono">{u.email}</div>
+                        <div className="font-bold text-slate-900">{u.fullName}</div>
+                        <div className="text-[11px] text-slate-400 font-mono">{u.email}</div>
                       </td>
                       <td className="py-3.5">
-                        <span className="px-2.5 py-0.5 rounded-full text-[10px] font-bold bg-charcoal-100 text-charcoal-700">
+                        <span className="px-2.5 py-0.5 rounded-full text-[10px] font-bold bg-slate-100 text-slate-700">
                           {u.role}
                         </span>
                       </td>
@@ -327,11 +328,11 @@ export const AdminDashboard: React.FC = () => {
                             Verified
                           </span>
                         ) : (
-                          <span className="text-charcoal-400 text-[11px]">Unverified</span>
+                          <span className="text-slate-400 text-[11px]">Unverified</span>
                         )}
                       </td>
-                      <td className="py-3.5 font-display font-extrabold text-charcoal-900">
-                        ⭐ {u.trustScore.toFixed(1)} <span className="text-charcoal-400 font-normal">/ 5.0</span>
+                      <td className="py-3.5 font-display font-extrabold text-slate-900">
+                        ⭐ {u.trustScore.toFixed(1)} <span className="text-slate-400 font-normal">/ 5.0</span>
                       </td>
                       <td className="py-3.5 text-right pr-2 space-x-1.5">
                         <button
@@ -362,13 +363,13 @@ export const AdminDashboard: React.FC = () => {
           {/* TAB 3: Disputes Mediation */}
           {activeTab === 'disputes' && (
             disputes.length === 0 ? (
-              <div className="py-16 text-center text-xs text-charcoal-400">
+              <div className="py-16 text-center text-xs text-slate-400">
                 <div className="w-12 h-12 rounded-2xl bg-emerald-50 text-emerald-600 flex items-center justify-center mx-auto mb-2 border border-emerald-200">
                   <CheckCircle2 className="w-6 h-6" />
                 </div>
-                <h4 className="text-sm font-bold text-charcoal-800">Zero open disputes</h4>
-                <p className="text-xs text-charcoal-500 mt-0.5">
-                  All equipment rentals have been settled without damage claims.
+                <h4 className="text-sm font-bold text-slate-800">Zero active disputes</h4>
+                <p className="text-xs text-slate-500 mt-0.5">
+                  All equipment rentals have been concluded without damage claims.
                 </p>
               </div>
             ) : (
@@ -378,12 +379,12 @@ export const AdminDashboard: React.FC = () => {
                     key={d.id}
                     initial={{ opacity: 0, y: 4 }}
                     animate={{ opacity: 1, y: 0 }}
-                    className="p-5 rounded-2xl border border-charcoal-200/80 bg-white shadow-card space-y-3 text-xs"
+                    className="p-5 rounded-2xl border border-slate-200 bg-white shadow-card space-y-3 text-xs"
                   >
                     <div className="flex items-center justify-between">
                       <div className="flex items-center gap-2.5">
-                        <span className="font-bold text-charcoal-900 text-sm">{d.reason}</span>
-                        <span className="font-mono text-[11px] text-charcoal-500 bg-charcoal-50 px-2 py-0.5 rounded-lg border border-charcoal-200">
+                        <span className="font-bold text-slate-900 text-sm">{d.reason}</span>
+                        <span className="font-mono text-[11px] text-slate-500 bg-slate-50 px-2 py-0.5 rounded-lg border border-slate-200">
                           Ref: {d.booking?.bookingNumber}
                         </span>
                       </div>
@@ -392,13 +393,13 @@ export const AdminDashboard: React.FC = () => {
                       </span>
                     </div>
 
-                    <p className="text-charcoal-600 leading-relaxed italic bg-charcoal-50 p-3 rounded-xl border border-charcoal-100">
+                    <p className="text-slate-600 leading-relaxed italic bg-slate-50 p-3 rounded-xl border border-slate-100">
                       "{d.description}"
                     </p>
 
-                    <div className="flex items-center justify-between pt-2 border-t border-charcoal-100">
+                    <div className="flex items-center justify-between pt-2 border-t border-slate-100">
                       <div>
-                        Claimed Deduction: <span className="font-display font-extrabold text-rose-600">${d.claimAmount}</span> • Raised by: <span className="font-semibold text-charcoal-800">{d.raisedBy?.fullName}</span>
+                        Claimed Deduction: <span className="font-display font-extrabold text-rose-600">{formatINR(d.claimAmount)}</span> • Raised by: <span className="font-semibold text-slate-800">{d.raisedBy?.fullName}</span>
                       </div>
 
                       {d.status === 'OPEN' && (
@@ -409,7 +410,7 @@ export const AdminDashboard: React.FC = () => {
                             setDeductedAmount(d.claimAmount.toString());
                             setResolutionNotes('');
                           }}
-                          className="px-3.5 py-1.5 bg-charcoal-900 hover:bg-charcoal-800 text-white font-bold rounded-xl text-xs shadow-sm transition-all"
+                          className="px-3.5 py-1.5 bg-slate-900 hover:bg-slate-800 text-white font-bold rounded-xl text-xs shadow-sm transition-all"
                         >
                           Mediate & Settle Claim
                         </button>
@@ -426,34 +427,33 @@ export const AdminDashboard: React.FC = () => {
             <div className="overflow-x-auto">
               <table className="w-full text-left text-xs">
                 <thead>
-                  <tr className="border-b border-charcoal-200 text-charcoal-400 font-bold uppercase tracking-wider text-[10px]">
+                  <tr className="border-b border-slate-200 text-slate-400 font-bold uppercase tracking-wider text-[10px]">
                     <th className="pb-3 pl-2">Booking Ref</th>
                     <th className="pb-3">Equipment</th>
                     <th className="pb-3">Renter</th>
                     <th className="pb-3">Rental Schedule</th>
                     <th className="pb-3">Status</th>
-                    <th className="pb-3 text-right pr-2">Total Volume</th>
+                    <th className="pb-3 text-right pr-2">Total Amount</th>
                   </tr>
                 </thead>
-                <tbody className="divide-y divide-charcoal-100">
+                <tbody className="divide-y divide-slate-100">
                   {bookings.map((b) => (
-                    <tr key={b.id} className="hover:bg-charcoal-50/70 transition-colors">
-                      <td className="py-3.5 pl-2 font-mono font-bold text-charcoal-900">
+                    <tr key={b.id} className="hover:bg-slate-50 transition-colors">
+                      <td className="py-3.5 pl-2 font-mono font-bold text-slate-900">
                         {b.bookingNumber}
                       </td>
-                      <td className="py-3.5 font-bold text-charcoal-900">{b.product?.name}</td>
-                      <td className="py-3.5 text-charcoal-600 font-medium">{b.customer?.fullName}</td>
-                      <td className="py-3.5 text-charcoal-600">
-                        {new Date(b.startDate).toLocaleDateString([], { month: 'short', day: 'numeric' })} →{' '}
-                        {new Date(b.endDate).toLocaleDateString([], { month: 'short', day: 'numeric' })}
+                      <td className="py-3.5 font-bold text-slate-900">{b.product?.name}</td>
+                      <td className="py-3.5 text-slate-600 font-medium">{b.customer?.fullName}</td>
+                      <td className="py-3.5 text-slate-600">
+                        {formatDateIN(b.startDate)} → {formatDateIN(b.endDate)}
                       </td>
                       <td className="py-3.5">
-                        <span className="px-2.5 py-0.5 rounded-full text-[10px] font-bold bg-charcoal-100 text-charcoal-800">
+                        <span className="px-2.5 py-0.5 rounded-full text-[10px] font-bold bg-slate-100 text-slate-800">
                           {b.status}
                         </span>
                       </td>
-                      <td className="py-3.5 text-right pr-2 font-display font-extrabold text-charcoal-900">
-                        ${b.totalAmount}
+                      <td className="py-3.5 text-right pr-2 font-display font-extrabold text-slate-900">
+                        {formatINR(b.totalAmount)}
                       </td>
                     </tr>
                   ))}
@@ -473,18 +473,18 @@ export const AdminDashboard: React.FC = () => {
               animate={{ opacity: 1 }}
               exit={{ opacity: 0 }}
               onClick={() => setResolvingDispute(null)}
-              className="fixed inset-0 bg-charcoal-950/70 backdrop-blur-md"
+              className="fixed inset-0 bg-slate-950/70 backdrop-blur-md"
             />
 
             <motion.div
               initial={{ opacity: 0, scale: 0.95, y: 10 }}
               animate={{ opacity: 1, scale: 1, y: 0 }}
               exit={{ opacity: 0, scale: 0.95, y: 10 }}
-              className="relative bg-white rounded-3xl p-6 sm:p-8 max-w-md w-full shadow-elevated border border-charcoal-100 z-10"
+              className="relative bg-white rounded-3xl p-6 sm:p-8 max-w-md w-full shadow-2xl border border-slate-200 z-10"
             >
               <button
                 onClick={() => setResolvingDispute(null)}
-                className="absolute top-5 right-5 text-charcoal-400 hover:text-charcoal-700 p-2 rounded-xl hover:bg-charcoal-100/70 transition-colors"
+                className="absolute top-5 right-5 text-slate-400 hover:text-slate-700 p-2 rounded-xl hover:bg-slate-100 transition-colors"
               >
                 <X className="w-5 h-5" />
               </button>
@@ -494,44 +494,44 @@ export const AdminDashboard: React.FC = () => {
                   <Scale className="w-3.5 h-3.5" />
                   Arbitration Dock
                 </span>
-                <h3 className="text-xl font-display font-extrabold text-charcoal-900">
+                <h3 className="text-xl font-display font-extrabold text-slate-900">
                   Mediate Damage Dispute
                 </h3>
-                <p className="text-xs text-charcoal-500 font-mono mt-0.5">
+                <p className="text-xs text-slate-500 font-mono mt-0.5">
                   Ref: {resolvingDispute.booking?.bookingNumber}
                 </p>
               </div>
 
               <form onSubmit={handleResolveDisputeSubmit} className="space-y-4 text-xs">
                 <div>
-                  <label className="block font-bold text-charcoal-700 mb-1.5">
-                    Deduction from Security Deposit ($) *
+                  <label className="block font-bold text-slate-700 mb-1.5">
+                    Deduction from Security Deposit (₹) *
                   </label>
                   <input
                     type="number"
-                    step="0.01"
+                    step="1"
                     min="0"
                     required
                     value={deductedAmount}
                     onChange={(e) => setDeductedAmount(e.target.value)}
-                    className="w-full px-3.5 py-2.5 border border-charcoal-200 rounded-xl focus:border-brand-500 focus:ring-4 focus:ring-brand-500/10 focus:outline-none transition-all font-display font-bold text-sm"
+                    className="w-full px-3.5 py-2.5 border border-slate-200 rounded-xl focus:border-brand-500 focus:ring-4 focus:ring-brand-500/10 focus:outline-none transition-all font-display font-bold text-sm"
                   />
-                  <span className="text-[11px] text-charcoal-400 mt-1 block">
-                    Remaining deposit balance will be automatically disbursed back to the renter.
+                  <span className="text-[11px] text-slate-400 mt-1 block">
+                    Any remaining deposit will be automatically released back to the customer.
                   </span>
                 </div>
 
                 <div>
-                  <label className="block font-bold text-charcoal-700 mb-1.5">
-                    Official Arbitration Reasoning *
+                  <label className="block font-bold text-slate-700 mb-1.5">
+                    Arbitration Reason & Notes *
                   </label>
                   <textarea
                     required
                     rows={3}
                     value={resolutionNotes}
                     onChange={(e) => setResolutionNotes(e.target.value)}
-                    placeholder="Document the mediated outcome and findings for both parties..."
-                    className="w-full px-3.5 py-2.5 border border-charcoal-200 rounded-xl focus:border-brand-500 focus:ring-4 focus:ring-brand-500/10 focus:outline-none transition-all"
+                    placeholder="Document the mediated outcome and reasoning for both parties..."
+                    className="w-full px-3.5 py-2.5 border border-slate-200 rounded-xl focus:border-brand-500 focus:ring-4 focus:ring-brand-500/10 focus:outline-none transition-all"
                   />
                 </div>
 
@@ -539,13 +539,13 @@ export const AdminDashboard: React.FC = () => {
                   <button
                     type="button"
                     onClick={() => setResolvingDispute(null)}
-                    className="px-4 py-2 text-xs font-bold text-charcoal-500 hover:text-charcoal-800 transition-colors"
+                    className="px-4 py-2 text-xs font-bold text-slate-500 hover:text-slate-800 transition-colors"
                   >
                     Cancel
                   </button>
                   <button
                     type="submit"
-                    className="px-5 py-2.5 bg-charcoal-900 hover:bg-charcoal-800 text-white font-bold rounded-xl shadow-card transition-all text-xs"
+                    className="px-5 py-2.5 bg-slate-900 hover:bg-slate-800 text-white font-bold rounded-xl shadow-md transition-all text-xs"
                   >
                     Confirm Arbitration
                   </button>
