@@ -1,0 +1,340 @@
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+// -------------------------------------------------------------
+// ENUMS
+// -------------------------------------------------------------
+
+enum UserRole {
+  CUSTOMER
+  OWNER
+  ADMIN
+}
+
+enum UserStatus {
+  ACTIVE
+  SUSPENDED
+  PENDING_VERIFICATION
+}
+
+enum ProductCondition {
+  BRAND_NEW
+  LIKE_NEW
+  GOOD
+  FAIR
+}
+
+enum ApprovalStatus {
+  PENDING
+  APPROVED
+  REJECTED
+}
+
+enum ListingStatus {
+  ACTIVE
+  INACTIVE
+  RENTED
+  UNDER_MAINTENANCE
+}
+
+enum BookingStatus {
+  PENDING
+  RESERVED
+  CONFIRMED
+  READY_FOR_PICKUP
+  ACTIVE
+  RETURN_REQUESTED
+  RETURNED
+  COMPLETED
+  CANCELLED
+  EXPIRED
+  DISPUTED
+}
+
+enum PaymentStatus {
+  PENDING
+  SUCCESSFUL
+  FAILED
+  REFUNDED
+  PARTIALLY_REFUNDED
+}
+
+enum DepositStatus {
+  HELD
+  DEDUCTED
+  FULLY_REFUNDED
+  PARTIALLY_REFUNDED
+  FORFEITED
+}
+
+enum InspectionType {
+  PRE_PICKUP
+  POST_RETURN
+}
+
+enum DisputeStatus {
+  OPEN
+  UNDER_REVIEW
+  RESOLVED
+  REJECTED
+}
+
+enum ReviewType {
+  CUSTOMER_TO_OWNER
+  OWNER_TO_CUSTOMER
+}
+
+// -------------------------------------------------------------
+// MODELS
+// -------------------------------------------------------------
+
+model User {
+  id                  String       @id @default(uuid())
+  email               String       @unique
+  passwordHash        String
+  fullName            String
+  phone               String?
+  avatarUrl           String?
+  role                UserRole     @default(CUSTOMER)
+  status              UserStatus   @default(ACTIVE)
+  isVerifiedOwner     Boolean      @default(false)
+  ownerBio            String?      @db.Text
+  ownerAddress        String?
+  trustScore          Float        @default(5.0)
+  resetPasswordToken  String?
+  resetPasswordExpiry DateTime?
+  createdAt           DateTime     @default(now())
+  updatedAt           DateTime     @updatedAt
+
+  // Relationships
+  products            Product[]    @relation("OwnerProducts")
+  bookings            Booking[]    @relation("CustomerBookings")
+  payments            Payment[]
+  reviewsGiven        Review[]     @relation("Reviewer")
+  reviewsReceived     Review[]     @relation("Reviewee")
+  notifications       Notification[]
+  disputesRaised      Dispute[]    @relation("DisputeRaiser")
+  disputesResolved    Dispute[]    @relation("DisputeResolver")
+  inspections         Inspection[] @relation("Inspector")
+
+  @@index([email])
+  @@index([role])
+}
+
+model Category {
+  id          String    @id @default(uuid())
+  name        String    @unique
+  slug        String    @unique
+  description String?   @db.Text
+  icon        String?
+  createdAt   DateTime  @default(now())
+
+  products    Product[]
+
+  @@index([slug])
+}
+
+model Product {
+  id              String           @id @default(uuid())
+  ownerId         String
+  categoryId      String
+  name            String
+  description     String           @db.Text
+  brand           String?
+  model           String?
+  pricePerDay     Float
+  securityDeposit Float
+  condition       ProductCondition @default(GOOD)
+  location        String
+  images          String[]
+  approvalStatus  ApprovalStatus   @default(APPROVED)
+  listingStatus   ListingStatus    @default(ACTIVE)
+  rejectionReason String?          @db.Text
+  createdAt       DateTime         @default(now())
+  updatedAt       DateTime         @updatedAt
+
+  // Relationships
+  owner           User             @relation("OwnerProducts", fields: [ownerId], references: [id], onDelete: Cascade)
+  category        Category         @relation(fields: [categoryId], references: [id])
+  bookings        Booking[]
+
+  @@index([ownerId])
+  @@index([categoryId])
+  @@index([location])
+  @@index([pricePerDay])
+  @@index([approvalStatus, listingStatus])
+}
+
+model Booking {
+  id                 String           @id @default(uuid())
+  bookingNumber      String           @unique
+  productId          String
+  customerId         String
+  startDate          DateTime
+  endDate            DateTime
+  totalDays          Int
+  dailyPrice         Float
+  rentalTotal        Float
+  securityDeposit    Float
+  totalAmount        Float
+  status             BookingStatus    @default(PENDING)
+  holdExpiresAt      DateTime?
+  pickupCode         String?          @unique
+  returnCode         String?          @unique
+  pickupAt           DateTime?
+  returnedAt         DateTime?
+  expectedReturnDate DateTime
+  actualReturnDate   DateTime?
+  lateFeePerDay      Float            @default(0)
+  lateFeeCalculated  Float            @default(0)
+  cancellationReason String?          @db.Text
+  createdAt          DateTime         @default(now())
+  updatedAt          DateTime         @updatedAt
+
+  // Relationships
+  product            Product          @relation(fields: [productId], references: [id], onDelete: Restrict)
+  customer           User             @relation("CustomerBookings", fields: [customerId], references: [id], onDelete: Restrict)
+  payments           Payment[]
+  depositRecord      SecurityDeposit?
+  inspections        Inspection[]
+  disputes           Dispute[]
+  reviews            Review[]
+
+  @@index([productId, startDate, endDate])
+  @@index([customerId])
+  @@index([status])
+  @@index([bookingNumber])
+}
+
+model Payment {
+  id                   String        @id @default(uuid())
+  bookingId            String
+  userId               String
+  transactionId        String        @unique
+  amount               Float
+  rentalAmount         Float
+  depositAmount        Float
+  status               PaymentStatus @default(PENDING)
+  paymentMethod        String        @default("SIMULATED_CARD")
+  failureReason        String?
+  refundedAmount       Float         @default(0)
+  refundTransactionId  String?
+  createdAt            DateTime      @default(now())
+  updatedAt            DateTime      @updatedAt
+
+  // Relationships
+  booking              Booking       @relation(fields: [bookingId], references: [id], onDelete: Cascade)
+  user                 User          @relation(fields: [userId], references: [id], onDelete: Restrict)
+
+  @@index([bookingId])
+  @@index([userId])
+  @@index([transactionId])
+}
+
+model SecurityDeposit {
+  id              String        @id @default(uuid())
+  bookingId       String        @unique
+  originalAmount  Float
+  deductionAmount Float         @default(0)
+  refundedAmount  Float         @default(0)
+  deductionReason String?       @db.Text
+  status          DepositStatus @default(HELD)
+  releasedAt      DateTime?
+  createdAt       DateTime      @default(now())
+  updatedAt       DateTime      @updatedAt
+
+  // Relationships
+  booking         Booking       @relation(fields: [bookingId], references: [id], onDelete: Cascade)
+
+  @@index([bookingId])
+  @@index([status])
+}
+
+model Inspection {
+  id                   String         @id @default(uuid())
+  bookingId            String
+  inspectorId          String
+  type                 InspectionType
+  photos               String[]
+  conditionNotes       String         @db.Text
+  existingDamage       String?        @db.Text
+  confirmedByCustomer  Boolean        @default(false)
+  createdAt            DateTime       @default(now())
+  updatedAt            DateTime       @updatedAt
+
+  // Relationships
+  booking              Booking        @relation(fields: [bookingId], references: [id], onDelete: Cascade)
+  inspector            User           @relation("Inspector", fields: [inspectorId], references: [id], onDelete: Restrict)
+
+  @@index([bookingId])
+  @@index([inspectorId])
+}
+
+model Dispute {
+  id                   String        @id @default(uuid())
+  bookingId            String
+  raisedById           String
+  resolvedById         String?
+  claimAmount          Float
+  reason               String
+  description          String        @db.Text
+  photos               String[]
+  status               DisputeStatus @default(OPEN)
+  resolutionNotes      String?       @db.Text
+  deductedFromDeposit  Float         @default(0)
+  createdAt            DateTime      @default(now())
+  resolvedAt           DateTime?
+  updatedAt            DateTime      @updatedAt
+
+  // Relationships
+  booking              Booking       @relation(fields: [bookingId], references: [id], onDelete: Cascade)
+  raisedBy             User          @relation("DisputeRaiser", fields: [raisedById], references: [id], onDelete: Restrict)
+  resolvedBy           User?         @relation("DisputeResolver", fields: [resolvedById], references: [id], onDelete: SetNull)
+
+  @@index([bookingId])
+  @@index([raisedById])
+  @@index([status])
+}
+
+model Review {
+  id          String     @id @default(uuid())
+  bookingId   String
+  reviewerId  String
+  revieweeId  String
+  rating      Int
+  comment     String     @db.Text
+  type        ReviewType
+  createdAt   DateTime   @default(now())
+
+  // Relationships
+  booking     Booking    @relation(fields: [bookingId], references: [id], onDelete: Cascade)
+  reviewer    User       @relation("Reviewer", fields: [reviewerId], references: [id], onDelete: Restrict)
+  reviewee    User       @relation("Reviewee", fields: [revieweeId], references: [id], onDelete: Restrict)
+
+  @@unique([bookingId, reviewerId])
+  @@index([revieweeId])
+  @@index([reviewerId])
+}
+
+model Notification {
+  id          String   @id @default(uuid())
+  userId      String
+  title       String
+  message     String   @db.Text
+  type        String
+  referenceId String?
+  isRead      Boolean  @default(false)
+  createdAt   DateTime @default(now())
+
+  // Relationships
+  user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId, isRead])
+}
+

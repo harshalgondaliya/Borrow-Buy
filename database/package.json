@@ -1,0 +1,23 @@
+{
+  "name": "borrowbuy-database",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Prisma schema, migrations, and seed scripts for BorrowBuy",
+  "scripts": {
+    "generate": "prisma generate",
+    "migrate": "prisma migrate dev",
+    "migrate:deploy": "prisma migrate deploy",
+    "seed": "tsx prisma/seed.ts",
+    "studio": "prisma studio"
+  },
+  "dependencies": {
+    "@prisma/client": "^5.22.0"
+  },
+  "devDependencies": {
+    "dotenv": "^16.4.7",
+    "prisma": "^5.22.0",
+    "tsx": "^4.19.2",
+    "typescript": "^5.7.2"
+  }
+}
+
