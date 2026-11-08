@@ -77,12 +77,6 @@ export const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose, initialTa
     }
   };
 
-  const fillDemoAccount = (demoEmail: string, demoPass: string) => {
-    setEmail(demoEmail);
-    setPassword(demoPass);
-    setError(null);
-  };
-
   return (
     <AnimatePresence>
       {isOpen && (
@@ -259,40 +253,6 @@ export const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose, initialTa
                     </>
                   )}
                 </motion.button>
-
-                {/* Safe Demonstration Profiles for Testing */}
-                <div className="pt-4 border-t border-slate-100">
-                  <div className="flex items-center justify-between mb-2">
-                    <span className="text-[11px] font-bold text-slate-400 uppercase tracking-wider">
-                      Demo Accounts
-                    </span>
-                    <span className="text-[10px] text-slate-400 font-mono">Quick sign-in</span>
-                  </div>
-                  <div className="grid grid-cols-2 gap-2">
-                    <button
-                      type="button"
-                      onClick={() => fillDemoAccount('priya.customer@borrowbuy.in', 'Password123!')}
-                      className="p-2.5 text-left bg-emerald-50/70 hover:bg-emerald-50 rounded-xl border border-emerald-200/80 transition-all group"
-                    >
-                      <div className="flex items-center gap-1.5 mb-0.5">
-                        <div className="w-2 h-2 rounded-full bg-emerald-600" />
-                        <span className="text-xs font-bold text-slate-900">Priya Shah</span>
-                      </div>
-                      <span className="text-[10px] text-emerald-700 block leading-tight">Customer Renter (Ahmedabad)</span>
-                    </button>
-                    <button
-                      type="button"
-                      onClick={() => fillDemoAccount('rajesh.owner@borrowbuy.in', 'Password123!')}
-                      className="p-2.5 text-left bg-brand-50/70 hover:bg-brand-50 rounded-xl border border-brand-200/80 transition-all group"
-                    >
-                      <div className="flex items-center gap-1.5 mb-0.5">
-                        <div className="w-2 h-2 rounded-full bg-brand-600" />
-                        <span className="text-xs font-bold text-slate-900">Rajesh Patel</span>
-                      </div>
-                      <span className="text-[10px] text-brand-700 block leading-tight">Equipment Owner (Ahmedabad)</span>
-                    </button>
-                  </div>
-                </div>
               </form>
             )}
 

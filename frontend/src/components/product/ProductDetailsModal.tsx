@@ -10,6 +10,8 @@ import {
   Calendar,
   CheckCircle2,
   UserCheck,
+  ChevronLeft,
+  ChevronRight,
 } from 'lucide-react';
 
 interface ProductDetailsModalProps {
@@ -81,15 +83,50 @@ export const ProductDetailsModal: React.FC<ProductDetailsModalProps> = ({
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
             {/* LEFT: Image Gallery */}
             <div className="lg:col-span-7 space-y-4">
-              <div className="relative aspect-[4/3] rounded-3xl overflow-hidden bg-slate-100 border border-slate-200 shadow-sm">
+              <div className="relative aspect-[4/3] rounded-3xl overflow-hidden bg-slate-100 border border-slate-200 shadow-sm group">
                 <img
                   src={getImageUrl(images[selectedImageIndex])}
-                  alt={product.name}
+                  alt={`${product.name} - View ${selectedImageIndex + 1}`}
                   className="w-full h-full object-cover transition-all duration-300"
                 />
                 <div className="absolute bottom-3 left-3 px-3 py-1 bg-white/90 backdrop-blur-md rounded-full text-xs font-bold text-slate-800 shadow-sm border border-white/70">
                   {product.category?.name || 'Equipment'}
                 </div>
+
+                {/* Image Counter Badge */}
+                {images.length > 1 && (
+                  <div className="absolute bottom-3 right-3 px-2.5 py-1 bg-black/60 backdrop-blur-md rounded-full text-[10px] font-bold text-white shadow-sm">
+                    {selectedImageIndex + 1} / {images.length}
+                  </div>
+                )}
+
+                {/* Arrow navigation buttons */}
+                {images.length > 1 && (
+                  <>
+                    <button
+                      type="button"
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        setSelectedImageIndex((prev) => (prev > 0 ? prev - 1 : images.length - 1));
+                      }}
+                      className="absolute left-3 top-1/2 -translate-y-1/2 w-8 h-8 rounded-full bg-white/80 hover:bg-white text-slate-800 shadow-md flex items-center justify-center backdrop-blur-sm transition-all opacity-80 group-hover:opacity-100"
+                      aria-label="Previous image"
+                    >
+                      <ChevronLeft className="w-4 h-4" />
+                    </button>
+                    <button
+                      type="button"
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        setSelectedImageIndex((prev) => (prev < images.length - 1 ? prev + 1 : 0));
+                      }}
+                      className="absolute right-3 top-1/2 -translate-y-1/2 w-8 h-8 rounded-full bg-white/80 hover:bg-white text-slate-800 shadow-md flex items-center justify-center backdrop-blur-sm transition-all opacity-80 group-hover:opacity-100"
+                      aria-label="Next image"
+                    >
+                      <ChevronRight className="w-4 h-4" />
+                    </button>
+                  </>
+                )}
               </div>
 
               {/* Thumbnail Selector */}
@@ -106,7 +143,11 @@ export const ProductDetailsModal: React.FC<ProductDetailsModalProps> = ({
                           : 'border-slate-200 opacity-70 hover:opacity-100'
                       }`}
                     >
-                      <img src={getImageUrl(img)} alt="" className="w-full h-full object-cover" />
+                      <img
+                        src={getImageUrl(img)}
+                        alt={`${product.name} thumbnail ${i + 1}`}
+                        className="w-full h-full object-cover"
+                      />
                     </button>
                   ))}
                 </div>
