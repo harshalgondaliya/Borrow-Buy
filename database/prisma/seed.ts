@@ -200,21 +200,30 @@ async function main() {
   const primaryCustomer = seededCustomers[0]; // Priya Shah (Customer)
 
   // --------------------------------------------------------------------------
-  // 4. SEED 12 INDIAN CATEGORIES
+  // 4. SEED 21 EXPANDED INDIAN CATEGORIES (Meeting Master Requirement 5)
   // --------------------------------------------------------------------------
   const categoryDefs = [
-    { name: 'Cameras & Photography', slug: 'cameras', icon: 'Camera', description: 'DSLRs, mirrorless cameras, prime lenses, gimbals, and studio lighting.' },
-    { name: 'Laptops & Computers', slug: 'laptops', icon: 'Laptop', description: 'MacBooks, Windows coding laptops, gaming rigs, and high-res external monitors.' },
-    { name: 'Projectors & Displays', slug: 'projectors', icon: 'Projector', description: 'Full HD and 4K projectors with tripod screens for college fests and business meetings.' },
-    { name: 'Sound & Audio Systems', slug: 'audio', icon: 'Volume2', description: 'PA speakers, party sound systems, wireless mics, podcast mixers, and amplifiers.' },
-    { name: 'Bicycles & Mobility', slug: 'bicycles', icon: 'Bike', description: 'Geared mountain bikes, city hybrids, and commute cycles.' },
-    { name: 'Sports & Fitness Equipment', slug: 'sports', icon: 'Activity', description: 'Full cricket kits, badminton sets, football gear, and gym accessories.' },
-    { name: 'Power Tools & DIY Gear', slug: 'tools', icon: 'Wrench', description: 'Cordless drills, miter saws, angle grinders, and pressure washers.' },
-    { name: 'Home & Kitchen Appliances', slug: 'appliances', icon: 'Home', description: 'Heavy-duty sewing machines, portable vacuums, and temporary home appliances.' },
+    { name: 'Laptops and Computers', slug: 'laptops', icon: 'Laptop', description: 'MacBooks, Windows coding laptops, gaming rigs, and high-res external monitors.' },
+    { name: 'Cameras and Photography', slug: 'cameras', icon: 'Camera', description: 'DSLRs, mirrorless cameras, prime lenses, gimbals, and studio lighting.' },
+    { name: 'Projectors and Presentation Equipment', slug: 'projectors', icon: 'Video', description: 'Full HD and 4K projectors with tripod screens for college fests and business meetings.' },
+    { name: 'Mobile Accessories', slug: 'mobile-accessories', icon: 'Smartphone', description: 'Wireless lavalier microphones, smartphone gimbals, ring lights, and fast power banks.' },
+    { name: 'Audio and Speakers', slug: 'audio', icon: 'Volume2', description: 'PA speakers, party sound systems, wireless mics, podcast mixers, and amplifiers.' },
+    { name: 'Gaming Equipment', slug: 'gaming', icon: 'Gamepad2', description: 'PlayStation 5 consoles, VR headsets, mechanical keyboards, and gaming controllers.' },
+    { name: 'Sports and Fitness', slug: 'sports', icon: 'Activity', description: 'Full cricket kits, badminton sets, football gear, and gym accessories.' },
+    { name: 'Bicycles and Cycling', slug: 'bicycles', icon: 'Bike', description: 'Geared mountain bikes, city hybrids, and commute cycles.' },
+    { name: 'Power Tools', slug: 'tools', icon: 'Hammer', description: 'Cordless drills, miter saws, angle grinders, and rotary hammer drills.' },
+    { name: 'Home Appliances', slug: 'appliances', icon: 'Home', description: 'Heavy-duty sewing machines, portable vacuums, and temporary home appliances.' },
+    { name: 'Kitchen Equipment', slug: 'kitchen', icon: 'UtensilsCrossed', description: 'Commercial air fryers, induction cooktops, tandoor ovens, and buffet chafing sets.' },
     { name: 'Musical Instruments', slug: 'instruments', icon: 'Music', description: 'Acoustic guitars, Indian keyboards, harmoniums, and electronic drums.' },
-    { name: 'College & Study Equipment', slug: 'study', icon: 'BookOpen', description: 'Scientific calculators, drawing boards, and presentation clickers.' },
-    { name: 'Travel & Camping Accessories', slug: 'travel', icon: 'Compass', description: 'Waterproof trekking tents, sleeping bags, cooler boxes, and rucksacks.' },
-    { name: 'Drones & Aerial Video', slug: 'drones', icon: 'Send', description: '4K cinema drones with controllers and extra batteries for pre-wedding and landscape shoots.' },
+    { name: 'Event and Party Equipment', slug: 'events', icon: 'Sparkles', description: 'Stage smoke machines, event laser lighting, balloon inflators, and buffet counters.' },
+    { name: 'Travel Equipment', slug: 'travel', icon: 'Compass', description: 'Hard-shell trolley suitcases, travel backpacks, universal adapters, and car roof bags.' },
+    { name: 'College and Study Equipment', slug: 'study', icon: 'GraduationCap', description: 'Scientific calculators, drafting boards, and wireless presentation clickers.' },
+    { name: 'Outdoor and Camping Equipment', slug: 'outdoor', icon: 'Tent', description: 'Waterproof dome tents, sleeping bags, camp stoves, and trekking poles.' },
+    { name: 'Lighting Equipment', slug: 'lighting', icon: 'Sun', description: 'Studio flash strobes, continuous softbox kits, RGB tube lights, and C-stands.' },
+    { name: 'Office Equipment', slug: 'office', icon: 'Building2', description: 'Conference speakerphones, paper shredders, label printers, and whiteboard stands.' },
+    { name: 'Networking Equipment', slug: 'networking', icon: 'Wifi', description: 'Mesh Wi-Fi 6 systems, gigabit PoE switches, LTE travel hotspots, and long cables.' },
+    { name: 'Cleaning Equipment', slug: 'cleaning', icon: 'Sparkle', description: 'High-pressure washers, commercial wet/dry vacuum cleaners, and steam cleaners.' },
+    { name: 'Drones and Aerial Video', slug: 'drones', icon: 'Send', description: '4K cinema drones with controllers and extra batteries for pre-wedding and landscape shoots.' },
   ];
 
   const categories: Record<string, any> = {};

@@ -23,7 +23,22 @@ import {
   Tent,
   GraduationCap,
   Sparkle,
-  MapPin
+  MapPin,
+  Smartphone,
+  Gamepad2,
+  Activity,
+  Home,
+  UtensilsCrossed,
+  Music,
+  Sun,
+  Building2,
+  Wifi,
+  Send,
+  Layers,
+  Heart,
+  HelpCircle,
+  Info,
+  LogOut
 } from 'lucide-react';
 import { AuthProvider, useAuth } from './features/auth/AuthContext';
 import { ToastProvider, useToast } from './features/toast/ToastContext';
@@ -41,8 +56,14 @@ import { ProductDetailsModal } from './components/product/ProductDetailsModal';
 import { OwnerDashboard } from './components/dashboard/OwnerDashboard';
 import { AdminDashboard } from './components/dashboard/AdminDashboard';
 import { NotificationDropdown } from './components/layout/NotificationDropdown';
+import { UserProfileDropdown } from './components/layout/UserProfileDropdown';
 import { DateRangePickerModal } from './components/booking/DateRangePickerModal';
 import { CustomerBookingsModal } from './components/booking/CustomerBookingsModal';
+import { WishlistModal } from './components/product/WishlistModal';
+import { UserProfileModal } from './components/auth/UserProfileModal';
+import { HelpFaqModal } from './components/common/HelpFaqModal';
+import { AboutModal } from './components/common/AboutModal';
+import { CategoryExplorerModal } from './components/product/CategoryExplorerModal';
 import { BorrowBuyLogo } from './components/common/BorrowBuyLogo';
 import { StartupSplash } from './components/common/StartupSplash';
 import { formatINR } from './utils/formatters';
@@ -68,6 +89,13 @@ function MainContent() {
   const [customerBookingsOpen, setCustomerBookingsOpen] = useState(false);
   const [authModalOpen, setAuthModalOpen] = useState(false);
   const [authTab, setAuthTab] = useState<'login' | 'register'>('login');
+
+  // New Modals
+  const [wishlistOpen, setWishlistOpen] = useState(false);
+  const [profileOpen, setProfileOpen] = useState(false);
+  const [helpOpen, setHelpOpen] = useState(false);
+  const [aboutOpen, setAboutOpen] = useState(false);
+  const [categoryExplorerOpen, setCategoryExplorerOpen] = useState(false);
 
   // Filters state
   const [filters, setFilters] = useState<ProductQueryParams>({
@@ -134,14 +162,29 @@ function MainContent() {
     }, 100);
   };
 
-  // Category visual icons mapping
+  // Category visual icons mapping for all 21 categories
   const getCategoryIcon = (slug?: string) => {
     if (slug?.includes('camera') || slug?.includes('photography')) return <Camera className="w-5 h-5" />;
-    if (slug?.includes('tool') || slug?.includes('workshop')) return <Hammer className="w-5 h-5" />;
-    if (slug?.includes('audio') || slug?.includes('dj')) return <Volume2 className="w-5 h-5" />;
+    if (slug?.includes('laptop') || slug?.includes('computer')) return <Laptop className="w-5 h-5" />;
     if (slug?.includes('projector') || slug?.includes('display')) return <Video className="w-5 h-5" />;
+    if (slug?.includes('mobile')) return <Smartphone className="w-5 h-5" />;
+    if (slug?.includes('audio') || slug?.includes('speaker') || slug?.includes('sound')) return <Volume2 className="w-5 h-5" />;
+    if (slug?.includes('gaming')) return <Gamepad2 className="w-5 h-5" />;
+    if (slug?.includes('sport') || slug?.includes('fitness')) return <Activity className="w-5 h-5" />;
+    if (slug?.includes('bicycle') || slug?.includes('mobility') || slug?.includes('bike')) return <Bike className="w-5 h-5" />;
+    if (slug?.includes('tool') || slug?.includes('workshop')) return <Hammer className="w-5 h-5" />;
+    if (slug?.includes('appliance')) return <Home className="w-5 h-5" />;
+    if (slug?.includes('kitchen')) return <UtensilsCrossed className="w-5 h-5" />;
+    if (slug?.includes('instrument') || slug?.includes('music')) return <Music className="w-5 h-5" />;
+    if (slug?.includes('event') || slug?.includes('party')) return <Sparkles className="w-5 h-5" />;
+    if (slug?.includes('travel')) return <Compass className="w-5 h-5" />;
+    if (slug?.includes('study') || slug?.includes('college')) return <GraduationCap className="w-5 h-5" />;
     if (slug?.includes('outdoor') || slug?.includes('camping')) return <Tent className="w-5 h-5" />;
-    if (slug?.includes('mobility') || slug?.includes('bike')) return <Bike className="w-5 h-5" />;
+    if (slug?.includes('lighting')) return <Sun className="w-5 h-5" />;
+    if (slug?.includes('office')) return <Building2 className="w-5 h-5" />;
+    if (slug?.includes('networking')) return <Wifi className="w-5 h-5" />;
+    if (slug?.includes('cleaning')) return <Sparkle className="w-5 h-5" />;
+    if (slug?.includes('drone')) return <Send className="w-5 h-5" />;
     return <Laptop className="w-5 h-5" />;
   };
 
@@ -151,7 +194,7 @@ function MainContent() {
       <StartupSplash />
 
       {/* Top Navigation */}
-      <header className="sticky top-0 z-40 bg-white/90 backdrop-blur-md border-b border-slate-200/80 transition-all shadow-xs">
+      <header className="sticky top-0 z-40 bg-white/95 backdrop-blur-md border-b border-slate-200/80 transition-all shadow-xs">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-20 flex items-center justify-between">
           {/* Brand Logo */}
           <div 
@@ -162,10 +205,10 @@ function MainContent() {
           </div>
 
           {/* Desktop Navigation Links */}
-          <div className="hidden lg:flex items-center space-x-2">
+          <div className="hidden lg:flex items-center space-x-1.5">
             <button
               onClick={() => { setViewMode('marketplace'); window.scrollTo({ top: 0, behavior: 'smooth' }); }}
-              className={`px-4 py-2 rounded-xl text-xs font-semibold transition ${
+              className={`px-3.5 py-2 rounded-xl text-xs font-semibold transition ${
                 viewMode === 'marketplace'
                   ? 'bg-slate-100 text-slate-950 shadow-xs'
                   : 'text-slate-600 hover:text-slate-900 hover:bg-slate-50'
@@ -174,11 +217,19 @@ function MainContent() {
               Explore Products
             </button>
 
+            <button
+              onClick={() => setCategoryExplorerOpen(true)}
+              className="px-3.5 py-2 text-xs font-semibold text-slate-600 hover:text-slate-900 hover:bg-slate-50 rounded-xl transition flex items-center gap-1.5"
+            >
+              <Layers className="w-3.5 h-3.5 text-blue-600" />
+              <span>Categories</span>
+            </button>
+
             {/* Role Dashboards */}
             {(user?.role === 'OWNER' || user?.role === 'ADMIN') && (
               <button
                 onClick={() => setViewMode('owner-dashboard')}
-                className={`px-4 py-2 rounded-xl text-xs font-semibold transition flex items-center gap-1.5 ${
+                className={`px-3.5 py-2 rounded-xl text-xs font-semibold transition flex items-center gap-1.5 ${
                   viewMode === 'owner-dashboard'
                     ? 'bg-blue-50 text-blue-700 shadow-xs border border-blue-200/60'
                     : 'text-slate-600 hover:text-slate-900 hover:bg-slate-50'
@@ -192,7 +243,7 @@ function MainContent() {
             {user?.role === 'ADMIN' && (
               <button
                 onClick={() => setViewMode('admin-dashboard')}
-                className={`px-4 py-2 rounded-xl text-xs font-semibold transition flex items-center gap-1.5 ${
+                className={`px-3.5 py-2 rounded-xl text-xs font-semibold transition flex items-center gap-1.5 ${
                   viewMode === 'admin-dashboard'
                     ? 'bg-rose-50 text-rose-700 shadow-xs border border-rose-200/60'
                     : 'text-slate-600 hover:text-slate-900 hover:bg-slate-50'
@@ -207,12 +258,21 @@ function MainContent() {
             {isAuthenticated && (
               <button
                 onClick={() => setCustomerBookingsOpen(true)}
-                className="px-4 py-2 text-xs font-semibold text-slate-700 hover:text-slate-900 hover:bg-slate-100/80 rounded-xl transition flex items-center gap-1.5"
+                className="px-3.5 py-2 text-xs font-semibold text-slate-700 hover:text-slate-900 hover:bg-slate-100/80 rounded-xl transition flex items-center gap-1.5"
               >
-                <CalendarDays className="w-4 h-4 text-blue-600" />
+                <CalendarDays className="w-3.5 h-3.5 text-blue-600" />
                 <span>My Bookings</span>
               </button>
             )}
+
+            {/* Wishlist Pill */}
+            <button
+              onClick={() => setWishlistOpen(true)}
+              className="p-2 text-slate-600 hover:text-rose-600 hover:bg-rose-50 rounded-xl transition"
+              title="Saved Wishlist"
+            >
+              <Heart className="w-4 h-4" />
+            </button>
           </div>
 
           {/* Desktop Right Action Panel */}
@@ -220,30 +280,21 @@ function MainContent() {
             {/* Notification Bell Dropdown */}
             {isAuthenticated && <NotificationDropdown />}
 
-            {/* Auth Session State */}
+            {/* User Profile Dropdown (Replaces standalone X logout icon) */}
             {isAuthenticated && user ? (
-              <div className="flex items-center space-x-3 pl-3 border-l border-slate-200">
-                <div className="text-right">
-                  <div className="text-xs font-bold text-slate-900 font-display">{user.fullName}</div>
-                  <div className="text-[11px] font-semibold text-blue-600 flex items-center justify-end gap-1">
-                    <span>{user.role}</span>
-                    <span className="text-slate-300">•</span>
-                    <span className="text-slate-500 font-medium">★ {user.trustScore.toFixed(1)}</span>
-                  </div>
-                </div>
-
-                <div className="w-9 h-9 rounded-full bg-gradient-to-tr from-blue-600 to-indigo-600 text-white font-bold flex items-center justify-center text-xs shadow-xs">
-                  {user.fullName.charAt(0)}
-                </div>
-
-                <button
-                  onClick={logout}
-                  title="Sign Out"
-                  className="p-2 text-slate-400 hover:text-rose-600 hover:bg-rose-50 rounded-xl transition"
-                >
-                  <X className="w-4 h-4" />
-                </button>
-              </div>
+              <UserProfileDropdown
+                user={user}
+                onLogout={logout}
+                onOpenProfile={() => setProfileOpen(true)}
+                onOpenBookings={() => setCustomerBookingsOpen(true)}
+                onOpenWishlist={() => setWishlistOpen(true)}
+                onOpenHelp={() => setHelpOpen(true)}
+                onOpenAbout={() => setAboutOpen(true)}
+                onNavigateToView={(view) => {
+                  setViewMode(view);
+                  window.scrollTo({ top: 0, behavior: 'smooth' });
+                }}
+              />
             ) : (
               <div className="flex items-center space-x-2.5">
                 <button
@@ -266,8 +317,16 @@ function MainContent() {
           <div className="flex items-center gap-2 lg:hidden">
             {isAuthenticated && <NotificationDropdown />}
             <button
+              onClick={() => setWishlistOpen(true)}
+              className="p-2 text-slate-700 hover:bg-slate-100 rounded-xl transition"
+              title="Wishlist"
+            >
+              <Heart className="w-5 h-5 text-rose-500" />
+            </button>
+            <button
               onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
               className="p-2.5 text-slate-700 hover:bg-slate-100 rounded-2xl transition"
+              aria-label="Toggle menu"
             >
               {mobileMenuOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
             </button>
@@ -281,19 +340,24 @@ function MainContent() {
               initial={{ opacity: 0, height: 0 }}
               animate={{ opacity: 1, height: 'auto' }}
               exit={{ opacity: 0, height: 0 }}
-              className="lg:hidden border-t border-slate-200 bg-white px-5 py-5 space-y-3 shadow-xl"
+              className="lg:hidden border-t border-slate-200 bg-white px-5 py-5 space-y-3 shadow-xl font-sans"
             >
               {isAuthenticated && user && (
                 <div className="p-3.5 bg-slate-50 border border-slate-200/80 rounded-2xl flex items-center justify-between">
-                  <div>
-                    <div className="text-xs font-bold text-slate-900 font-display">{user.fullName}</div>
-                    <div className="text-[11px] text-blue-600 font-semibold">{user.role} • Trust Score: {user.trustScore.toFixed(1)}/5.0</div>
+                  <div className="flex items-center gap-3">
+                    <div className="w-10 h-10 rounded-xl bg-gradient-to-tr from-blue-600 to-indigo-600 text-white font-bold flex items-center justify-center text-sm shadow-xs">
+                      {user.fullName.charAt(0)}
+                    </div>
+                    <div>
+                      <div className="text-xs font-bold text-slate-900 font-display">{user.fullName}</div>
+                      <div className="text-[11px] text-blue-600 font-semibold">{user.role} • ★ {user.trustScore ? user.trustScore.toFixed(1) : '5.0'}</div>
+                    </div>
                   </div>
                   <button
-                    onClick={() => { logout(); setMobileMenuOpen(false); }}
-                    className="text-xs font-bold text-rose-600 hover:underline"
+                    onClick={() => { setProfileOpen(true); setMobileMenuOpen(false); }}
+                    className="text-xs font-bold text-blue-600 hover:underline"
                   >
-                    Sign Out
+                    Edit
                   </button>
                 </div>
               )}
@@ -308,12 +372,29 @@ function MainContent() {
                   Explore Products
                 </button>
 
+                <button
+                  onClick={() => { setCategoryExplorerOpen(true); setMobileMenuOpen(false); }}
+                  className="w-full text-left px-3.5 py-2.5 rounded-xl text-slate-700 hover:bg-slate-50 transition flex items-center gap-2"
+                >
+                  <Layers className="w-4 h-4 text-blue-600" />
+                  <span>Browse All Categories</span>
+                </button>
+
+                <button
+                  onClick={() => { setWishlistOpen(true); setMobileMenuOpen(false); }}
+                  className="w-full text-left px-3.5 py-2.5 rounded-xl text-slate-700 hover:bg-slate-50 transition flex items-center gap-2"
+                >
+                  <Heart className="w-4 h-4 text-rose-500" />
+                  <span>Saved Wishlist</span>
+                </button>
+
                 {isAuthenticated && (
                   <button
                     onClick={() => { setCustomerBookingsOpen(true); setMobileMenuOpen(false); }}
-                    className="w-full text-left px-3.5 py-2.5 rounded-xl text-slate-700 hover:bg-slate-50 transition"
+                    className="w-full text-left px-3.5 py-2.5 rounded-xl text-slate-700 hover:bg-slate-50 transition flex items-center gap-2"
                   >
-                    My Bookings & Digital Passes
+                    <CalendarDays className="w-4 h-4 text-blue-600" />
+                    <span>My Bookings & Digital Passes</span>
                   </button>
                 )}
 
@@ -340,9 +421,36 @@ function MainContent() {
                     <span>Admin Console</span>
                   </button>
                 )}
+
+                <div className="pt-2 border-t border-slate-100 space-y-1">
+                  <button
+                    onClick={() => { setHelpOpen(true); setMobileMenuOpen(false); }}
+                    className="w-full text-left px-3.5 py-2 rounded-xl text-slate-600 hover:bg-slate-50 transition flex items-center gap-2 text-xs"
+                  >
+                    <HelpCircle className="w-3.5 h-3.5 text-amber-500" />
+                    <span>Help & FAQs</span>
+                  </button>
+                  <button
+                    onClick={() => { setAboutOpen(true); setMobileMenuOpen(false); }}
+                    className="w-full text-left px-3.5 py-2 rounded-xl text-slate-600 hover:bg-slate-50 transition flex items-center gap-2 text-xs"
+                  >
+                    <Info className="w-3.5 h-3.5 text-indigo-500" />
+                    <span>About BorrowBuy</span>
+                  </button>
+                </div>
               </div>
 
-              {!isAuthenticated && (
+              {isAuthenticated ? (
+                <div className="pt-3 border-t border-slate-100">
+                  <button
+                    onClick={() => { logout(); setMobileMenuOpen(false); }}
+                    className="w-full py-2.5 text-xs font-bold text-rose-600 hover:bg-rose-50 rounded-xl transition flex items-center justify-center gap-2 border border-rose-200"
+                  >
+                    <LogOut className="w-4 h-4" />
+                    <span>Sign Out</span>
+                  </button>
+                </div>
+              ) : (
                 <div className="pt-3 border-t border-slate-100 flex gap-2.5">
                   <button
                     onClick={() => { setAuthTab('login'); setAuthModalOpen(true); setMobileMenuOpen(false); }}
@@ -482,25 +590,34 @@ function MainContent() {
               </div>
             </section>
 
-            {/* FEATURED CATEGORY NAVIGATION STRIP */}
+            {/* FEATURED CATEGORY NAVIGATION STRIP (21 Categories Supported) */}
             <section className="bg-white border-y border-slate-200/80 py-8">
               <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
                 <div className="flex items-center justify-between mb-4">
                   <h3 className="text-xs font-bold text-slate-400 uppercase tracking-wider font-display">
-                    Popular Rental Categories
+                    Rental Equipment Categories
                   </h3>
-                  {filters.categoryId && (
+                  <div className="flex items-center gap-3">
                     <button
-                      onClick={() => handleFilterChange({ categoryId: undefined })}
-                      className="text-xs text-blue-600 font-bold hover:underline"
+                      onClick={() => setCategoryExplorerOpen(true)}
+                      className="text-xs text-blue-600 font-bold hover:underline flex items-center gap-1"
                     >
-                      Show All Categories
+                      <span>Explore Visual Examples ({categories.length})</span>
+                      <ArrowRight className="w-3.5 h-3.5" />
                     </button>
-                  )}
+                    {filters.categoryId && (
+                      <button
+                        onClick={() => handleFilterChange({ categoryId: undefined })}
+                        className="text-xs text-slate-500 font-bold hover:underline"
+                      >
+                        Show All
+                      </button>
+                    )}
+                  </div>
                 </div>
 
                 <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-3">
-                  {categories.map((cat) => {
+                  {categories.slice(0, 12).map((cat) => {
                     const isSelected = filters.categoryId === cat.id;
                     return (
                       <button
@@ -867,11 +984,11 @@ function MainContent() {
                 Categories
               </div>
               <ul className="space-y-2 text-xs text-slate-600">
-                <li><button onClick={() => scrollToCatalog()} className="hover:text-blue-600">Cameras & Lenses</button></li>
+                <li><button onClick={() => scrollToCatalog()} className="hover:text-blue-600">Cameras & Photography</button></li>
+                <li><button onClick={() => scrollToCatalog()} className="hover:text-blue-600">Laptops & Computers</button></li>
                 <li><button onClick={() => scrollToCatalog()} className="hover:text-blue-600">Power Tools & Workshop</button></li>
-                <li><button onClick={() => scrollToCatalog()} className="hover:text-blue-600">Audio & Projectors</button></li>
-                <li><button onClick={() => scrollToCatalog()} className="hover:text-blue-600">Laptops & Workstations</button></li>
-                <li><button onClick={() => scrollToCatalog()} className="hover:text-blue-600">Camping & Outdoors</button></li>
+                <li><button onClick={() => scrollToCatalog()} className="hover:text-blue-600">Sound & Audio Systems</button></li>
+                <li><button onClick={() => setCategoryExplorerOpen(true)} className="text-blue-600 font-bold hover:underline">View All 21 Categories &rarr;</button></li>
               </ul>
             </div>
 
@@ -881,11 +998,11 @@ function MainContent() {
                 Trust & Safety
               </div>
               <ul className="space-y-2 text-xs text-slate-600">
-                <li><span className="text-slate-600 hover:text-blue-600 cursor-pointer">Verified Owners</span></li>
-                <li><span className="text-slate-600 hover:text-blue-600 cursor-pointer">Refundable Deposits</span></li>
-                <li><span className="text-slate-600 hover:text-blue-600 cursor-pointer">Digital QR Passes</span></li>
-                <li><span className="text-slate-600 hover:text-blue-600 cursor-pointer">Condition Verification</span></li>
-                <li><span className="text-slate-600 hover:text-blue-600 cursor-pointer">Dispute Resolution</span></li>
+                <li><button onClick={() => setHelpOpen(true)} className="hover:text-blue-600">Verified Owners</button></li>
+                <li><button onClick={() => setHelpOpen(true)} className="hover:text-blue-600">Refundable Deposits</button></li>
+                <li><button onClick={() => setHelpOpen(true)} className="hover:text-blue-600">Digital QR Passes</button></li>
+                <li><button onClick={() => setHelpOpen(true)} className="hover:text-blue-600">Condition Verification</button></li>
+                <li><button onClick={() => setHelpOpen(true)} className="hover:text-blue-600">Dispute Arbitration</button></li>
               </ul>
             </div>
 
@@ -897,8 +1014,9 @@ function MainContent() {
               <ul className="space-y-2 text-xs text-slate-600">
                 <li><button onClick={() => { setAuthTab('login'); setAuthModalOpen(true); }} className="hover:text-blue-600">Sign In</button></li>
                 <li><button onClick={() => { setAuthTab('register'); setAuthModalOpen(true); }} className="hover:text-blue-600">List Your Equipment</button></li>
-                <li><span className="text-slate-500">Support: support@borrowbuy.in</span></li>
-                <li><span className="text-slate-500">Made with ❤️ in Gujarat</span></li>
+                <li><button onClick={() => setAboutOpen(true)} className="hover:text-blue-600">About BorrowBuy</button></li>
+                <li><button onClick={() => setHelpOpen(true)} className="hover:text-blue-600">Help & FAQs</button></li>
+                <li><span className="text-slate-500">support@borrowbuy.in</span></li>
               </ul>
             </div>
           </div>
@@ -937,6 +1055,45 @@ function MainContent() {
       <CustomerBookingsModal
         isOpen={customerBookingsOpen}
         onClose={() => setCustomerBookingsOpen(false)}
+      />
+
+      {/* Saved Wishlist Modal */}
+      <WishlistModal
+        isOpen={wishlistOpen}
+        onClose={() => setWishlistOpen(false)}
+        products={products}
+        onSelectProduct={(p) => setSelectedProduct(p)}
+        onInitiateBooking={(p) => handleInitiateBooking(p)}
+      />
+
+      {/* User Profile & Contact Edit Modal */}
+      <UserProfileModal
+        isOpen={profileOpen}
+        onClose={() => setProfileOpen(false)}
+      />
+
+      {/* Help & FAQs Modal */}
+      <HelpFaqModal
+        isOpen={helpOpen}
+        onClose={() => setHelpOpen(false)}
+      />
+
+      {/* About BorrowBuy Modal */}
+      <AboutModal
+        isOpen={aboutOpen}
+        onClose={() => setAboutOpen(false)}
+      />
+
+      {/* Category Visual Explorer Modal (All 21 Categories + 3 Previews) */}
+      <CategoryExplorerModal
+        isOpen={categoryExplorerOpen}
+        onClose={() => setCategoryExplorerOpen(false)}
+        categories={categories}
+        selectedCategoryId={filters.categoryId}
+        onSelectCategory={(catId) => {
+          handleFilterChange({ categoryId: catId, page: 1 });
+          scrollToCatalog();
+        }}
       />
 
       {/* Global Auth Modal */}

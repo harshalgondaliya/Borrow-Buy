@@ -1,5 +1,5 @@
 /**
- * Centralized Indian Localization & Currency Utilities for BorrowBuy
+ * Centralized Indian Localization, Financial Calculations & Currency Utilities for BorrowBuy
  */
 
 /**
@@ -19,7 +19,6 @@ export function formatINR(amount: number, forceDecimals: boolean = false): strin
     maximumFractionDigits: 2,
   }).format(amount);
 
-  // Return standard ₹ symbol format
   return formatted;
 }
 
@@ -35,7 +34,30 @@ export function formatDateIN(dateInput: string | Date | null | undefined): strin
     day: 'numeric',
     month: 'short',
     year: 'numeric',
+    timeZone: 'Asia/Kolkata',
   }).format(d);
+}
+
+/**
+ * Format date & time explicitly in India Standard Time (IST).
+ * Example: "14 Nov 2026, 03:30 PM IST"
+ */
+export function formatDateTimeIST(dateInput: string | Date | null | undefined): string {
+  if (!dateInput) return '—';
+  const d = typeof dateInput === 'string' ? new Date(dateInput) : dateInput;
+  if (isNaN(d.getTime())) return '—';
+
+  const formatted = new Intl.DateTimeFormat('en-IN', {
+    day: 'numeric',
+    month: 'short',
+    year: 'numeric',
+    hour: '2-digit',
+    minute: '2-digit',
+    hour12: true,
+    timeZone: 'Asia/Kolkata',
+  }).format(d);
+
+  return `${formatted} IST`;
 }
 
 /**
@@ -58,4 +80,26 @@ export function formatPhoneIN(phone?: string | null): string {
     return `+91 ${cleaned.slice(3, 8)} ${cleaned.slice(8)}`;
   }
   return phone;
+}
+
+/**
+ * Centralized authoritative calculation of rental charges and deposit breakdown.
+ * Shared mathematical model to prevent frontend/backend discrepancy.
+ */
+export function calculateRentalFinancials(dailyPrice: number, totalDays: number, securityDeposit: number) {
+  const days = Math.max(1, Math.round(totalDays));
+  const rentalTotal = Math.round(Number(dailyPrice) * days * 100) / 100;
+  const deposit = Math.round(Number(securityDeposit) * 100) / 100;
+  const convenienceFee = 0; // ₹0 subscription/platform fee
+  const totalAmount = Math.round((rentalTotal + deposit + convenienceFee) * 100) / 100;
+
+  return {
+    dailyPrice: Number(dailyPrice),
+    totalDays: days,
+    rentalTotal,
+    securityDeposit: deposit,
+    convenienceFee,
+    totalAmount,
+    refundableAmount: deposit,
+  };
 }

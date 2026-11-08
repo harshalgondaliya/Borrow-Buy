@@ -1,7 +1,8 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { Product } from '../../services/products';
 import { formatINR } from '../../utils/formatters';
+import { isInWishlist, toggleWishlist } from '../../utils/wishlist';
 import { MapPin, Star, ShieldCheck, Heart, ArrowUpRight } from 'lucide-react';
 
 interface ProductCardProps {
@@ -10,8 +11,16 @@ interface ProductCardProps {
 }
 
 export const ProductCard: React.FC<ProductCardProps> = ({ product, onSelect }) => {
-  const [isLiked, setIsLiked] = useState(false);
+  const [isLiked, setIsLiked] = useState(() => isInWishlist(product.id));
   const [imageLoaded, setImageLoaded] = useState(false);
+
+  useEffect(() => {
+    const handleUpdate = () => {
+      setIsLiked(isInWishlist(product.id));
+    };
+    window.addEventListener('wishlist-updated', handleUpdate);
+    return () => window.removeEventListener('wishlist-updated', handleUpdate);
+  }, [product.id]);
 
   const getImageUrl = (url: string) => {
     if (url.startsWith('http://') || url.startsWith('https://')) {
@@ -72,10 +81,11 @@ export const ProductCard: React.FC<ProductCardProps> = ({ product, onSelect }) =
             type="button"
             onClick={(e) => {
               e.stopPropagation();
-              setIsLiked(!isLiked);
+              const next = toggleWishlist(product.id);
+              setIsLiked(next);
             }}
             className="absolute top-3 right-3 p-2 rounded-xl bg-white/80 hover:bg-white text-slate-700 backdrop-blur-md shadow-sm transition-all duration-200 hover:scale-110 z-10"
-            aria-label="Add to wishlist"
+            aria-label="Save to Wishlist"
           >
             <Heart className={`w-4 h-4 transition ${isLiked ? 'fill-rose-500 text-rose-500' : ''}`} />
           </button>

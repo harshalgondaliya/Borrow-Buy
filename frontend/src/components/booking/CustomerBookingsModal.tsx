@@ -10,10 +10,12 @@ import {
   QrCode,
   Star,
   AlertCircle,
+  FileText,
 } from 'lucide-react';
 import { PaymentModal } from './PaymentModal';
 import { QRCodeModal } from './QRCodeModal';
 import { ReviewModal } from './ReviewModal';
+import { PaymentReceiptModal } from './PaymentReceiptModal';
 
 interface CustomerBookingsModalProps {
   isOpen: boolean;
@@ -33,6 +35,7 @@ export const CustomerBookingsModal: React.FC<CustomerBookingsModalProps> = ({
   const [payingBooking, setPayingBooking] = useState<Booking | null>(null);
   const [qrBooking, setQrBooking] = useState<Booking | null>(null);
   const [reviewBooking, setReviewBooking] = useState<Booking | null>(null);
+  const [receiptBooking, setReceiptBooking] = useState<Booking | null>(null);
 
   const fetchBookings = async () => {
     setLoading(true);
@@ -275,6 +278,19 @@ export const CustomerBookingsModal: React.FC<CustomerBookingsModalProps> = ({
                           </motion.button>
                         )}
 
+                        {/* View Receipt for Paid Bookings */}
+                        {booking.status !== 'RESERVED' && booking.status !== 'CANCELLED' && (
+                          <button
+                            type="button"
+                            onClick={() => setReceiptBooking(booking)}
+                            className="inline-flex items-center gap-1.5 px-3 py-1.5 bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold rounded-xl text-xs transition-colors border border-slate-200"
+                            title="View Official Payment Receipt"
+                          >
+                            <FileText className="w-3.5 h-3.5 text-blue-600" />
+                            <span>Receipt</span>
+                          </button>
+                        )}
+
                         {/* View QR Code Pass */}
                         {(booking.status === 'CONFIRMED' ||
                           booking.status === 'ACTIVE' ||
@@ -344,6 +360,12 @@ export const CustomerBookingsModal: React.FC<CustomerBookingsModalProps> = ({
             onReviewSuccess={() => {
               fetchBookings();
             }}
+          />
+
+          <PaymentReceiptModal
+            booking={receiptBooking}
+            isOpen={!!receiptBooking}
+            onClose={() => setReceiptBooking(null)}
           />
         </motion.div>
       </div>

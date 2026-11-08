@@ -17,7 +17,7 @@ export const StartupSplash: React.FC<{ onComplete?: () => void }> = ({ onComplet
 
     // Check prefers-reduced-motion
     const mediaQuery = window.matchMedia('(prefers-reduced-motion: reduce)');
-    const duration = mediaQuery.matches ? 300 : 1200;
+    const duration = mediaQuery.matches ? 300 : 1400;
 
     const timer = setTimeout(() => {
       try {
@@ -32,43 +32,44 @@ export const StartupSplash: React.FC<{ onComplete?: () => void }> = ({ onComplet
     return () => clearTimeout(timer);
   }, [isVisible, onComplete]);
 
-  if (!isVisible) return null;
-
   return (
     <AnimatePresence>
-      <motion.div
-        key="startup-splash"
-        initial={{ opacity: 1 }}
-        exit={{ opacity: 0, transition: { duration: 0.35, ease: 'easeInOut' } }}
-        className="fixed inset-0 z-[100] flex flex-col items-center justify-center bg-white"
-        aria-hidden="true"
-      >
-        {/* Subtle background glow */}
-        <div className="absolute w-72 h-72 rounded-full bg-brand-500/10 blur-3xl pointer-events-none" />
-
+      {isVisible && (
         <motion.div
-          initial={{ scale: 0.88, opacity: 0, y: 12 }}
-          animate={{ scale: 1, opacity: 1, y: 0 }}
-          transition={{ duration: 0.5, ease: [0.16, 1, 0.3, 1] }}
-          className="relative z-10 flex flex-col items-center text-center px-4"
+          key="startup-splash"
+          initial={{ opacity: 1 }}
+          exit={{ opacity: 0, transition: { duration: 0.4, ease: 'easeInOut' } }}
+          className="fixed inset-0 z-[100] flex flex-col items-center justify-center bg-white selection:bg-brand-600"
+          aria-hidden="true"
         >
-          <BorrowBuyLogo size="xl" variant="full" />
-          
-          <p className="mt-3 text-xs font-sans text-slate-500 tracking-wide">
-            Verified equipment rental across India
-          </p>
+          {/* Subtle radial ambient background glow */}
+          <div className="absolute w-96 h-96 rounded-full bg-blue-500/10 blur-3xl pointer-events-none" />
+          <div className="absolute w-80 h-80 rounded-full bg-indigo-500/10 blur-2xl pointer-events-none translate-x-12 translate-y-12" />
 
-          {/* Minimal refined progress bar */}
-          <div className="w-36 h-1 bg-slate-100 rounded-full overflow-hidden mt-6">
-            <motion.div
-              initial={{ x: '-100%' }}
-              animate={{ x: '100%' }}
-              transition={{ repeat: Infinity, duration: 0.9, ease: 'easeInOut' }}
-              className="w-1/2 h-full bg-gradient-to-r from-brand-600 to-cyan-500 rounded-full"
-            />
-          </div>
+          <motion.div
+            initial={{ scale: 0.88, opacity: 0, y: 14 }}
+            animate={{ scale: 1, opacity: 1, y: 0 }}
+            transition={{ duration: 0.5, ease: [0.16, 1, 0.3, 1] }}
+            className="relative z-10 flex flex-col items-center text-center px-4"
+          >
+            <BorrowBuyLogo size="xl" variant="full" />
+            
+            <p className="mt-3.5 text-xs font-medium text-slate-500 tracking-wide font-sans">
+              Verified Equipment Rental Across Gujarat & India
+            </p>
+
+            {/* Minimal refined progress bar that smoothly fills across 1.4s */}
+            <div className="w-40 h-1 bg-slate-100 rounded-full overflow-hidden mt-6 relative shadow-inner">
+              <motion.div
+                initial={{ width: '0%' }}
+                animate={{ width: '100%' }}
+                transition={{ duration: 1.3, ease: 'easeInOut' }}
+                className="h-full bg-gradient-to-r from-blue-600 via-indigo-600 to-cyan-500 rounded-full"
+              />
+            </div>
+          </motion.div>
         </motion.div>
-      </motion.div>
+      )}
     </AnimatePresence>
   );
 };
