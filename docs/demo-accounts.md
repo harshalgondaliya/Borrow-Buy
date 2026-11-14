@@ -14,7 +14,7 @@ This document lists all seeded accounts created by `npm run seed --workspace=dat
 
 | Role | Full Name | Email Address | Development Password | Location | Permissions |
 |---|---|---|---|---|---|
-| **ADMIN** | Harshal (System Admin) | `harshal07@gmail.com` | Configured via `ADMIN_INITIAL_PASSWORD` *(Local default: `Harshal@Admin2026!`)* | Ahmedabad, Gujarat | Full Governance, User Moderation, Dispute Arbitration, Financial Escrow Ledger |
+| **ADMIN** | Harshal (System Admin) | `harshal07@gmail.com` | Configured via `ADMIN_INITIAL_PASSWORD` *(Local dev: `DevAdmin#BorrowBuy2026!`)* | Ahmedabad, Gujarat | Full Governance, User Moderation, Dispute Arbitration, Financial Escrow Ledger |
 
 ---
 

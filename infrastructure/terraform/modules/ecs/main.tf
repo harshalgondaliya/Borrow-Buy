@@ -124,7 +124,7 @@ resource "aws_ecs_task_definition" "backend" {
         logDriver = "awslogs"
         options = {
           "awslogs-group"         = aws_cloudwatch_log_group.ecs.name
-          "awslogs-region"        = "us-east-1"
+          "awslogs-region"        = var.aws_region
           "awslogs-stream-prefix" = "ecs"
         }
       }
@@ -134,9 +134,9 @@ resource "aws_ecs_task_definition" "backend" {
         { name = "PORT", value = tostring(var.container_port) },
         { name = "STORAGE_DRIVER", value = var.s3_bucket_name != "" ? "s3" : "local" },
         { name = "NOTIFICATION_DRIVER", value = "local" },
-        { name = "PAYMENT_DRIVER", value = "mock" },
-        { name = "AWS_S3_BUCKET", value = var.s3_bucket_name },
-        { name = "AWS_REGION", value = "us-east-1" },
+        { name = "PAYMENT_DRIVER", value = "simulation" },
+        { name = "AWS_S3_BUCKET_NAME", value = var.s3_bucket_name },
+        { name = "AWS_REGION", value = var.aws_region },
         { name = "DATABASE_URL", value = var.database_url },
         { name = "JWT_SECRET", value = var.jwt_secret }
       ]

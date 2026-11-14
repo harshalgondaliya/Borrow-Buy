@@ -10,6 +10,12 @@ variable "environment" {
   default     = "dev"
 }
 
+variable "aws_region" {
+  description = "AWS region for logging and cloud integrations"
+  type        = string
+  default     = "us-east-1"
+}
+
 variable "vpc_id" {
   description = "The VPC ID"
   type        = string

@@ -202,6 +202,10 @@ export class ProductsService {
       securityDeposit: number;
       condition: ProductCondition;
       location: string;
+      specifications?: Record<string, any> | null;
+      includedAccessories?: string[];
+      quantity?: number;
+      rentalInstructions?: string | null;
     },
     files: Express.Multer.File[] = []
   ) {
@@ -240,6 +244,10 @@ export class ProductsService {
         condition: data.condition,
         location: data.location,
         images: imageUrls,
+        specifications: data.specifications ?? undefined,
+        includedAccessories: data.includedAccessories ?? [],
+        quantity: data.quantity ?? 1,
+        rentalInstructions: data.rentalInstructions,
         approvalStatus: ApprovalStatus.APPROVED, // Auto-approve for demo convenience
         listingStatus: ListingStatus.ACTIVE,
       },
@@ -267,6 +275,10 @@ export class ProductsService {
       securityDeposit: number;
       condition: ProductCondition;
       location: string;
+      specifications?: Record<string, any> | null;
+      includedAccessories?: string[];
+      quantity?: number;
+      rentalInstructions?: string | null;
       listingStatus: ListingStatus;
     }>,
     files: Express.Multer.File[] = []

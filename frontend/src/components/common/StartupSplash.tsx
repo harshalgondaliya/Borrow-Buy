@@ -39,12 +39,12 @@ export const StartupSplash: React.FC<{ onComplete?: () => void }> = ({ onComplet
           key="startup-splash"
           initial={{ opacity: 1 }}
           exit={{ opacity: 0, transition: { duration: 0.4, ease: 'easeInOut' } }}
-          className="fixed inset-0 z-[100] flex flex-col items-center justify-center bg-white selection:bg-brand-600"
+          className="fixed inset-0 z-[100] flex flex-col items-center justify-center bg-[#F7F5EF] selection:bg-[#244B3A]"
           aria-hidden="true"
         >
-          {/* Subtle radial ambient background glow */}
-          <div className="absolute w-96 h-96 rounded-full bg-blue-500/10 blur-3xl pointer-events-none" />
-          <div className="absolute w-80 h-80 rounded-full bg-indigo-500/10 blur-2xl pointer-events-none translate-x-12 translate-y-12" />
+          {/* Subtle radial ambient background glow in Sage and Terracotta */}
+          <div className="absolute w-96 h-96 rounded-full bg-[#87977F]/15 blur-3xl pointer-events-none" />
+          <div className="absolute w-80 h-80 rounded-full bg-[#C7785A]/12 blur-2xl pointer-events-none translate-x-12 translate-y-12" />
 
           <motion.div
             initial={{ scale: 0.88, opacity: 0, y: 14 }}
@@ -54,17 +54,17 @@ export const StartupSplash: React.FC<{ onComplete?: () => void }> = ({ onComplet
           >
             <BorrowBuyLogo size="xl" variant="full" />
             
-            <p className="mt-3.5 text-xs font-medium text-slate-500 tracking-wide font-sans">
+            <p className="mt-3.5 text-xs font-semibold text-[#87977F] tracking-wide font-sans">
               Verified Equipment Rental Across Gujarat & India
             </p>
 
             {/* Minimal refined progress bar that smoothly fills across 1.4s */}
-            <div className="w-40 h-1 bg-slate-100 rounded-full overflow-hidden mt-6 relative shadow-inner">
+            <div className="w-40 h-1 bg-[#D4DCD1] rounded-full overflow-hidden mt-6 relative shadow-inner">
               <motion.div
                 initial={{ width: '0%' }}
                 animate={{ width: '100%' }}
                 transition={{ duration: 1.3, ease: 'easeInOut' }}
-                className="h-full bg-gradient-to-r from-blue-600 via-indigo-600 to-cyan-500 rounded-full"
+                className="h-full bg-gradient-to-r from-[#244B3A] via-[#427863] to-[#C7785A] rounded-full"
               />
             </div>
           </motion.div>

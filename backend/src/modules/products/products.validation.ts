@@ -16,6 +16,10 @@ export const createProductSchema = z.object({
     ProductCondition.FAIR,
   ]).default(ProductCondition.GOOD),
   location: z.string().min(3, 'Location is required'),
+  specifications: z.record(z.any()).optional().nullable(),
+  includedAccessories: z.array(z.string()).optional().default([]),
+  quantity: z.coerce.number().int().min(1).default(1),
+  rentalInstructions: z.string().optional().nullable(),
 });
 
 export const updateProductSchema = z.object({
@@ -33,6 +37,10 @@ export const updateProductSchema = z.object({
     ProductCondition.FAIR,
   ]).optional(),
   location: z.string().min(3).optional(),
+  specifications: z.record(z.any()).optional().nullable(),
+  includedAccessories: z.array(z.string()).optional(),
+  quantity: z.coerce.number().int().min(1).optional(),
+  rentalInstructions: z.string().optional().nullable(),
   listingStatus: z.enum([
     ListingStatus.ACTIVE,
     ListingStatus.INACTIVE,

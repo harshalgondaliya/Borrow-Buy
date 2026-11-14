@@ -17,7 +17,7 @@ describe('Phase 6 – Notifications, Background Jobs & Admin Dashboard Tests', (
 
   beforeAll(async () => {
     // 1. Login Admin
-    const adminPassword = process.env.ADMIN_INITIAL_PASSWORD || 'Harshal@Admin2026!';
+    const adminPassword = process.env.ADMIN_INITIAL_PASSWORD || 'DevAdmin#BorrowBuy2026!';
     const adminRes = await request(app)
       .post('/api/auth/login')
       .send({ email: 'harshal07@gmail.com', password: adminPassword });

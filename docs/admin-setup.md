@@ -27,10 +27,11 @@ In local development, the initial administrator password is securely read from t
 ADMIN_INITIAL_PASSWORD="YourSecurePasswordHere"
 ```
 
-If `ADMIN_INITIAL_PASSWORD` is not explicitly set, the database seed falls back to a development-only initial password:
+If `ADMIN_INITIAL_PASSWORD` is not explicitly set in development, the database seed uses the local development fallback:
 ```
-Harshal@Admin2026!
+DevAdmin#BorrowBuy2026!
 ```
+*(In production, omitting `ADMIN_INITIAL_PASSWORD` halts execution with a fatal configuration error).*
 
 To seed or refresh the database with this administrator:
 ```bash

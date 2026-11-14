@@ -55,6 +55,7 @@ export class BackgroundJobRunner {
    */
   static async checkOverdueRentals(): Promise<number> {
     const now = new Date();
+    const oneDayAgo = new Date(Date.now() - 24 * 60 * 60 * 1000);
 
     const overdueBookings = await prisma.booking.findMany({
       where: {
@@ -68,23 +69,45 @@ export class BackgroundJobRunner {
     });
 
     for (const b of overdueBookings) {
-      // Alert Customer
-      await notificationService.sendNotification({
-        userId: b.customerId,
-        title: '⚠️ Rental Return Overdue',
-        message: `Your rental period for '${b.product.name}' ended on ${b.expectedReturnDate.toLocaleDateString()}. Please return equipment immediately to avoid late fees.`,
-        type: 'OVERDUE_ALERT',
-        referenceId: b.id,
+      // Debounce: Alert Customer at most once every 24 hours
+      const recentCustomerAlert = await prisma.notification.findFirst({
+        where: {
+          userId: b.customerId,
+          referenceId: b.id,
+          type: 'OVERDUE_ALERT',
+          createdAt: { gte: oneDayAgo },
+        },
       });
 
-      // Alert Owner
-      await notificationService.sendNotification({
-        userId: b.product.ownerId,
-        title: 'Overdue Rental Alert',
-        message: `'${b.product.name}' rented by ${b.customer.fullName} is past its return date.`,
-        type: 'OWNER_OVERDUE_ALERT',
-        referenceId: b.id,
+      if (!recentCustomerAlert) {
+        await notificationService.sendNotification({
+          userId: b.customerId,
+          title: '⚠️ Rental Return Overdue',
+          message: `Your rental period for '${b.product.name}' ended on ${b.expectedReturnDate.toLocaleDateString()}. Please return equipment immediately to avoid late fees.`,
+          type: 'OVERDUE_ALERT',
+          referenceId: b.id,
+        });
+      }
+
+      // Debounce: Alert Owner at most once every 24 hours
+      const recentOwnerAlert = await prisma.notification.findFirst({
+        where: {
+          userId: b.product.ownerId,
+          referenceId: b.id,
+          type: 'OWNER_OVERDUE_ALERT',
+          createdAt: { gte: oneDayAgo },
+        },
       });
+
+      if (!recentOwnerAlert) {
+        await notificationService.sendNotification({
+          userId: b.product.ownerId,
+          title: 'Overdue Rental Alert',
+          message: `'${b.product.name}' rented by ${b.customer.fullName} is past its return date.`,
+          type: 'OWNER_OVERDUE_ALERT',
+          referenceId: b.id,
+        });
+      }
     }
 
     return overdueBookings.length;

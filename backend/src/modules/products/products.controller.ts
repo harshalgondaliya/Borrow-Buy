@@ -69,7 +69,17 @@ export class ProductsController {
         return;
       }
 
-      const validated = createProductSchema.parse(req.body);
+      const body = { ...req.body };
+      if (typeof body.specifications === 'string') {
+        try { body.specifications = JSON.parse(body.specifications); } catch {}
+      }
+      if (typeof body.includedAccessories === 'string') {
+        try { body.includedAccessories = JSON.parse(body.includedAccessories); } catch {
+          body.includedAccessories = body.includedAccessories.split(',').map((s: string) => s.trim()).filter(Boolean);
+        }
+      }
+
+      const validated = createProductSchema.parse(body);
       const files = (req.files as Express.Multer.File[]) || [];
 
       const product = await ProductsService.createProduct(req.user.id, validated, files);
@@ -102,7 +112,17 @@ export class ProductsController {
         return;
       }
 
-      const validated = updateProductSchema.parse(req.body);
+      const body = { ...req.body };
+      if (typeof body.specifications === 'string') {
+        try { body.specifications = JSON.parse(body.specifications); } catch {}
+      }
+      if (typeof body.includedAccessories === 'string') {
+        try { body.includedAccessories = JSON.parse(body.includedAccessories); } catch {
+          body.includedAccessories = body.includedAccessories.split(',').map((s: string) => s.trim()).filter(Boolean);
+        }
+      }
+
+      const validated = updateProductSchema.parse(body);
       const files = (req.files as Express.Multer.File[]) || [];
 
       const updated = await ProductsService.updateProduct(

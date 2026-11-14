@@ -26,7 +26,7 @@ export const ProductDetailsModal: React.FC<ProductDetailsModalProps> = ({
   onBookNow,
 }) => {
   const [selectedImageIndex, setSelectedImageIndex] = useState(0);
-  const [activeTab, setActiveTab] = useState<'details' | 'rules' | 'reviews'>('details');
+  const [activeTab, setActiveTab] = useState<'details' | 'specs' | 'accessories' | 'rules' | 'reviews'>('details');
 
   if (!product) return null;
 
@@ -207,54 +207,76 @@ export const ProductDetailsModal: React.FC<ProductDetailsModalProps> = ({
                 )}
 
                 {/* Pricing Box */}
-                <div className="p-4 bg-brand-50/60 border border-brand-100 rounded-2xl mb-5">
+                <div className="p-4 bg-[#F7F5EF] border border-[#D4DCD1] rounded-2xl mb-5">
                   <div className="flex items-baseline justify-between">
                     <div>
-                      <span className="text-2xl font-display font-black text-brand-700">
+                      <span className="text-2xl font-display font-black text-[#244B3A]">
                         {formatINR(product.pricePerDay)}
                       </span>
                       <span className="text-xs font-semibold text-slate-500 ml-1">/ day</span>
                     </div>
                     <div className="text-right">
                       <span className="text-xs text-slate-500 block">Security Deposit</span>
-                      <span className="text-sm font-bold text-slate-900 font-display">
+                      <span className="text-sm font-bold text-[#292D29] font-display">
                         {formatINR(product.securityDeposit)}
                       </span>
                     </div>
                   </div>
                 </div>
 
-                {/* Tabs Switcher: Details vs Rules vs Reviews */}
-                <div className="flex p-1 bg-slate-100 rounded-2xl mb-4 text-xs font-semibold">
+                {/* Tabs Switcher: Overview vs Specs vs Accessories vs Rules vs Reviews */}
+                <div className="flex p-1 bg-[#F5F7F4] rounded-2xl mb-4 text-[11px] font-semibold overflow-x-auto">
                   <button
                     type="button"
                     onClick={() => setActiveTab('details')}
-                    className={`flex-1 py-1.5 rounded-xl transition-all ${
+                    className={`px-3 py-1.5 rounded-xl whitespace-nowrap transition-all ${
                       activeTab === 'details'
-                        ? 'bg-white text-slate-900 shadow-sm font-bold'
-                        : 'text-slate-500 hover:text-slate-800'
+                        ? 'bg-white text-[#244B3A] shadow-sm font-bold'
+                        : 'text-slate-600 hover:text-slate-900'
                     }`}
                   >
                     Overview
                   </button>
                   <button
                     type="button"
-                    onClick={() => setActiveTab('rules')}
-                    className={`flex-1 py-1.5 rounded-xl transition-all ${
-                      activeTab === 'rules'
-                        ? 'bg-white text-slate-900 shadow-sm font-bold'
-                        : 'text-slate-500 hover:text-slate-800'
+                    onClick={() => setActiveTab('specs')}
+                    className={`px-3 py-1.5 rounded-xl whitespace-nowrap transition-all ${
+                      activeTab === 'specs'
+                        ? 'bg-white text-[#244B3A] shadow-sm font-bold'
+                        : 'text-slate-600 hover:text-slate-900'
                     }`}
                   >
-                    Rental Rules
+                    Specs
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => setActiveTab('accessories')}
+                    className={`px-3 py-1.5 rounded-xl whitespace-nowrap transition-all ${
+                      activeTab === 'accessories'
+                        ? 'bg-white text-[#244B3A] shadow-sm font-bold'
+                        : 'text-slate-600 hover:text-slate-900'
+                    }`}
+                  >
+                    Accessories
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => setActiveTab('rules')}
+                    className={`px-3 py-1.5 rounded-xl whitespace-nowrap transition-all ${
+                      activeTab === 'rules'
+                        ? 'bg-white text-[#244B3A] shadow-sm font-bold'
+                        : 'text-slate-600 hover:text-slate-900'
+                    }`}
+                  >
+                    Rules & Guide
                   </button>
                   <button
                     type="button"
                     onClick={() => setActiveTab('reviews')}
-                    className={`flex-1 py-1.5 rounded-xl transition-all ${
+                    className={`px-3 py-1.5 rounded-xl whitespace-nowrap transition-all ${
                       activeTab === 'reviews'
-                        ? 'bg-white text-slate-900 shadow-sm font-bold'
-                        : 'text-slate-500 hover:text-slate-800'
+                        ? 'bg-white text-[#244B3A] shadow-sm font-bold'
+                        : 'text-slate-600 hover:text-slate-900'
                     }`}
                   >
                     Reviews
@@ -285,8 +307,8 @@ export const ProductDetailsModal: React.FC<ProductDetailsModalProps> = ({
                     </div>
 
                     {/* Owner Card */}
-                    <div className="p-3 bg-slate-50 border border-slate-200/80 rounded-2xl flex items-center gap-3">
-                      <div className="w-10 h-10 rounded-full bg-brand-100 text-brand-700 flex items-center justify-center font-bold text-sm shrink-0">
+                    <div className="p-3 bg-[#FAF8F3] border border-[#D4DCD1] rounded-2xl flex items-center gap-3">
+                      <div className="w-10 h-10 rounded-full bg-[#E3ECE7] text-[#244B3A] flex items-center justify-center font-bold text-sm shrink-0">
                         {product.owner?.fullName?.charAt(0) || 'O'}
                       </div>
                       <div className="min-w-0">
@@ -294,7 +316,7 @@ export const ProductDetailsModal: React.FC<ProductDetailsModalProps> = ({
                           {product.owner?.fullName || 'Verified Lender'}
                         </div>
                         <div className="text-[11px] text-slate-500 flex items-center gap-1">
-                          <UserCheck className="w-3.5 h-3.5 text-emerald-600" />
+                          <UserCheck className="w-3.5 h-3.5 text-[#244B3A]" />
                           <span>Identity Verified • Gujarati Local</span>
                         </div>
                       </div>
@@ -302,24 +324,78 @@ export const ProductDetailsModal: React.FC<ProductDetailsModalProps> = ({
                   </div>
                 )}
 
-                {/* TAB CONTENT: Rental Rules */}
+                {/* TAB CONTENT: Specifications */}
+                {activeTab === 'specs' && (
+                  <div className="space-y-3 text-xs">
+                    <span className="font-bold text-slate-800 block">Technical Specifications</span>
+                    {product.specifications && Object.keys(product.specifications).length > 0 ? (
+                      <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 max-h-52 overflow-y-auto">
+                        {Object.entries(product.specifications).map(([key, value]) => (
+                          <div key={key} className="p-2.5 rounded-xl bg-[#FDFCF9] border border-[#D4DCD1] flex flex-col justify-center">
+                            <span className="text-[10px] text-slate-400 font-semibold uppercase tracking-wider">
+                              {key.replace(/([A-Z])/g, ' $1').trim()}
+                            </span>
+                            <span className="text-xs font-bold text-[#292D29] mt-0.5 truncate">
+                              {String(value)}
+                            </span>
+                          </div>
+                        ))}
+                      </div>
+                    ) : (
+                      <p className="text-slate-500 text-xs italic">
+                        Standard manufacturer specifications. Contact owner for custom inquiries.
+                      </p>
+                    )}
+                  </div>
+                )}
+
+                {/* TAB CONTENT: Included Accessories */}
+                {activeTab === 'accessories' && (
+                  <div className="space-y-3 text-xs">
+                    <span className="font-bold text-slate-800 block">Package & Included Accessories</span>
+                    {product.includedAccessories && product.includedAccessories.length > 0 ? (
+                      <div className="space-y-2 max-h-52 overflow-y-auto">
+                        {product.includedAccessories.map((item, idx) => (
+                          <div key={idx} className="p-2.5 rounded-xl bg-[#E9EDE7]/60 border border-[#D4DCD1] flex items-center gap-2.5">
+                            <CheckCircle2 className="w-4 h-4 text-[#244B3A] shrink-0" />
+                            <span className="text-xs font-medium text-[#292D29]">{item}</span>
+                          </div>
+                        ))}
+                      </div>
+                    ) : (
+                      <p className="text-slate-500 text-xs italic">
+                        Includes standard power cable and basic accessories.
+                      </p>
+                    )}
+                  </div>
+                )}
+
+                {/* TAB CONTENT: Rental Rules & Instructions */}
                 {activeTab === 'rules' && (
-                  <div className="space-y-2.5 text-xs text-slate-600">
-                    <div className="flex items-start gap-2">
-                      <CheckCircle2 className="w-4 h-4 text-brand-600 shrink-0 mt-0.5" />
-                      <span>Carry original government ID (Aadhaar / Driving License) during pickup for verification.</span>
-                    </div>
-                    <div className="flex items-start gap-2">
-                      <CheckCircle2 className="w-4 h-4 text-brand-600 shrink-0 mt-0.5" />
-                      <span>Take 2 minutes to inspect equipment and test battery/accessories with the owner at pickup.</span>
-                    </div>
-                    <div className="flex items-start gap-2">
-                      <CheckCircle2 className="w-4 h-4 text-brand-600 shrink-0 mt-0.5" />
-                      <span>Standard pickup window: 8:00 AM – 8:00 PM. Flexible by mutual chat.</span>
-                    </div>
-                    <div className="flex items-start gap-2">
-                      <CheckCircle2 className="w-4 h-4 text-brand-600 shrink-0 mt-0.5" />
-                      <span>Security deposit is released immediately upon return in original functional condition.</span>
+                  <div className="space-y-3 text-xs max-h-56 overflow-y-auto">
+                    {product.rentalInstructions && (
+                      <div className="p-3 bg-[#FDF6F4] border border-[#F2D3C9] rounded-2xl text-xs text-[#904830]">
+                        <span className="font-bold block mb-1">Owner Instructions:</span>
+                        <p className="leading-relaxed">{product.rentalInstructions}</p>
+                      </div>
+                    )}
+                    <div className="space-y-2 text-slate-600 text-[11px]">
+                      <div className="flex items-start gap-2">
+                        <CheckCircle2 className="w-3.5 h-3.5 text-[#244B3A] shrink-0 mt-0.5" />
+                        <span>Carry original government ID (Aadhaar / Driving License) during pickup for verification.</span>
+                      </div>
+                      <div className="flex items-start gap-2">
+                        <CheckCircle2 className="w-3.5 h-3.5 text-[#244B3A] shrink-0 mt-0.5" />
+                        <span>Take 2 minutes to inspect equipment and test battery/accessories with the owner at pickup.</span>
+                      </div>
+                      <div className="flex items-start gap-2">
+                        <CheckCircle2 className="w-3.5 h-3.5 text-[#244B3A] shrink-0 mt-0.5" />
+                        <span>Standard pickup window: 8:00 AM – 8:00 PM. Flexible by mutual chat.</span>
+                      </div>
+                      <div className="flex items-start gap-2">
+                        <CheckCircle2 className="w-3.5 h-3.5 text-[#244B3A] shrink-0 mt-0.5" />
+                        <span>Security deposit is released immediately upon return in original functional condition.</span>
+                      </div>
                     </div>
                   </div>
                 )}
@@ -369,7 +445,7 @@ export const ProductDetailsModal: React.FC<ProductDetailsModalProps> = ({
                     onClose();
                     onBookNow(product);
                   }}
-                  className="px-6 py-3 bg-brand-600 hover:bg-brand-700 text-white font-bold text-xs rounded-xl shadow-md transition-all flex items-center gap-2"
+                  className="px-6 py-3 bg-[#244B3A] hover:bg-[#1C3B2E] text-white font-bold text-xs rounded-xl shadow-md transition-all flex items-center gap-2"
                 >
                   <Calendar className="w-4 h-4" />
                   <span>Choose Dates & Book</span>

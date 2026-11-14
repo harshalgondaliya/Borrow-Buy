@@ -50,6 +50,10 @@ export interface Product {
   images: string[];
   approvalStatus: 'PENDING' | 'APPROVED' | 'REJECTED';
   listingStatus: 'ACTIVE' | 'INACTIVE' | 'RENTED' | 'UNDER_MAINTENANCE';
+  specifications?: Record<string, any>;
+  includedAccessories?: string[];
+  quantity?: number;
+  rentalInstructions?: string;
   createdAt: string;
   updatedAt: string;
   category: Category;

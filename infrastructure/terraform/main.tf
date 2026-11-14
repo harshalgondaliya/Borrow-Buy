@@ -71,7 +71,8 @@ module "ecs" {
   memory                = var.fargate_memory
   desired_count         = var.desired_count
   s3_bucket_name        = module.s3.bucket_id
-  database_url          = "postgresql://${module.rds.db_name}:${module.rds.db_endpoint}/${module.rds.db_name}?sslmode=require"
+  aws_region            = var.aws_region
+  database_url          = module.rds.database_url
   jwt_secret            = var.jwt_secret
 }
 

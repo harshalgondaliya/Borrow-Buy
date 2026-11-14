@@ -153,11 +153,15 @@ model Product {
   condition       ProductCondition @default(GOOD)
   location        String
   images          String[]
-  approvalStatus  ApprovalStatus   @default(APPROVED)
-  listingStatus   ListingStatus    @default(ACTIVE)
-  rejectionReason String?          @db.Text
-  createdAt       DateTime         @default(now())
-  updatedAt       DateTime         @updatedAt
+  approvalStatus      ApprovalStatus   @default(APPROVED)
+  listingStatus       ListingStatus    @default(ACTIVE)
+  rejectionReason     String?          @db.Text
+  specifications      Json?
+  includedAccessories String[]         @default([])
+  quantity            Int              @default(1)
+  rentalInstructions  String?          @db.Text
+  createdAt           DateTime         @default(now())
+  updatedAt           DateTime         @updatedAt
 
   // Relationships
   owner           User             @relation("OwnerProducts", fields: [ownerId], references: [id], onDelete: Cascade)

@@ -1,18 +1,18 @@
 <svg width="64" height="64" viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg">
   <defs>
     <linearGradient id="favicon-grad" x1="6" y1="6" x2="58" y2="58" gradientUnits="userSpaceOnUse">
-      <stop stopColor="#2563EB" />
-      <stop offset="0.6" stopColor="#4361EE" />
-      <stop offset="1" stopColor="#06B6D4" />
+      <stop stopColor="#244B3A" />
+      <stop offset="0.7" stopColor="#2D5E4C" />
+      <stop offset="1" stopColor="#427863" />
     </linearGradient>
   </defs>
-  <rect width="64" height="64" rx="18" fill="#0F172A" />
+  <rect width="64" height="64" rx="18" fill="#F7F5EF" stroke="#D4DCD1" stroke-width="2" />
   <path
     d="M18 19C18 15.6863 20.6863 13 24 13H33C37.9706 13 42 17.0294 42 22C42 25.3485 40.1727 28.2713 37.5 29.8C40.8137 31.4749 42.8 34.874 42.8 38.8C42.8 44.4337 38.2337 49 32.6 49H24C20.6863 49 18 46.3137 18 43V19Z"
     fill="url(#favicon-grad)"
   />
-  <rect x="25.5" y="19.5" width="8" height="6.5" rx="3" fill="#0F172A" />
-  <rect x="25.5" y="34.5" width="9.5" height="7.5" rx="3" fill="#0F172A" />
+  <rect x="25.5" y="19.5" width="8" height="6.5" rx="3" fill="#F7F5EF" />
+  <rect x="25.5" y="34.5" width="9.5" height="7.5" rx="3" fill="#F7F5EF" />
   <path
     d="M39 26L45.5 32L39 38"
     stroke="#FFFFFF"
@@ -20,5 +20,5 @@
     stroke-linecap="round"
     stroke-linejoin="round"
   />
-  <circle cx="45.5" cy="32" r="3" fill="#10B981" />
+  <circle cx="45.5" cy="32" r="3.5" fill="#C7785A" />
 </svg>

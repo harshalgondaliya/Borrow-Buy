@@ -10,6 +10,28 @@
 
 BorrowBuy is a consumer-grade equipment rental marketplace connecting product owners with local creators, students, and businesses across Gujarat and India. Built with pessimistic row-locking for date reservations, single-use QR handover tokens, automated deposit escrow, and an AWS cloud-ready hexagonal architecture.
 
+### Brand Identity & Aesthetic
+The platform features an organic, premium community marketplace visual identity:
+- **Warm Ivory** (`#F7F5EF`): Soft canvas background
+- **Deep Forest Green** (`#244B3A`): Grounded primary brand action & headings
+- **Muted Sage** (`#A7B5A0`): Subtle accents, borders, and badge outlines
+- **Soft Terracotta** (`#C7785A`): Interactive highlights, CTAs, and badges
+- **Charcoal** (`#292D29`): High-contrast readable typography in Manrope & Inter
+
+---
+
+## 1. Technical Documentation & Reports
+
+| Document | Purpose |
+|---|---|
+| [`docs/task1-architecture-audit.md`](docs/task1-architecture-audit.md) | Comprehensive audit findings, identified defects, and architectural fixes |
+| [`docs/product-image-audit.md`](docs/product-image-audit.md) | 100-product catalogue audit, structured specs, and image verification ($\ge 3$ images per product) |
+| [`docs/aws-readiness-report.md`](docs/aws-readiness-report.md) | Cloud infrastructure validation, Terraform module fixes, and Task 2 deployment prerequisites |
+| [`docs/local-test-report.md`](docs/local-test-report.md) | Automated testing report (89/89 tests passing, concurrency, payments, QR, and jobs) |
+| [`docs/local-development-guide.md`](docs/local-development-guide.md) | Complete guide for local setup, Docker Compose, seeding modes, and scripts |
+| [`docs/demo-accounts.md`](docs/demo-accounts.md) | Demonstration credentials for local testing across Ahmedabad, Surat, and Gandhinagar |
+| [`docs/admin-setup.md`](docs/admin-setup.md) | Administrator account setup, environment configuration, and security guidelines |
+
 ---
 
 ## 1. System Requirements
@@ -55,7 +77,7 @@ For local evaluation and testing, the database seed script generates 1 Administr
 
 | Role | Full Name | Email Address | Development Password | Privileges |
 |---|---|---|---|---|
-| **ADMIN** | Harshal (System Admin) | `harshal07@gmail.com` | `ADMIN_INITIAL_PASSWORD` *(Local default: `Harshal@Admin2026!`)* | Full governance, dispute arbitration, payment ledger |
+| **ADMIN** | Harshal (System Admin) | `harshal07@gmail.com` | `ADMIN_INITIAL_PASSWORD` *(Local dev: `DevAdmin#BorrowBuy2026!`)* | Full governance, dispute arbitration, payment ledger |
 
 ### Verified Equipment Owners (6 Accounts across Gujarat)
 
@@ -106,11 +128,16 @@ Ensure Docker Desktop is running, then execute:
 npm run db:up
 ```
 
-### Step 3: Run Database Migrations and Seed Clean Demo State
+### Step 3: Run Database Migrations and Seed Demo State
 ```powershell
 npm run db:migrate
 npm run db:seed
 ```
+*Note: `npm run db:seed` operates in safe idempotent mode (upserting base records without data loss). To execute an explicit clean reset during local development:*
+```powershell
+$env:ALLOW_DESTRUCTIVE_RESET="true"; npm run db:seed; Remove-Item Env:\ALLOW_DESTRUCTIVE_RESET
+```
+*(Destructive resets are strictly forbidden when `NODE_ENV === 'production'`).*
 
 ### Step 4: Start the Development Servers
 In terminal 1:

@@ -10,14 +10,15 @@
   }
 
   body {
-    background-color: #FBFBFC;
-    color: #0F172A;
+    background-color: #F7F5EF;
+    color: #292D29;
     font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
   }
 
   h1, h2, h3, h4, h5, h6, .font-display {
     font-family: 'Manrope', 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif !important;
     letter-spacing: -0.02em;
+    color: #244B3A;
   }
 
   button, input, select, textarea {
@@ -36,27 +37,27 @@
 }
 
 ::-webkit-scrollbar-thumb {
-  background: #CBD5E1;
+  background: #BAC7B5;
   border-radius: 9999px;
 }
 
 ::-webkit-scrollbar-thumb:hover {
-  background: #94A3B8;
+  background: #87977F;
 }
 
 /* Modern Glass & Grid Background Utilities */
 .glass-panel {
-  background: rgba(255, 255, 255, 0.90);
+  background: rgba(255, 255, 255, 0.92);
   backdrop-filter: blur(16px);
   -webkit-backdrop-filter: blur(16px);
-  border: 1px solid rgba(226, 232, 240, 0.85);
+  border: 1px solid rgba(167, 181, 160, 0.28);
 }
 
 .glass-panel-dark {
-  background: rgba(15, 23, 42, 0.88);
+  background: rgba(36, 75, 58, 0.95);
   backdrop-filter: blur(20px);
   -webkit-backdrop-filter: blur(20px);
-  border: 1px solid rgba(255, 255, 255, 0.1);
+  border: 1px solid rgba(255, 255, 255, 0.15);
 }
 
 .bg-dot-pattern {
