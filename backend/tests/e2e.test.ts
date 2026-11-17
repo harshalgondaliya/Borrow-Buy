@@ -1,4 +1,4 @@
-import { describe, it, expect } from 'vitest';
+import { describe, it, expect, afterAll } from 'vitest';
 import request from 'supertest';
 import app from '../src/app.js';
 import { prisma } from '../src/shared/prisma.js';
@@ -104,7 +104,7 @@ describe('Phase 8 – Master End-to-End User Lifecycle & Platform Acceptance Tes
         .field('pricePerDay', '125.00')
         .field('securityDeposit', '500.00')
         .field('condition', 'LIKE_NEW')
-        .field('location', 'Arts District, Los Angeles, CA');
+        .field('location', 'Ahmedabad (SG Highway)');
 
       expect(res.status).toBe(201);
       expect(res.body.success).toBe(true);
@@ -434,5 +434,27 @@ describe('Phase 8 – Master End-to-End User Lifecycle & Platform Acceptance Tes
       expect(Array.isArray(ownerNotifs.body.notifications)).toBe(true);
       expect(ownerNotifs.body.notifications.length).toBeGreaterThan(0);
     });
+  });
+
+  afterAll(async () => {
+    if (bookingId) {
+      await prisma.review.deleteMany({ where: { bookingId } });
+      await prisma.inspection.deleteMany({ where: { bookingId } });
+      await prisma.payment.deleteMany({ where: { bookingId } });
+      await prisma.dispute.deleteMany({ where: { bookingId } });
+      await prisma.booking.deleteMany({ where: { id: bookingId } });
+    }
+    if (productId) {
+      await prisma.productImage.deleteMany({ where: { productId } });
+      await prisma.product.deleteMany({ where: { id: productId } });
+    }
+    const testEmails = [ownerEmail, renterEmail, rivalEmail];
+    for (const email of testEmails) {
+      const user = await prisma.user.findUnique({ where: { email } });
+      if (user) {
+        await prisma.notification.deleteMany({ where: { userId: user.id } });
+        await prisma.user.delete({ where: { id: user.id } });
+      }
+    }
   });
 });

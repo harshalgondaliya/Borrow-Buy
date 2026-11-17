@@ -17,10 +17,11 @@ describe('Phase 6 – Notifications, Background Jobs & Admin Dashboard Tests', (
 
   beforeAll(async () => {
     // 1. Login Admin
+    const adminEmail = process.env.ADMIN_EMAIL || 'admin@borrowbuy.in';
     const adminPassword = process.env.ADMIN_INITIAL_PASSWORD || 'DevAdmin#BorrowBuy2026!';
     const adminRes = await request(app)
       .post('/api/auth/login')
-      .send({ email: 'harshal07@gmail.com', password: adminPassword });
+      .send({ email: adminEmail, password: adminPassword });
     adminToken = adminRes.body.data.token;
 
     // 2. Login Customer (Neha)

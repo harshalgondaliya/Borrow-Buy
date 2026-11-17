@@ -115,7 +115,7 @@ export const AdminDashboard: React.FC = () => {
         <div className="flex items-center gap-2 self-start sm:self-auto">
           <span className="px-3 py-1 bg-rose-50 text-rose-700 text-xs font-bold rounded-xl border border-rose-200 flex items-center gap-1.5">
             <span className="w-2 h-2 rounded-full bg-rose-500 animate-pulse" />
-            <span>Admin: harshal07@gmail.com</span>
+            <span>Admin: {users.find(u => u.role === 'ADMIN')?.email || 'admin@borrowbuy.in'}</span>
           </span>
         </div>
       </div>

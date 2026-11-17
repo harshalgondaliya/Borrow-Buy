@@ -6,7 +6,7 @@ This guide documents the security architecture, environment variable configurati
 
 ## 🔒 1. Administrator Account Specifications
 
-- **Designated Administrator Email**: `harshal07@gmail.com`
+- **Designated Administrator Email**: Configurable via `ADMIN_EMAIL` (default: `admin@borrowbuy.in`)
 - **Primary Permissions**:
   - Full Platform Governance & Moderation
   - Financial Ledger & Security Deposit Escrow Oversight
@@ -24,13 +24,10 @@ In local development, the initial administrator password is securely read from t
 
 ```bash
 # In backend/.env or your terminal session
-ADMIN_INITIAL_PASSWORD="YourSecurePasswordHere"
+ADMIN_INITIAL_PASSWORD="<YourSecureAdminPasswordHere>"
 ```
 
-If `ADMIN_INITIAL_PASSWORD` is not explicitly set in development, the database seed uses the local development fallback:
-```
-DevAdmin#BorrowBuy2026!
-```
+If `ADMIN_INITIAL_PASSWORD` is not explicitly set in development, the database seed uses a fallback configured for local development testing only.
 *(In production, omitting `ADMIN_INITIAL_PASSWORD` halts execution with a fatal configuration error).*
 
 To seed or refresh the database with this administrator:
@@ -59,7 +56,7 @@ When deploying to production (e.g., AWS ECS, EKS, or App Runner):
 ## 🛡️ 3. Credential Protection Checklist
 
 - [x] Password hashed using `bcrypt` with work factor 10.
-- [x] Admin email verified: `harshal07@gmail.com`.
+- [x] Admin email configurable via environment (`admin@borrowbuy.in`).
 - [x] Zero hardcoded admin passwords in frontend code.
 - [x] Zero admin credentials displayed on public login screens.
 - [x] Role-Based Access Control (`UserRole.ADMIN`) enforced on all `/api/admin/*` routes.

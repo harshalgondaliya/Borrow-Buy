@@ -40,6 +40,9 @@ coverage/
 playwright-report/
 test-results/
 
+# Scratch scripts & temporary audit files
+scratch/
+
 # Terraform
 *.tfstate
 *.tfstate.*

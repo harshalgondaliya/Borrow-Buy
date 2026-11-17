@@ -1,4 +1,4 @@
-import { apiRequest } from './api';
+import { apiRequest, API_BASE_URL } from './api';
 
 export interface Category {
   id: string;
@@ -125,7 +125,7 @@ export const productsService = {
 
   async createProduct(formData: FormData): Promise<{ success: boolean; data: Product }> {
     const token = localStorage.getItem('borrowbuy_token');
-    const apiUrl = import.meta.env.VITE_API_BASE_URL || 'http://localhost:5000/api';
+    const apiUrl = API_BASE_URL;
 
     const response = await fetch(`${apiUrl}/products`, {
       method: 'POST',
@@ -144,7 +144,7 @@ export const productsService = {
 
   async updateProduct(id: string, formData: FormData): Promise<{ success: boolean; data: Product }> {
     const token = localStorage.getItem('borrowbuy_token');
-    const apiUrl = import.meta.env.VITE_API_BASE_URL || 'http://localhost:5000/api';
+    const apiUrl = API_BASE_URL;
 
     const response = await fetch(`${apiUrl}/products/${id}`, {
       method: 'PUT',

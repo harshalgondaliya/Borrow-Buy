@@ -14,6 +14,7 @@ import inspectionRoutes from './modules/inspections/inspections.routes.js';
 import reviewRoutes from './modules/reviews/reviews.routes.js';
 import notificationRoutes from './modules/notifications/notifications.routes.js';
 import adminRoutes from './modules/admin/admin.routes.js';
+import cloudRoutes from './modules/cloud/cloud.routes.js';
 
 const app: Application = express();
 
@@ -24,8 +25,21 @@ if (!fs.existsSync(uploadsDir)) {
 }
 
 // Middleware
+const allowedOrigins = env.FRONTEND_URL
+  ? env.FRONTEND_URL.split(',').map((s) => s.trim())
+  : ['http://localhost:5173'];
+
 app.use(cors({
-  origin: env.FRONTEND_URL,
+  origin: (origin, callback) => {
+    if (!origin || allowedOrigins.includes(origin) || allowedOrigins.includes('*')) {
+      return callback(null, true);
+    }
+    // Automatically permit any CloudFront distribution URL
+    if (origin.endsWith('.cloudfront.net')) {
+      return callback(null, true);
+    }
+    return callback(new Error(`Origin ${origin} not allowed by CORS`));
+  },
   credentials: true,
 }));
 app.use(express.json());
@@ -45,6 +59,7 @@ app.use('/api/inspections', inspectionRoutes);
 app.use('/api/reviews', reviewRoutes);
 app.use('/api/notifications', notificationRoutes);
 app.use('/api/admin', adminRoutes);
+app.use('/api/cloud', cloudRoutes);
 
 // System Health Check Endpoint
 app.get('/api/health', (req: Request, res: Response) => {

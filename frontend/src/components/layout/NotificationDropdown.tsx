@@ -68,13 +68,13 @@ export const NotificationDropdown: React.FC = () => {
           setIsOpen(!isOpen);
           if (!isOpen) fetchNotifications();
         }}
-        className="relative p-2.5 text-charcoal-500 hover:text-charcoal-900 hover:bg-charcoal-100 rounded-2xl transition-colors focus:outline-none"
+        className="relative p-2.5 text-[#202833] hover:text-[#172B46] hover:bg-[#F5F6F8] rounded-2xl transition border border-transparent hover:border-[#E4E7EC] focus:outline-none"
         title="Notifications"
         aria-label="Open notifications"
       >
-        <Bell className="w-4 h-4" />
+        <Bell className="w-4 h-4 text-[#172B46]" />
         {unreadCount > 0 && (
-          <span className="absolute top-1.5 right-1.5 w-4 h-4 rounded-full bg-brand-600 text-white font-display font-bold text-[10px] flex items-center justify-center ring-2 ring-white animate-pulse">
+          <span className="absolute top-1.5 right-1.5 w-4 h-4 rounded-full bg-[#F06449] text-white font-display font-bold text-[10px] flex items-center justify-center ring-2 ring-white animate-pulse">
             {unreadCount > 9 ? '9+' : unreadCount}
           </span>
         )}
@@ -88,16 +88,16 @@ export const NotificationDropdown: React.FC = () => {
             animate={{ opacity: 1, scale: 1, y: 0 }}
             exit={{ opacity: 0, scale: 0.95, y: 8 }}
             transition={{ type: 'spring', damping: 25, stiffness: 350 }}
-            className="absolute right-0 mt-2 w-80 sm:w-96 bg-white rounded-3xl shadow-elevated border border-charcoal-200/80 z-50 overflow-hidden"
+            className="absolute right-0 mt-2 w-80 sm:w-96 bg-white rounded-3xl shadow-elevated border border-[#E4E7EC] z-50 overflow-hidden font-sans"
           >
             {/* Header */}
-            <div className="p-4 border-b border-charcoal-100 flex items-center justify-between bg-charcoal-50/50">
+            <div className="p-4 border-b border-[#E4E7EC] flex items-center justify-between bg-[#F5F6F8]">
               <div className="flex items-center gap-2">
-                <span className="text-xs font-display font-extrabold text-charcoal-900">
+                <span className="text-xs font-display font-extrabold text-[#172B46]">
                   Notifications
                 </span>
                 {unreadCount > 0 && (
-                  <span className="px-2 py-0.5 rounded-full text-[10px] font-bold bg-brand-50 text-brand-700 border border-brand-200">
+                  <span className="px-2 py-0.5 rounded-full text-[10px] font-bold bg-[#F06449]/10 text-[#F06449] border border-[#F06449]/20">
                     {unreadCount} unread
                   </span>
                 )}
@@ -107,7 +107,7 @@ export const NotificationDropdown: React.FC = () => {
                 <button
                   type="button"
                   onClick={handleMarkAllRead}
-                  className="text-[11px] text-brand-600 hover:text-brand-800 font-bold flex items-center gap-1 transition-colors"
+                  className="text-[11px] text-[#F06449] hover:text-[#D95339] font-bold flex items-center gap-1 transition-colors"
                 >
                   <CheckCheck className="w-3.5 h-3.5" />
                   Mark all as read
@@ -116,31 +116,31 @@ export const NotificationDropdown: React.FC = () => {
             </div>
 
             {/* Notifications List */}
-            <div className="max-h-80 overflow-y-auto divide-y divide-charcoal-100">
+            <div className="max-h-80 overflow-y-auto divide-y divide-[#E4E7EC]">
               {notifications.length === 0 ? (
-                <div className="py-12 text-center text-xs text-charcoal-400">
-                  <div className="w-10 h-10 rounded-2xl bg-charcoal-50 text-charcoal-300 flex items-center justify-center mx-auto mb-2 border border-charcoal-100">
-                    <Inbox className="w-5 h-5" />
+                <div className="py-12 text-center text-xs text-[#667085]">
+                  <div className="w-10 h-10 rounded-2xl bg-[#F5F6F8] text-[#172B46] flex items-center justify-center mx-auto mb-2 border border-[#E4E7EC]">
+                    <Inbox className="w-5 h-5 text-[#172B46]" />
                   </div>
-                  <span className="font-medium">No notifications right now</span>
+                  <span className="font-medium text-[#667085]">No notifications right now</span>
                 </div>
               ) : (
                 notifications.map((n) => (
                   <div
                     key={n.id}
                     onClick={() => handleItemClick(n.id, n.isRead)}
-                    className={`p-4 hover:bg-charcoal-50/70 transition-colors cursor-pointer text-xs relative ${
-                      !n.isRead ? 'bg-brand-50/30' : ''
+                    className={`p-4 hover:bg-[#F5F6F8] transition-colors cursor-pointer text-xs relative ${
+                      !n.isRead ? 'bg-[#F5F6F8]/60' : ''
                     }`}
                   >
                     {!n.isRead && (
-                      <span className="absolute left-2 top-5 w-1.5 h-1.5 rounded-full bg-brand-600" />
+                      <span className="absolute left-2.5 top-5 w-1.5 h-1.5 rounded-full bg-[#F06449]" />
                     )}
                     <div className="flex items-center justify-between mb-1 pl-1">
-                      <span className="font-bold text-charcoal-900 line-clamp-1">
+                      <span className="font-bold text-[#202833] line-clamp-1">
                         {n.title}
                       </span>
-                      <span className="text-[10px] text-charcoal-400 shrink-0 flex items-center gap-1">
+                      <span className="text-[10px] text-[#667085] shrink-0 flex items-center gap-1">
                         <Clock className="w-3 h-3" />
                         {new Date(n.createdAt).toLocaleTimeString([], {
                           hour: '2-digit',
@@ -148,7 +148,7 @@ export const NotificationDropdown: React.FC = () => {
                         })}
                       </span>
                     </div>
-                    <p className="text-charcoal-600 leading-relaxed text-[11px] pl-1">
+                    <p className="text-[#667085] leading-relaxed text-[11px] pl-1">
                       {n.message}
                     </p>
                   </div>

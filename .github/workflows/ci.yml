@@ -1,0 +1,80 @@
+name: BorrowBuy Continuous Integration (CI)
+
+on:
+  push:
+    branches: [main, master, develop]
+  pull_request:
+    branches: [main, master]
+
+permissions:
+  contents: read
+
+jobs:
+  lint-and-test:
+    name: Lint, Test & Build Validation
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+
+    services:
+      postgres:
+        image: postgres:16-alpine
+        env:
+          POSTGRES_USER: test_user
+          POSTGRES_PASSWORD: test_password
+          POSTGRES_DB: borrowbuy_test_db
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+
+    steps:
+      - name: Checkout Code Repository
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js Runtime
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: 'npm'
+
+      - name: Install Monorepo Dependencies
+        run: npm ci
+
+      - name: Generate Prisma Database Client
+        run: npx prisma generate --schema=./database/prisma/schema.prisma
+
+      - name: Run Database Migrations (Test DB)
+        env:
+          DATABASE_URL: postgresql://test_user:test_password@localhost:5432/borrowbuy_test_db?schema=public
+        run: npx prisma db push --schema=./database/prisma/schema.prisma
+
+      - name: Execute Frontend Unit Tests
+        run: npm run test --workspace=frontend
+
+      - name: Execute Backend Integration & Unit Tests
+        env:
+          DATABASE_URL: postgresql://test_user:test_password@localhost:5432/borrowbuy_test_db?schema=public
+          JWT_SECRET: ci-test-jwt-secret-borrowbuy-32chars-min
+          NODE_ENV: test
+          STORAGE_DRIVER: local
+          NOTIFICATION_DRIVER: local
+          PAYMENT_DRIVER: simulation
+        run: npm run test --workspace=backend
+
+      - name: Compile Frontend Production Bundle
+        run: npm run build --workspace=frontend
+
+      - name: Compile Backend TypeScript
+        run: npm run build --workspace=backend
+
+      - name: Validate Terraform Infrastructure Configuration
+        uses: hashicorp/setup-terraform@v3
+        with:
+          terraform_version: 1.17.0
+      - run: |
+          terraform -chdir=infra/terraform fmt -check
+          terraform -chdir=infra/terraform init -backend=false
+          terraform -chdir=infra/terraform validate

@@ -2,6 +2,32 @@
 @tailwind components;
 @tailwind utilities;
 
+:root {
+  /* BORROWBUY MANDATORY DESIGN SYSTEM CENTRAL TOKENS */
+  --bb-primary: #172B46;      /* Midnight Navy */
+  --bb-action: #F06449;       /* Coral */
+  --bb-action-hover: #D95339; /* Coral Hover */
+  --bb-background: #F5F6F8;   /* Porcelain Page Background */
+  --bb-surface: #FFFFFF;      /* Pure White Surface */
+  --bb-secondary: #2F6B65;    /* Teal Status & Accent */
+  --bb-highlight: #F2C66D;    /* Amber Special Promotion */
+  --bb-text: #202833;         /* Charcoal Main Text */
+  --bb-muted: #667085;        /* Slate Muted Text */
+  --bb-border: #E4E7EC;       /* Light Grey Border */
+  --bb-subtle: #E9EDF2;       /* Light Blue Grey Image & Subtle Surface */
+
+  /* Legacy Aliases Safeguard: Guarantees zero old beige or green remains */
+  --color-ivory: var(--bb-background);
+  --color-ink: var(--bb-text);
+  --color-cobalt: var(--bb-primary);
+  --color-cobalt-hover: #0F1E33;
+  --color-tangerine: var(--bb-action);
+  --color-mist: var(--bb-subtle);
+  --color-white: var(--bb-surface);
+  --color-muted: var(--bb-muted);
+  --color-border: var(--bb-border);
+}
+
 @layer base {
   html {
     scroll-behavior: smooth;
@@ -10,57 +36,84 @@
   }
 
   body {
-    background-color: #F7F5EF;
-    color: #292D29;
+    background-color: var(--bb-background);
+    color: var(--bb-text);
     font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
   }
 
-  h1, h2, h3, h4, h5, h6, .font-display {
+  h1, h2, h3, h4, h5, h6 {
+    font-family: 'Manrope', 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif !important;
+    letter-spacing: -0.025em;
+    font-weight: 700;
+    color: var(--bb-primary);
+  }
+
+  .font-display {
     font-family: 'Manrope', 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif !important;
     letter-spacing: -0.02em;
-    color: #244B3A;
   }
 
   button, input, select, textarea {
     font-family: inherit;
   }
+
+  input:focus, select:focus, textarea:focus {
+    outline: none;
+    border-color: var(--bb-action) !important;
+    box-shadow: 0 0 0 3px rgba(240, 100, 73, 0.15) !important;
+  }
 }
 
 /* Custom Scrollbar */
 ::-webkit-scrollbar {
-  width: 8px;
-  height: 8px;
+  width: 7px;
+  height: 7px;
 }
 
 ::-webkit-scrollbar-track {
-  background: transparent;
+  background: var(--bb-background);
 }
 
 ::-webkit-scrollbar-thumb {
-  background: #BAC7B5;
+  background: #D0D5DD;
   border-radius: 9999px;
 }
 
 ::-webkit-scrollbar-thumb:hover {
-  background: #87977F;
+  background: var(--bb-muted);
 }
 
-/* Modern Glass & Grid Background Utilities */
+/* Editorial Glass & Card Utilities */
 .glass-panel {
-  background: rgba(255, 255, 255, 0.92);
-  backdrop-filter: blur(16px);
-  -webkit-backdrop-filter: blur(16px);
-  border: 1px solid rgba(167, 181, 160, 0.28);
+  background: rgba(255, 255, 255, 0.96);
+  backdrop-filter: blur(14px);
+  -webkit-backdrop-filter: blur(14px);
+  border: 1px solid var(--bb-border);
 }
 
 .glass-panel-dark {
-  background: rgba(36, 75, 58, 0.95);
-  backdrop-filter: blur(20px);
-  -webkit-backdrop-filter: blur(20px);
-  border: 1px solid rgba(255, 255, 255, 0.15);
+  background: rgba(23, 43, 70, 0.96);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border: 1px solid rgba(255, 255, 255, 0.12);
 }
 
 .bg-dot-pattern {
-  background-image: radial-gradient(rgba(148, 163, 184, 0.22) 1px, transparent 1px);
-  background-size: 24px 24px;
+  background-image: radial-gradient(#D0D5DD 1.2px, transparent 1.2px);
+  background-size: 20px 20px;
+}
+
+.editorial-card {
+  background: var(--bb-surface);
+  border: 1px solid var(--bb-border);
+  box-shadow: 0 2px 6px -1px rgba(23, 43, 70, 0.04), 0 1px 3px -1px rgba(23, 43, 70, 0.03);
+  transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.editorial-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 16px 28px -8px rgba(23, 43, 70, 0.09), 0 6px 12px -3px rgba(23, 43, 70, 0.04);
+  border-color: var(--bb-action);
 }

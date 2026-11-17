@@ -1,5 +1,4 @@
 import dotenv from 'dotenv';
-import path from 'path';
 import { z } from 'zod';
 
 // Load environment variables
@@ -15,11 +14,20 @@ const envSchema = z.object({
   STORAGE_DRIVER: z.enum(['local', 's3']).default('local'),
   NOTIFICATION_DRIVER: z.enum(['local', 'sns']).default('local'),
   PAYMENT_DRIVER: z.enum(['simulation', 'gateway']).default('simulation'),
-  AWS_REGION: z.string().optional().default('us-east-1'),
+  QUEUE_DRIVER: z.enum(['local', 'sqs']).default('local'),
+  AWS_REGION: z.string().default('ap-south-1'),
   AWS_S3_BUCKET_NAME: z.string().optional(),
+  AWS_SNS_TOPIC_ARN: z.string().optional(),
+  AWS_SQS_QUEUE_URL: z.string().optional(),
+  CLOUDFRONT_DOMAIN: z.string().optional(),
 });
 
 const parseEnv = () => {
+  // Support AWS_S3_BUCKET alias if AWS_S3_BUCKET_NAME is unset
+  if (!process.env.AWS_S3_BUCKET_NAME && process.env.AWS_S3_BUCKET) {
+    process.env.AWS_S3_BUCKET_NAME = process.env.AWS_S3_BUCKET;
+  }
+
   const parsed = envSchema.safeParse(process.env);
   if (!parsed.success) {
     console.error('❌ Invalid environment variables:', parsed.error.format());
@@ -29,4 +37,3 @@ const parseEnv = () => {
 };
 
 export const env = parseEnv();
-

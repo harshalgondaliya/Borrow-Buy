@@ -1,0 +1,744 @@
+{
+  "totalRecords": 109,
+  "activeProducts": 106,
+  "inactiveProducts": 3,
+  "underMaintenance": 0,
+  "rented": 0,
+  "categoryCount": 21,
+  "productsWithMissingImages": 0,
+  "productsWithFewerThan3Images": 9,
+  "productsWithIncompleteSpecs": 9,
+  "duplicateNamesCount": 2,
+  "crossProductDuplicateImagesCount": 55,
+  "crossProductDuplicates": [
+    {
+      "url": "https://images.unsplash.com/photo-1516035069371-29a1b244cc32?auto=format&fit=crop&w=800&q=80",
+      "count": 9,
+      "products": [
+        "DJI Mavic 3 Pro Cine Drone",
+        "Phase 5 Drone Kit 1794647647174",
+        "Sony FX3 Cinema Camera Kit 1794647645150",
+        "DJI Mavic 3 Pro Cine Drone",
+        "Phase 5 Drone Kit 1794647540808",
+        "Sony FX3 Cinema Camera Kit 1794647538441",
+        "DJI Mavic 3 Pro Cine Drone",
+        "Phase 5 Drone Kit 1794647190904",
+        "Sony FX3 Cinema Camera Kit 1794647186987"
+      ]
+    },
+    {
+      "url": "https://images.unsplash.com/photo-1516035069371-29a1b244cc32?auto=format&fit=crop&w=1200&q=80",
+      "count": 10,
+      "products": [
+        "Fujifilm X-T5 Mirrorless Camera Body Silver",
+        "DJI RS 3 Pro 3-Axis Gimbal Stabilizer Combo with LiDAR Focus",
+        "Neewer 660 LED Bi-Color Studio Light Panel Kit with Barndoors",
+        "Nanlite PavoTube II 6C RGBWW Handheld Tube Light Pair",
+        "Godox SL60W 60W Continuous Studio LED Video Light + Softbox",
+        "Godox LR150 18",
+        "DJI Osmo Mobile 6 Smartphone Gimbal Stabilizer",
+        "Manfrotto 055 Carbon Fiber 3-Section Tripod",
+        "Canon EOS R6 Mark II Mirrorless Camera Kit",
+        "Sony Alpha a7 IV Mirrorless Camera"
+      ]
+    },
+    {
+      "url": "https://images.unsplash.com/photo-1502920917128-1aa500764cbd?auto=format&fit=crop&w=1200&q=80",
+      "count": 3,
+      "products": [
+        "Fujifilm X-T5 Mirrorless Camera Body Silver",
+        "Canon EOS R6 Mark II Mirrorless Camera Kit",
+        "Sony Alpha a7 IV Mirrorless Camera"
+      ]
+    },
+    {
+      "url": "https://images.unsplash.com/photo-1512790182412-b19e6d62bc39?auto=format&fit=crop&w=1200&q=80",
+      "count": 2,
+      "products": [
+        "Fujifilm X-T5 Mirrorless Camera Body Silver",
+        "Sony Alpha a7 IV Mirrorless Camera"
+      ]
+    },
+    {
+      "url": "https://images.unsplash.com/photo-1553062407-98eeb64c6a62?auto=format&fit=crop&w=1200&q=80",
+      "count": 3,
+      "products": [
+        "Delsey Paris Chatelet Air 2.0 4-Wheel Hard Luggage Set",
+        "Samsonite Polycarbonate 28-Inch Hard-Shell Spinner Suitcase Set",
+        "Decathlon Forclaz 50L Easyfit Ergonomic Trekking Backpack"
+      ]
+    },
+    {
+      "url": "https://images.unsplash.com/photo-1540747913346-19e32dc3e97e?auto=format&fit=crop&w=1200&q=80",
+      "count": 5,
+      "products": [
+        "SG Savage Edition English Willow Cricket Kit Full Bag",
+        "Cosco Tennis Ball Cricket Bowling Machine with Auto Feeder",
+        "Nivia Heavy Leather Football + Training Cones & Agility Ladder Kit",
+        "Yonex Astrox 99 Pro Badminton Pair + Mavis 350 Shuttles",
+        "SG Full English Willow Cricket Kit with Wheelie Bag"
+      ]
+    },
+    {
+      "url": "https://images.unsplash.com/photo-1600080972464-8e5f35f63d08?auto=format&fit=crop&w=1200&q=80",
+      "count": 2,
+      "products": [
+        "Nintendo Switch OLED Model Neon Blue/Red Console Kit",
+        "Microsoft Xbox Series X 1TB Console"
+      ]
+    },
+    {
+      "url": "https://images.unsplash.com/photo-1550745165-9bc0b252726f?auto=format&fit=crop&w=1200&q=80",
+      "count": 3,
+      "products": [
+        "Nintendo Switch OLED Model Neon Blue/Red Console Kit",
+        "Lenovo Legion Pro 5 Gen 8 Gaming Laptop (Ryzen 7, 32GB RAM, RTX 4070)",
+        "ASUS ROG Strix G16 Gaming Laptop"
+      ]
+    },
+    {
+      "url": "https://images.unsplash.com/photo-1485965120184-e220f721d03e?auto=format&fit=crop&w=1200&q=80",
+      "count": 5,
+      "products": [
+        "Firefox Road Runner Pro D 700C Hybrid Bicycle",
+        "Hero Lectro C6E 27.5T Electric Bicycle (Pedelec with 30km Range)",
+        "Giant Escape 3 City Commuter Hybrid Bicycle (Medium Frame)",
+        "Firefox Target 29D Dual Disc Hybrid Bicycle",
+        "Trek Marlin 7 Gen 3 Mountain Bike (Large Frame, 29"
+      ]
+    },
+    {
+      "url": "https://images.unsplash.com/photo-1532298229144-0ec0c57515c7?auto=format&fit=crop&w=1200&q=80",
+      "count": 5,
+      "products": [
+        "Firefox Road Runner Pro D 700C Hybrid Bicycle",
+        "Hero Lectro C6E 27.5T Electric Bicycle (Pedelec with 30km Range)",
+        "Giant Escape 3 City Commuter Hybrid Bicycle (Medium Frame)",
+        "Firefox Target 29D Dual Disc Hybrid Bicycle",
+        "Trek Marlin 7 Gen 3 Mountain Bike (Large Frame, 29"
+      ]
+    },
+    {
+      "url": "https://images.unsplash.com/photo-1544716278-ca5e3f4abd8c?auto=format&fit=crop&w=1200&q=80",
+      "count": 6,
+      "products": [
+        "Huion Kamvas Pro 16 (2.5K) Pen Display Drawing Tablet",
+        "Wacom Intuos Pro Medium Graphic Drawing Tablet with Pro Pen 2",
+        "Epson EcoTank L3250 Wi-Fi Color All-in-One Ink Tank Printer",
+        "Fellowes AutoMax 100M Micro-Cut High-Security Paper Shredder",
+        "Anker 737 Power Bank (PowerCore 24K, 140W Output)",
+        "Dell XPS 15 9530 (Core i7, 32GB RAM, RTX 4060)"
+      ]
+    },
+    {
+      "url": "https://images.unsplash.com/photo-1544197150-b99a580bb7a8?auto=format&fit=crop&w=1200&q=80",
+      "count": 4,
+      "products": [
+        "Netgear Nighthawk M6 Pro 5G Mobile WiFi 6E Router",
+        "Cisco CBS250-24P-4G 24-Port Gigabit PoE Managed Switch",
+        "Netgear Nighthawk M6 Pro 5G Mobile Hotspot Router (Unlocked)",
+        "TP-Link Deco XE75 Pro AXE5400 Tri-Band Mesh Wi-Fi 6E System (3-Pack)"
+      ]
+    },
+    {
+      "url": "https://images.unsplash.com/photo-1558494949-ef010cbdcc31?auto=format&fit=crop&w=1200&q=80",
+      "count": 4,
+      "products": [
+        "Netgear Nighthawk M6 Pro 5G Mobile WiFi 6E Router",
+        "Cisco CBS250-24P-4G 24-Port Gigabit PoE Managed Switch",
+        "Netgear Nighthawk M6 Pro 5G Mobile Hotspot Router (Unlocked)",
+        "TP-Link Deco XE75 Pro AXE5400 Tri-Band Mesh Wi-Fi 6E System (3-Pack)"
+      ]
+    },
+    {
+      "url": "https://images.unsplash.com/photo-1524368535928-5b5e00ddc76b?auto=format&fit=crop&w=1200&q=80",
+      "count": 5,
+      "products": [
+        "Aputure Amaran 200x Bi-Color LED Video Light",
+        "Neewer 660 LED Bi-Color Studio Light Panel Kit with Barndoors",
+        "Nanlite PavoTube II 6C RGBWW Handheld Tube Light Pair",
+        "Godox SL60W 60W Continuous Studio LED Video Light + Softbox",
+        "Godox LR150 18"
+      ]
+    },
+    {
+      "url": "https://images.unsplash.com/photo-1556911220-e15b29be8c8f?auto=format&fit=crop&w=1200&q=80",
+      "count": 4,
+      "products": [
+        "Ninja Foodi 8-in-1 DualZone 2-Basket Air Fryer",
+        "Morphy Richards 52L Oven Toaster Griller (OTG) with Rotisserie",
+        "Prestige PIC 20 1600-Watt Induction Cooktop + Hard Anodized Kadai",
+        "Philips Digital Air Fryer XXL 7.2L with Rapid Air Technology"
+      ]
+    },
+    {
+      "url": "https://images.unsplash.com/photo-1504280390367-361c6d9f38f4?auto=format&fit=crop&w=1200&q=80",
+      "count": 8,
+      "products": [
+        "Coleman Steel Belted 54-Quart Heavy Duty Cooler",
+        "Quechua MH100 Fresh & Black 4-Person Camping Tent",
+        "Thule Force XT XL 500L Aerodynamic Car Rooftop Cargo Box & Roof Bars",
+        "Samsonite Polycarbonate 28-Inch Hard-Shell Spinner Suitcase Set",
+        "Quechua Foldable Camping Table with 4 Integrated Stools",
+        "Decathlon Forclaz 50L Easyfit Ergonomic Trekking Backpack",
+        "Coleman 54-Quart Steel-Belted Cooler Ice Box",
+        "Quechua MH100 4-Person Waterproof Camping Tent"
+      ]
+    },
+    {
+      "url": "https://images.unsplash.com/photo-1510312305653-8ed496efae75?auto=format&fit=crop&w=1200&q=80",
+      "count": 7,
+      "products": [
+        "Coleman Steel Belted 54-Quart Heavy Duty Cooler",
+        "Quechua MH100 Fresh & Black 4-Person Camping Tent",
+        "Thule Force XT XL 500L Aerodynamic Car Rooftop Cargo Box & Roof Bars",
+        "Quechua Foldable Camping Table with 4 Integrated Stools",
+        "Decathlon Forclaz 50L Easyfit Ergonomic Trekking Backpack",
+        "Coleman 54-Quart Steel-Belted Cooler Ice Box",
+        "Quechua MH100 4-Person Waterproof Camping Tent"
+      ]
+    },
+    {
+      "url": "https://images.unsplash.com/photo-1492684223066-81342ee5ff30?auto=format&fit=crop&w=1200&q=80",
+      "count": 4,
+      "products": [
+        "BeamZ 1500W High-Output Stage Fog Machine",
+        "Chauvet DJ GigBAR Move 5-in-1 Lighting System",
+        "Chauvet DJ Hurricane 1200 High Output Fog Smoke Machine",
+        "Beam 230W 7R Moving Head Stage Light with DMX Controller"
+      ]
+    },
+    {
+      "url": "https://images.unsplash.com/photo-1514525253161-7a46d19cd819?auto=format&fit=crop&w=1200&q=80",
+      "count": 2,
+      "products": [
+        "BeamZ 1500W High-Output Stage Fog Machine",
+        "Chauvet DJ GigBAR Move 5-in-1 Lighting System"
+      ]
+    },
+    {
+      "url": "https://images.unsplash.com/photo-1508614589041-895b88991e3e?auto=format&fit=crop&w=1200&q=80",
+      "count": 5,
+      "products": [
+        "Autel Robotics EVO Lite+ 6K Premium Drone",
+        "DJI Mini 4 Pro Fly More Combo Drone",
+        "DJI Air 3 Fly More Combo Drone with Dual 4K Primary Cameras",
+        "DJI Mini 4 Pro Drone with RC 2 Controller",
+        "GoPro HERO 12 Black Creator Edition Kit"
+      ]
+    },
+    {
+      "url": "https://images.unsplash.com/photo-1527977966376-1c8408f9f108?auto=format&fit=crop&w=1200&q=80",
+      "count": 3,
+      "products": [
+        "DJI Mini 4 Pro Fly More Combo Drone",
+        "DJI Air 3 Fly More Combo Drone with Dual 4K Primary Cameras",
+        "DJI Mini 4 Pro Drone with RC 2 Controller"
+      ]
+    },
+    {
+      "url": "https://images.unsplash.com/photo-1473968512647-3e447244af8f?auto=format&fit=crop&w=1200&q=80",
+      "count": 3,
+      "products": [
+        "DJI Mini 4 Pro Fly More Combo Drone",
+        "DJI Air 3 Fly More Combo Drone with Dual 4K Primary Cameras",
+        "DJI Mini 4 Pro Drone with RC 2 Controller"
+      ]
+    },
+    {
+      "url": "https://images.unsplash.com/photo-1489599849927-2ee91cede3ba?auto=format&fit=crop&w=1200&q=80",
+      "count": 5,
+      "products": [
+        "Logitech Spotlight Advanced Presentation Remote Clicker",
+        "ViewSonic M1+ Ultra-Portable LED Projector with Harman Kardon Speakers",
+        "Elite Screens 100-Inch Portable Tripod Screen",
+        "BenQ TK700STi 4K HDR Short-Throw Projector",
+        "Epson EB-FH52 4000 Lumens Full HD Projector"
+      ]
+    },
+    {
+      "url": "https://images.unsplash.com/photo-1517604931442-7e0c8ed2963c?auto=format&fit=crop&w=1200&q=80",
+      "count": 5,
+      "products": [
+        "Logitech Spotlight Advanced Presentation Remote Clicker",
+        "ViewSonic M1+ Ultra-Portable LED Projector with Harman Kardon Speakers",
+        "Elite Screens 100-Inch Portable Tripod Screen",
+        "BenQ TK700STi 4K HDR Short-Throw Projector",
+        "Epson EB-FH52 4000 Lumens Full HD Projector"
+      ]
+    },
+    {
+      "url": "https://images.unsplash.com/photo-1574375927938-d5a98e8ffe85?auto=format&fit=crop&w=1200&q=80",
+      "count": 5,
+      "products": [
+        "Logitech Spotlight Advanced Presentation Remote Clicker",
+        "ViewSonic M1+ Ultra-Portable LED Projector with Harman Kardon Speakers",
+        "Elite Screens 100-Inch Portable Tripod Screen",
+        "BenQ TK700STi 4K HDR Short-Throw Projector",
+        "Epson EB-FH52 4000 Lumens Full HD Projector"
+      ]
+    },
+    {
+      "url": "https://images.unsplash.com/photo-1533227268428-f9ed0900fb3b?auto=format&fit=crop&w=1200&q=80",
+      "count": 5,
+      "products": [
+        "Thule Force XT XL 500L Aerodynamic Car Rooftop Cargo Box & Roof Bars",
+        "Samsonite Polycarbonate 28-Inch Hard-Shell Spinner Suitcase Set",
+        "Quechua Foldable Camping Table with 4 Integrated Stools",
+        "Coleman 54-Quart Steel-Belted Cooler Ice Box",
+        "Quechua MH100 4-Person Waterproof Camping Tent"
+      ]
+    },
+    {
+      "url": "https://images.unsplash.com/photo-1528458876861-544fd1761a91?auto=format&fit=crop&w=1200&q=80",
+      "count": 6,
+      "products": [
+        "Philips EasySpeed Plus 2400W Steam Iron with Foldable Ironing Board",
+        "Daikin 1.5 Ton Portable Air Conditioner with Wheels and Exhaust Kit",
+        "Eureka Forbes Aquasure High-Heat Multi-Surface Steam Mop",
+        "Dyson V12 Detect Slim Total Clean Cordless Vacuum Cleaner",
+        "Kärcher WD 3 Multi-Purpose Wet and Dry Vacuum Cleaner",
+        "Singer Heavy Duty 4423 Sewing Machine"
+      ]
+    },
+    {
+      "url": "https://images.unsplash.com/photo-1584824486509-112e4181ff6b?auto=format&fit=crop&w=1200&q=80",
+      "count": 11,
+      "products": [
+        "Philips EasySpeed Plus 2400W Steam Iron with Foldable Ironing Board",
+        "Daikin 1.5 Ton Portable Air Conditioner with Wheels and Exhaust Kit",
+        "Makita DHS680Z 18V Brushless Cordless Circular Saw (165mm)",
+        "Bosch GBH 2-26 DRE Professional Rotary Hammer Drill (800W)",
+        "Eureka Forbes Aquasure High-Heat Multi-Surface Steam Mop",
+        "Dyson V12 Detect Slim Total Clean Cordless Vacuum Cleaner",
+        "Kärcher WD 3 Multi-Purpose Wet and Dry Vacuum Cleaner",
+        "Singer Heavy Duty 4423 Sewing Machine",
+        "Kärcher K3 High Pressure Washer (120 Bar)",
+        "Bosch Professional GWS 850W Angle Grinder (100mm)",
+        "DeWalt 20V Cordless Hammer Drill & Impact Driver Combo"
+      ]
+    },
+    {
+      "url": "https://images.unsplash.com/photo-1581092160607-ee22621dd758?auto=format&fit=crop&w=1200&q=80",
+      "count": 10,
+      "products": [
+        "Philips EasySpeed Plus 2400W Steam Iron with Foldable Ironing Board",
+        "Daikin 1.5 Ton Portable Air Conditioner with Wheels and Exhaust Kit",
+        "Makita DHS680Z 18V Brushless Cordless Circular Saw (165mm)",
+        "Bosch GBH 2-26 DRE Professional Rotary Hammer Drill (800W)",
+        "Eureka Forbes Aquasure High-Heat Multi-Surface Steam Mop",
+        "Dyson V12 Detect Slim Total Clean Cordless Vacuum Cleaner",
+        "Kärcher WD 3 Multi-Purpose Wet and Dry Vacuum Cleaner",
+        "Kärcher K3 High Pressure Washer (120 Bar)",
+        "Bosch Professional GWS 850W Angle Grinder (100mm)",
+        "DeWalt 20V Cordless Hammer Drill & Impact Driver Combo"
+      ]
+    },
+    {
+      "url": "https://images.unsplash.com/photo-1594980596870-8aa52a78d8cd?auto=format&fit=crop&w=1200&q=80",
+      "count": 2,
+      "products": [
+        "Casio FX-991CW ClassWiz Non-Programmable Scientific Calculator Pair",
+        "Texas Instruments TI-Nspire CX II CAS Calculator"
+      ]
+    },
+    {
+      "url": "https://images.unsplash.com/photo-1611162617213-7d7a39e9b1d7?auto=format&fit=crop&w=1200&q=80",
+      "count": 2,
+      "products": [
+        "Casio FX-991CW ClassWiz Non-Programmable Scientific Calculator Pair",
+        "Texas Instruments TI-Nspire CX II CAS Calculator"
+      ]
+    },
+    {
+      "url": "https://images.unsplash.com/photo-1587145820266-a5951ee6f620?auto=format&fit=crop&w=1200&q=80",
+      "count": 5,
+      "products": [
+        "Casio FX-991CW ClassWiz Non-Programmable Scientific Calculator Pair",
+        "Wacom Intuos Pro Medium Graphic Drawing Tablet with Pro Pen 2",
+        "Epson EcoTank L3250 Wi-Fi Color All-in-One Ink Tank Printer",
+        "Fellowes AutoMax 100M Micro-Cut High-Security Paper Shredder",
+        "Texas Instruments TI-Nspire CX II CAS Calculator"
+      ]
+    },
+    {
+      "url": "https://images.unsplash.com/photo-1527443224154-c4a3942d3acf?auto=format&fit=crop&w=1200&q=80",
+      "count": 4,
+      "products": [
+        "Wacom Intuos Pro Medium Graphic Drawing Tablet with Pro Pen 2",
+        "Epson EcoTank L3250 Wi-Fi Color All-in-One Ink Tank Printer",
+        "Fellowes AutoMax 100M Micro-Cut High-Security Paper Shredder",
+        "LG 27"
+      ]
+    },
+    {
+      "url": "https://images.unsplash.com/photo-1531415074868-036b107e775a?auto=format&fit=crop&w=1200&q=80",
+      "count": 4,
+      "products": [
+        "Cosco Tennis Ball Cricket Bowling Machine with Auto Feeder",
+        "Nivia Heavy Leather Football + Training Cones & Agility Ladder Kit",
+        "Yonex Astrox 99 Pro Badminton Pair + Mavis 350 Shuttles",
+        "SG Full English Willow Cricket Kit with Wheelie Bag"
+      ]
+    },
+    {
+      "url": "https://images.unsplash.com/photo-1626224583764-f87db24ac4ea?auto=format&fit=crop&w=1200&q=80",
+      "count": 4,
+      "products": [
+        "Cosco Tennis Ball Cricket Bowling Machine with Auto Feeder",
+        "Nivia Heavy Leather Football + Training Cones & Agility Ladder Kit",
+        "Yonex Astrox 99 Pro Badminton Pair + Mavis 350 Shuttles",
+        "SG Full English Willow Cricket Kit with Wheelie Bag"
+      ]
+    },
+    {
+      "url": "https://images.unsplash.com/photo-1576435728678-68d0fbf94e91?auto=format&fit=crop&w=1200&q=80",
+      "count": 4,
+      "products": [
+        "Hero Lectro C6E 27.5T Electric Bicycle (Pedelec with 30km Range)",
+        "Giant Escape 3 City Commuter Hybrid Bicycle (Medium Frame)",
+        "Firefox Target 29D Dual Disc Hybrid Bicycle",
+        "Trek Marlin 7 Gen 3 Mountain Bike (Large Frame, 29"
+      ]
+    },
+    {
+      "url": "https://images.unsplash.com/photo-1504148455328-c376907d081c?auto=format&fit=crop&w=1200&q=80",
+      "count": 5,
+      "products": [
+        "Makita DHS680Z 18V Brushless Cordless Circular Saw (165mm)",
+        "Bosch GBH 2-26 DRE Professional Rotary Hammer Drill (800W)",
+        "Kärcher K3 High Pressure Washer (120 Bar)",
+        "Bosch Professional GWS 850W Angle Grinder (100mm)",
+        "DeWalt 20V Cordless Hammer Drill & Impact Driver Combo"
+      ]
+    },
+    {
+      "url": "https://images.unsplash.com/photo-1511379938547-c1f69419868d?auto=format&fit=crop&w=1200&q=80",
+      "count": 3,
+      "products": [
+        "Roland TD-02KV Electronic V-Drums Kit with Mesh Snare & Headphones",
+        "Yamaha PSR-I500 61-Key Portable Indian Music Keyboard",
+        "Casio CT-X9000IN Indian Tone Keyboard"
+      ]
+    },
+    {
+      "url": "https://images.unsplash.com/photo-1520523839898-507121c2105c?auto=format&fit=crop&w=1200&q=80",
+      "count": 3,
+      "products": [
+        "Roland TD-02KV Electronic V-Drums Kit with Mesh Snare & Headphones",
+        "Yamaha PSR-I500 61-Key Portable Indian Music Keyboard",
+        "Casio CT-X9000IN Indian Tone Keyboard"
+      ]
+    },
+    {
+      "url": "https://images.unsplash.com/photo-1598488035139-bdbb2231ce04?auto=format&fit=crop&w=1200&q=80",
+      "count": 9,
+      "products": [
+        "Yamaha PSR-I500 61-Key Portable Indian Music Keyboard",
+        "Shure SM7B Dynamic Vocal Studio Microphone + Cloudlifter CL-1",
+        "Sony SRS-XP700 Portable Wireless Bluetooth Party Speaker",
+        "Jabra Speak 710 Premium Portable Bluetooth Conference Speaker",
+        "Røde Wireless GO II Dual Channel Microphone System",
+        "Casio CT-X9000IN Indian Tone Keyboard",
+        "Rødecaster Pro II Studio + 2 PodMic Package",
+        "Ahuja 250W Complete Portable PA System + 2 Wireless Mics",
+        "JBL PartyBox 310 Portable Bluetooth Party Speaker"
+      ]
+    },
+    {
+      "url": "https://images.unsplash.com/photo-1590602847861-f357a9332bbc?auto=format&fit=crop&w=1200&q=80",
+      "count": 5,
+      "products": [
+        "Shure SM7B Dynamic Vocal Studio Microphone + Cloudlifter CL-1",
+        "Jabra Speak 710 Premium Portable Bluetooth Conference Speaker",
+        "Røde Wireless GO II Dual Channel Microphone System",
+        "Rødecaster Pro II Studio + 2 PodMic Package",
+        "Ahuja 250W Complete Portable PA System + 2 Wireless Mics"
+      ]
+    },
+    {
+      "url": "https://images.unsplash.com/photo-1545454675-3531b543be5d?auto=format&fit=crop&w=1200&q=80",
+      "count": 7,
+      "products": [
+        "Shure SM7B Dynamic Vocal Studio Microphone + Cloudlifter CL-1",
+        "Sony SRS-XP700 Portable Wireless Bluetooth Party Speaker",
+        "Jabra Speak 710 Premium Portable Bluetooth Conference Speaker",
+        "Røde Wireless GO II Dual Channel Microphone System",
+        "Rødecaster Pro II Studio + 2 PodMic Package",
+        "Ahuja 250W Complete Portable PA System + 2 Wireless Mics",
+        "JBL PartyBox 310 Portable Bluetooth Party Speaker"
+      ]
+    },
+    {
+      "url": "https://images.unsplash.com/photo-1508700115892-45ecd05ae2ad?auto=format&fit=crop&w=1200&q=80",
+      "count": 5,
+      "products": [
+        "Sony SRS-XP700 Portable Wireless Bluetooth Party Speaker",
+        "Chauvet DJ Hurricane 1200 High Output Fog Smoke Machine",
+        "Beam 230W 7R Moving Head Stage Light with DMX Controller",
+        "Nanlite PavoTube II 6C RGBWW Handheld Tube Light Pair",
+        "JBL PartyBox 310 Portable Bluetooth Party Speaker"
+      ]
+    },
+    {
+      "url": "https://images.unsplash.com/photo-1517336714731-489689fd1ca8?auto=format&fit=crop&w=1200&q=80",
+      "count": 3,
+      "products": [
+        "Apple iPad Pro 12.9",
+        "Apple MacBook Air 13",
+        "Apple MacBook Pro 16"
+      ]
+    },
+    {
+      "url": "https://images.unsplash.com/photo-1603302576837-37561b2e2302?auto=format&fit=crop&w=1200&q=80",
+      "count": 2,
+      "products": [
+        "Lenovo Legion Pro 5 Gen 8 Gaming Laptop (Ryzen 7, 32GB RAM, RTX 4070)",
+        "ASUS ROG Strix G16 Gaming Laptop"
+      ]
+    },
+    {
+      "url": "https://images.unsplash.com/photo-1542751371-adc38448a05e?auto=format&fit=crop&w=1200&q=80",
+      "count": 2,
+      "products": [
+        "Lenovo Legion Pro 5 Gen 8 Gaming Laptop (Ryzen 7, 32GB RAM, RTX 4070)",
+        "ASUS ROG Strix G16 Gaming Laptop"
+      ]
+    },
+    {
+      "url": "https://images.unsplash.com/photo-1589872583861-fbeae5eb2531?auto=format&fit=crop&w=1200&q=80",
+      "count": 4,
+      "products": [
+        "DJI RS 3 Pro 3-Axis Gimbal Stabilizer Combo with LiDAR Focus",
+        "Sony FE 24-70mm f/2.8 GM II Standard Zoom Lens",
+        "DJI Osmo Mobile 6 Smartphone Gimbal Stabilizer",
+        "Sony FE 70-200mm f/2.8 GM II Telephoto Lens"
+      ]
+    },
+    {
+      "url": "https://images.unsplash.com/photo-1617005082133-548c4dd27f35?auto=format&fit=crop&w=1200&q=80",
+      "count": 4,
+      "products": [
+        "DJI RS 3 Pro 3-Axis Gimbal Stabilizer Combo with LiDAR Focus",
+        "Sony FE 24-70mm f/2.8 GM II Standard Zoom Lens",
+        "DJI Osmo Mobile 6 Smartphone Gimbal Stabilizer",
+        "Sony FE 70-200mm f/2.8 GM II Telephoto Lens"
+      ]
+    },
+    {
+      "url": "https://images.unsplash.com/photo-1606986628470-3694f4f34d19?auto=format&fit=crop&w=1200&q=80",
+      "count": 2,
+      "products": [
+        "Sony FE 24-70mm f/2.8 GM II Standard Zoom Lens",
+        "Sony FE 70-200mm f/2.8 GM II Telephoto Lens"
+      ]
+    },
+    {
+      "url": "https://images.unsplash.com/photo-1516450360452-9312f5e86fc7?auto=format&fit=crop&w=1200&q=80",
+      "count": 2,
+      "products": [
+        "Chauvet DJ Hurricane 1200 High Output Fog Smoke Machine",
+        "Beam 230W 7R Moving Head Stage Light with DMX Controller"
+      ]
+    },
+    {
+      "url": "https://images.unsplash.com/photo-1520869562399-e772f042f422?auto=format&fit=crop&w=1200&q=80",
+      "count": 3,
+      "products": [
+        "Cisco CBS250-24P-4G 24-Port Gigabit PoE Managed Switch",
+        "Netgear Nighthawk M6 Pro 5G Mobile Hotspot Router (Unlocked)",
+        "TP-Link Deco XE75 Pro AXE5400 Tri-Band Mesh Wi-Fi 6E System (3-Pack)"
+      ]
+    },
+    {
+      "url": "https://images.unsplash.com/photo-1544816155-12df9643f363?auto=format&fit=crop&w=1200&q=80",
+      "count": 4,
+      "products": [
+        "Neewer 660 LED Bi-Color Studio Light Panel Kit with Barndoors",
+        "Godox SL60W 60W Continuous Studio LED Video Light + Softbox",
+        "Godox LR150 18",
+        "Manfrotto 055 Carbon Fiber 3-Section Tripod"
+      ]
+    },
+    {
+      "url": "https://images.unsplash.com/photo-1585515320310-259814833e62?auto=format&fit=crop&w=1200&q=80",
+      "count": 3,
+      "products": [
+        "Morphy Richards 52L Oven Toaster Griller (OTG) with Rotisserie",
+        "Prestige PIC 20 1600-Watt Induction Cooktop + Hard Anodized Kadai",
+        "Philips Digital Air Fryer XXL 7.2L with Rapid Air Technology"
+      ]
+    },
+    {
+      "url": "https://images.unsplash.com/photo-1584269600464-37b1b58a9fe7?auto=format&fit=crop&w=1200&q=80",
+      "count": 3,
+      "products": [
+        "Morphy Richards 52L Oven Toaster Griller (OTG) with Rotisserie",
+        "Prestige PIC 20 1600-Watt Induction Cooktop + Hard Anodized Kadai",
+        "Philips Digital Air Fryer XXL 7.2L with Rapid Air Technology"
+      ]
+    },
+    {
+      "url": "https://images.unsplash.com/photo-1611186871348-b1ce696e52c9?auto=format&fit=crop&w=1200&q=80",
+      "count": 2,
+      "products": [
+        "Apple MacBook Air 13",
+        "Apple MacBook Pro 16"
+      ]
+    }
+  ],
+  "categories": [
+    {
+      "name": "Office Equipment",
+      "slug": "office",
+      "count": 4
+    },
+    {
+      "name": "Gaming Equipment",
+      "slug": "gaming",
+      "count": 5
+    },
+    {
+      "name": "Drones and Aerial Video",
+      "slug": "drones",
+      "count": 4
+    },
+    {
+      "name": "Cleaning Equipment",
+      "slug": "cleaning",
+      "count": 4
+    },
+    {
+      "name": "Event and Party Equipment",
+      "slug": "events",
+      "count": 4
+    },
+    {
+      "name": "Musical Instruments",
+      "slug": "instruments",
+      "count": 5
+    },
+    {
+      "name": "Sports and Fitness",
+      "slug": "sports",
+      "count": 5
+    },
+    {
+      "name": "Bicycles and Cycling",
+      "slug": "bicycles",
+      "count": 5
+    },
+    {
+      "name": "College and Study Equipment",
+      "slug": "study",
+      "count": 4
+    },
+    {
+      "name": "Power Tools",
+      "slug": "tools",
+      "count": 5
+    },
+    {
+      "name": "Outdoor and Camping Equipment",
+      "slug": "outdoor",
+      "count": 4
+    },
+    {
+      "name": "Audio and Speakers",
+      "slug": "audio",
+      "count": 11
+    },
+    {
+      "name": "Mobile Accessories",
+      "slug": "mobile-accessories",
+      "count": 5
+    },
+    {
+      "name": "Cameras and Photography",
+      "slug": "cameras",
+      "count": 11
+    },
+    {
+      "name": "Projectors and Presentation Equipment",
+      "slug": "projectors",
+      "count": 5
+    },
+    {
+      "name": "Travel Equipment",
+      "slug": "travel",
+      "count": 5
+    },
+    {
+      "name": "Networking Equipment",
+      "slug": "networking",
+      "count": 4
+    },
+    {
+      "name": "Laptops and Computers",
+      "slug": "laptops",
+      "count": 7
+    },
+    {
+      "name": "Lighting Equipment",
+      "slug": "lighting",
+      "count": 4
+    },
+    {
+      "name": "Home Appliances",
+      "slug": "appliances",
+      "count": 4
+    },
+    {
+      "name": "Kitchen Equipment",
+      "slug": "kitchen",
+      "count": 4
+    }
+  ],
+  "productsWithFewerThan3": [
+    {
+      "id": "6b243429-a677-47ac-b5a3-3a09ca47c51b",
+      "name": "DJI Mavic 3 Pro Cine Drone",
+      "count": 1
+    },
+    {
+      "id": "429db0f2-5697-43be-9899-b62166785e4e",
+      "name": "Phase 5 Drone Kit 1794647647174",
+      "count": 1
+    },
+    {
+      "id": "9ef12ef4-4a00-48f3-96a4-7917bf6bbec4",
+      "name": "Sony FX3 Cinema Camera Kit 1794647645150",
+      "count": 1
+    },
+    {
+      "id": "2caa0080-503b-4206-967e-d0e032e133e2",
+      "name": "DJI Mavic 3 Pro Cine Drone",
+      "count": 1
+    },
+    {
+      "id": "dc77e3ce-48ff-4520-affd-e65e699b6a70",
+      "name": "Phase 5 Drone Kit 1794647540808",
+      "count": 1
+    },
+    {
+      "id": "319fbc83-c88d-4735-ac65-2996813b813d",
+      "name": "Sony FX3 Cinema Camera Kit 1794647538441",
+      "count": 1
+    },
+    {
+      "id": "344c8014-6a96-44ea-b085-f528ea4e099b",
+      "name": "DJI Mavic 3 Pro Cine Drone",
+      "count": 1
+    },
+    {
+      "id": "c3190698-ebc6-4b1e-b571-e8f3b0fa5ad0",
+      "name": "Phase 5 Drone Kit 1794647190904",
+      "count": 1
+    },
+    {
+      "id": "6fb224ef-887e-492b-8aa4-a0195e64a3e5",
+      "name": "Sony FX3 Cinema Camera Kit 1794647186987",
+      "count": 1
+    }
+  ]
+}

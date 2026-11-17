@@ -1,0 +1,86 @@
+name: BorrowBuy Continuous Deployment (CD)
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  id-token: write   # Required for requesting the JWT OIDC token
+  contents: read    # Required for actions/checkout
+
+jobs:
+  deploy-to-aws:
+    name: Deploy to AWS ap-south-1 (Mumbai)
+    runs-on: ubuntu-latest
+    environment: production
+    timeout-minutes: 25
+
+    steps:
+      - name: Checkout Code Repository
+        uses: actions/checkout@v4
+
+      - name: Configure AWS Credentials using OpenID Connect (OIDC)
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          role-to-assume: ${{ secrets.AWS_GITHUB_ACTIONS_ROLE_ARN }}
+          aws-region: ap-south-1
+          audience: sts.amazonaws.com
+
+      - name: Setup Node.js Runtime
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: 'npm'
+
+      - name: Install Monorepo Dependencies
+        run: npm ci
+
+      - name: Build Frontend Production Artifacts
+        env:
+          VITE_API_URL: ${{ secrets.VITE_API_URL }}
+        run: npm run build --workspace=frontend
+
+      - name: Deploy Frontend to S3 & Invalidate CloudFront
+        run: |
+          aws s3 sync frontend/dist s3://${{ secrets.AWS_FRONTEND_BUCKET_NAME }} --delete --cache-control "max-age=31536000,public"
+          aws s3 cp frontend/dist/index.html s3://${{ secrets.AWS_FRONTEND_BUCKET_NAME }}/index.html --cache-control "no-cache,no-store,must-revalidate"
+          aws cloudfront create-invalidation --distribution-id ${{ secrets.CLOUDFRONT_DISTRIBUTION_ID }} --paths "/*"
+
+      - name: Build Backend Docker Image
+        run: |
+          docker build -t borrowbuy-backend:latest -f backend/Dockerfile .
+
+      - name: Log in to Amazon ECR
+        id: login-ecr
+        uses: aws-actions/amazon-ecr-login@v2
+
+      - name: Push Container to Amazon ECR
+        env:
+          ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
+          ECR_REPOSITORY: borrowbuy-backend
+          IMAGE_TAG: ${{ github.sha }}
+        run: |
+          docker tag borrowbuy-backend:latest $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG
+          docker tag borrowbuy-backend:latest $ECR_REGISTRY/$ECR_REPOSITORY:latest
+          docker push $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG
+          docker push $ECR_REGISTRY/$ECR_REPOSITORY:latest
+
+      - name: Deploy Container to EC2 via AWS Systems Manager (SSM)
+        env:
+          EC2_INSTANCE_ID: ${{ secrets.EC2_INSTANCE_ID }}
+        run: |
+          aws ssm send-command \
+            --instance-ids "$EC2_INSTANCE_ID" \
+            --document-name "AWS-RunShellScript" \
+            --parameters 'commands=[
+              "aws ecr get-login-password --region ap-south-1 | docker login --username AWS --password-stdin ${{ steps.login-ecr.outputs.registry }}",
+              "docker pull ${{ steps.login-ecr.outputs.registry }}/borrowbuy-backend:latest",
+              "docker-compose -f /opt/borrowbuy/docker-compose.prod.yml up -d --remove-orphans",
+              "docker exec borrowbuy-prod-backend npx prisma migrate deploy --schema=./database/prisma/schema.prisma"
+            ]' \
+            --comment "Deploy BorrowBuy Release ${{ github.sha }}"
+
+      - name: Post-Deployment Synthetic Health Check
+        run: |
+          curl --fail --retry 5 --retry-delay 5 --retry-connrefused "${{ secrets.PROD_HEALTH_CHECK_URL }}/api/health" || exit 1

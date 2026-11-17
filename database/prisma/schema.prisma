@@ -167,12 +167,31 @@ model Product {
   owner           User             @relation("OwnerProducts", fields: [ownerId], references: [id], onDelete: Cascade)
   category        Category         @relation(fields: [categoryId], references: [id])
   bookings        Booking[]
+  productImages   ProductImage[]
 
   @@index([ownerId])
   @@index([categoryId])
   @@index([location])
   @@index([pricePerDay])
   @@index([approvalStatus, listingStatus])
+}
+
+model ProductImage {
+  id         String   @id @default(uuid())
+  productId  String
+  url        String
+  altText    String?
+  orderIndex Int      @default(0)
+  isPrimary  Boolean  @default(false)
+  sourceUrl  String?
+  license    String?  @default("Attribution / Direct Permission / Wikimedia / Pexels")
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+
+  product    Product  @relation(fields: [productId], references: [id], onDelete: Cascade)
+
+  @@index([productId])
+  @@index([orderIndex])
 }
 
 model Booking {

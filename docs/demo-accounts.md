@@ -14,7 +14,7 @@ This document lists all seeded accounts created by `npm run seed --workspace=dat
 
 | Role | Full Name | Email Address | Development Password | Location | Permissions |
 |---|---|---|---|---|---|
-| **ADMIN** | Harshal (System Admin) | `harshal07@gmail.com` | Configured via `ADMIN_INITIAL_PASSWORD` *(Local dev: `DevAdmin#BorrowBuy2026!`)* | Ahmedabad, Gujarat | Full Governance, User Moderation, Dispute Arbitration, Financial Escrow Ledger |
+| **ADMIN** | Harshal (System Admin) | `admin@borrowbuy.in` | Configured via `ADMIN_INITIAL_PASSWORD` *(Local dev default: `DevAdmin#BorrowBuy2026!`)* | Ahmedabad, Gujarat | Full Governance, User Moderation, Dispute Arbitration, Financial Escrow Ledger |
 
 ---
 
@@ -65,7 +65,7 @@ npm run seed --workspace=database
 ```
 
 This cleans and repopulates:
-- 1 Admin account (`harshal07@gmail.com`)
+- 1 Admin account (`admin@borrowbuy.in`)
 - 6 Verified Owners
 - 18 Customers
 - 21 Categories

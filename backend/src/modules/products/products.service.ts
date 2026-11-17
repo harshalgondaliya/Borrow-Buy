@@ -61,12 +61,57 @@ export class ProductsService {
     }
 
     if (query.search) {
-      where.OR = [
-        { name: { contains: query.search, mode: 'insensitive' } },
-        { description: { contains: query.search, mode: 'insensitive' } },
-        { brand: { contains: query.search, mode: 'insensitive' } },
-        { location: { contains: query.search, mode: 'insensitive' } },
-      ];
+      const trimmedSearch = query.search.trim();
+      const searchTerms = [trimmedSearch];
+
+      // Common Indian equipment rental synonyms & colloquial terms
+      const synonymMap: Record<string, string[]> = {
+        drill: ['hammer drill', 'drilling', 'drill machine'],
+        'drill machine': ['drill', 'hammer drill'],
+        camera: ['dslr', 'mirrorless', 'cam'],
+        dslr: ['camera', 'mirrorless'],
+        mic: ['microphone', 'lavalier', 'wireless mic'],
+        mike: ['microphone', 'mic'],
+        microphone: ['mic', 'lavalier'],
+        speaker: ['sound system', 'pa system', 'sound', 'audio'],
+        'sound system': ['speaker', 'pa system', 'amplifier'],
+        projector: ['screen', 'presentation'],
+        screen: ['projector screen', 'tripod screen'],
+        cycle: ['bicycle', 'bike'],
+        bike: ['bicycle', 'cycling'],
+        bicycle: ['cycle', 'bike'],
+        laptop: ['macbook', 'computer', 'notebook'],
+        macbook: ['laptop', 'apple'],
+        tent: ['camping', 'outdoor shelter'],
+        cooler: ['ice box', 'icebox'],
+        vacuum: ['cleaning', 'vacuum cleaner'],
+        drone: ['quadcopter', 'camera drone'],
+      };
+
+      const lowerSearch = trimmedSearch.toLowerCase();
+      if (synonymMap[lowerSearch]) {
+        searchTerms.push(...synonymMap[lowerSearch]);
+      }
+
+      // Also split terms by space for multi-keyword queries (e.g. "Bosch Drill")
+      const tokens = trimmedSearch.split(/\s+/).filter(t => t.length >= 3);
+
+      const conditions: any[] = [];
+      const termsToSearch = Array.from(new Set([...searchTerms, ...tokens]));
+
+      for (const term of termsToSearch) {
+        conditions.push(
+          { name: { contains: term, mode: 'insensitive' } },
+          { description: { contains: term, mode: 'insensitive' } },
+          { brand: { contains: term, mode: 'insensitive' } },
+          { model: { contains: term, mode: 'insensitive' } },
+          { location: { contains: term, mode: 'insensitive' } },
+          { category: { name: { contains: term, mode: 'insensitive' } } },
+          { category: { slug: { contains: term, mode: 'insensitive' } } }
+        );
+      }
+
+      where.OR = conditions;
     }
 
     // Determine sorting
@@ -85,6 +130,9 @@ export class ProductsService {
         include: {
           category: {
             select: { id: true, name: true, slug: true, icon: true },
+          },
+          productImages: {
+            orderBy: { orderIndex: 'asc' },
           },
           owner: {
             select: {
@@ -119,6 +167,9 @@ export class ProductsService {
       where: { id },
       include: {
         category: true,
+        productImages: {
+          orderBy: { orderIndex: 'asc' },
+        },
         owner: {
           select: {
             id: true,
@@ -250,9 +301,21 @@ export class ProductsService {
         rentalInstructions: data.rentalInstructions,
         approvalStatus: ApprovalStatus.APPROVED, // Auto-approve for demo convenience
         listingStatus: ListingStatus.ACTIVE,
+        productImages: {
+          create: imageUrls.map((url, idx) => ({
+            url,
+            altText: `${data.name} - view ${idx + 1}`,
+            orderIndex: idx,
+            isPrimary: idx === 0,
+            license: 'Attribution / Verified Rental Photography',
+          })),
+        },
       },
       include: {
         category: true,
+        productImages: {
+          orderBy: { orderIndex: 'asc' },
+        },
         owner: {
           select: { id: true, fullName: true, trustScore: true },
         },
@@ -305,6 +368,20 @@ export class ProductsService {
       ? [...existing.images, ...newImageUrls] 
       : existing.images;
 
+    if (newImageUrls.length > 0) {
+      const startIndex = existing.images.length;
+      await prisma.productImage.createMany({
+        data: newImageUrls.map((url, idx) => ({
+          productId,
+          url,
+          altText: `${existing.name} - view ${startIndex + idx + 1}`,
+          orderIndex: startIndex + idx,
+          isPrimary: false,
+          license: 'Attribution / Verified Rental Photography',
+        })),
+      });
+    }
+
     const updated = await prisma.product.update({
       where: { id: productId },
       data: {
@@ -313,6 +390,9 @@ export class ProductsService {
       },
       include: {
         category: true,
+        productImages: {
+          orderBy: { orderIndex: 'asc' },
+        },
       },
     });
 
@@ -372,6 +452,9 @@ export class ProductsService {
       orderBy: { createdAt: 'desc' },
       include: {
         category: true,
+        productImages: {
+          orderBy: { orderIndex: 'asc' },
+        },
         _count: {
           select: {
             bookings: true,

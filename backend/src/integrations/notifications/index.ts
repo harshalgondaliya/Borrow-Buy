@@ -1,6 +1,7 @@
 import { env } from '../../config/env.js';
 import { INotificationService } from './notification.interface.js';
 import { LocalNotificationService } from './local-notification.service.js';
+import { SnsNotificationService } from './sns-notification.service.js';
 
 class NotificationFactory {
   private static instance: INotificationService;
@@ -8,9 +9,8 @@ class NotificationFactory {
   public static getNotificationService(): INotificationService {
     if (!this.instance) {
       if (env.NOTIFICATION_DRIVER === 'sns') {
-        // Will initialize AWS SNS provider in Stage B
-        console.log('[NotificationFactory] Initializing SNS Notification Provider...');
-        this.instance = new LocalNotificationService();
+        console.log('[NotificationFactory] Initializing AWS SNS Notification Provider...');
+        this.instance = new SnsNotificationService();
       } else {
         console.log('[NotificationFactory] Initializing Local Database Notification Provider');
         this.instance = new LocalNotificationService();
@@ -21,3 +21,6 @@ class NotificationFactory {
 }
 
 export const notificationService = NotificationFactory.getNotificationService();
+export { INotificationService, NotificationPayload } from './notification.interface.js';
+export { SnsNotificationService } from './sns-notification.service.js';
+export { LocalNotificationService } from './local-notification.service.js';

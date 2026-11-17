@@ -1,4 +1,4 @@
-import { describe, it, expect, beforeAll } from 'vitest';
+import { describe, it, expect, beforeAll, afterAll } from 'vitest';
 import request from 'supertest';
 import app from '../src/app.js';
 import { prisma } from '../src/shared/prisma.js';
@@ -41,7 +41,7 @@ describe('Phase 5 – Payments, QR Verification, Inspections & Reviews Tests', (
       .field('pricePerDay', '60')
       .field('securityDeposit', '300')
       .field('condition', 'LIKE_NEW')
-      .field('location', 'Downtown, Seattle, WA');
+      .field('location', 'Gandhinagar (Infocity)');
 
     testProductId = prodRes.body.data.id;
 
@@ -251,6 +251,22 @@ describe('Phase 5 – Payments, QR Verification, Inspections & Reviews Tests', (
       expect(Array.isArray(res.body.data)).toBe(true);
       expect(res.body.data.length).toBeGreaterThanOrEqual(1);
     });
+  });
+
+  afterAll(async () => {
+    if (testProductId) {
+      const bookings = await prisma.booking.findMany({ where: { productId: testProductId } });
+      const bIds = bookings.map((b) => b.id);
+      if (bIds.length > 0) {
+        await prisma.review.deleteMany({ where: { bookingId: { in: bIds } } });
+        await prisma.inspection.deleteMany({ where: { bookingId: { in: bIds } } });
+        await prisma.payment.deleteMany({ where: { bookingId: { in: bIds } } });
+        await prisma.dispute.deleteMany({ where: { bookingId: { in: bIds } } });
+        await prisma.booking.deleteMany({ where: { id: { in: bIds } } });
+      }
+      await prisma.productImage.deleteMany({ where: { productId: testProductId } });
+      await prisma.product.deleteMany({ where: { id: testProductId } });
+    }
   });
 });
 

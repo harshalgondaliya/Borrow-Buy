@@ -1,6 +1,7 @@
 import { env } from '../../config/env.js';
 import { IStorageService } from './storage.interface.js';
 import { LocalStorageService } from './local-storage.service.js';
+import { S3StorageService } from './s3-storage.service.js';
 
 class StorageFactory {
   private static instance: IStorageService;
@@ -8,9 +9,8 @@ class StorageFactory {
   public static getStorageService(): IStorageService {
     if (!this.instance) {
       if (env.STORAGE_DRIVER === 's3') {
-        // Will load AWS S3 adapter in Phase 10
-        console.log('[StorageFactory] Initializing S3 Storage Provider...');
-        this.instance = new LocalStorageService(); // Fallback until S3 configured
+        console.log('[StorageFactory] Initializing AWS S3 Storage Provider...');
+        this.instance = new S3StorageService();
       } else {
         console.log('[StorageFactory] Initializing Local Disk Storage Provider (./uploads)');
         this.instance = new LocalStorageService();
@@ -21,4 +21,6 @@ class StorageFactory {
 }
 
 export const storageService = StorageFactory.getStorageService();
-
+export { IStorageService, UploadedFileResult } from './storage.interface.js';
+export { S3StorageService } from './s3-storage.service.js';
+export { LocalStorageService } from './local-storage.service.js';

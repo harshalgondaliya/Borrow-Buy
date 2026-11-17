@@ -20,11 +20,13 @@ import { PaymentReceiptModal } from './PaymentReceiptModal';
 interface CustomerBookingsModalProps {
   isOpen: boolean;
   onClose: () => void;
+  onSelectProduct?: (product: any) => void;
 }
 
 export const CustomerBookingsModal: React.FC<CustomerBookingsModalProps> = ({
   isOpen,
   onClose,
+  onSelectProduct,
 }) => {
   const [bookings, setBookings] = useState<Booking[]>([]);
   const [filter, setFilter] = useState<'ALL' | 'ACTIVE' | 'RESERVED' | 'COMPLETED'>('ALL');
@@ -223,18 +225,29 @@ export const CustomerBookingsModal: React.FC<CustomerBookingsModalProps> = ({
 
                     {/* Middle Row: Product info and schedule */}
                     <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pt-2 border-t border-slate-100">
-                      <div className="flex items-center gap-3.5">
+                      <div
+                        onClick={() => {
+                          if (booking.product && onSelectProduct) {
+                            onClose();
+                            onSelectProduct(booking.product);
+                          }
+                        }}
+                        className={`flex items-center gap-3.5 ${onSelectProduct && booking.product ? 'cursor-pointer group/prod' : ''}`}
+                      >
                         <img
                           src={
                             booking.product?.images?.[0] ||
                             'https://images.unsplash.com/photo-1516035069371-29a1b244cc32?auto=format&fit=crop&w=120&q=80'
                           }
                           alt={booking.product?.name || 'Equipment'}
-                          className="w-14 h-14 rounded-2xl object-cover border border-slate-200 shadow-sm shrink-0"
+                          className="w-14 h-14 rounded-2xl object-cover border border-slate-200 shadow-sm shrink-0 group-hover/prod:scale-105 transition-transform"
                         />
                         <div className="min-w-0">
-                          <div className="text-sm font-bold text-slate-900 truncate">
-                            {booking.product?.name}
+                          <div className="text-sm font-bold text-slate-900 truncate group-hover/prod:text-[#315ACB] transition-colors flex items-center gap-1">
+                            <span>{booking.product?.name}</span>
+                            {onSelectProduct && booking.product && (
+                              <span className="text-[10px] text-muted font-normal underline opacity-0 group-hover/prod:opacity-100 transition-opacity">View &rarr;</span>
+                            )}
                           </div>
                           <div className="text-xs text-slate-500 mt-0.5">
                             Lender: <span className="text-slate-700 font-semibold">{booking.product?.owner?.fullName || 'Verified Owner'}</span>

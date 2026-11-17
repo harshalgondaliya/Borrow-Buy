@@ -1,0 +1,28 @@
+# =============================================================================
+# BorrowBuy – Terraform Configuration Variables (ap-south-1 Mumbai Student Baseline)
+# =============================================================================
+
+aws_region         = "ap-south-1"
+project_name       = "borrowbuy"
+environment        = "dev"
+vpc_cidr           = "10.0.0.0/16"
+availability_zones = ["ap-south-1a", "ap-south-1b"]
+
+# Deployment Architecture Mode
+# "ec2" = Student Free-Tier Baseline (EC2 Docker host with Express + PostgreSQL + Nginx, zero NAT Gateway, zero ALB)
+# "ecs" = Enterprise Mode (Fargate + ALB + NAT Gateway)
+deploy_mode        = "ec2"
+
+# Cost-Control Flags (CRITICAL for Student Budget)
+enable_nat_gateway = false  # Keep false to prevent recurring $32.40/month NAT Gateway charges
+enable_rds         = false  # Keep false to use Docker PostgreSQL on EC2 (saves $18/month)
+
+# Compute & Instance Sizing
+ec2_instance_type  = "t3.micro" # 750 hrs/month eligible under AWS Free Tier
+
+# Security & Secrets
+jwt_secret         = "REPLACE_WITH_YOUR_32_CHAR_SECRET_KEY_FOR_JWT_PRODUCTION"
+
+# AWS Budgets Guardrail ($5.00 limit with email alerts at 50%, 80%, 100%)
+monthly_budget_amount     = "5.0"
+budget_notification_email = "your-email@example.com"

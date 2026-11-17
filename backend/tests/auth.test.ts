@@ -112,8 +112,8 @@ describe('Authentication & Authorization Module Tests', () => {
       .set('Authorization', `Bearer ${authToken}`)
       .send({
         ownerBio: 'Experienced sound engineer and camera technician.',
-        ownerAddress: 'Queen Anne, Seattle, WA',
-        phone: '+1 206-555-9876',
+        ownerAddress: 'Ahmedabad (Prahladnagar)',
+        phone: '+91 98250 12345',
       });
 
     expect(res.status).toBe(200);

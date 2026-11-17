@@ -1,6 +1,7 @@
-import { describe, it, expect, beforeAll } from 'vitest';
+import { describe, it, expect, beforeAll, afterAll } from 'vitest';
 import request from 'supertest';
 import app from '../src/app.js';
+import { prisma } from '../src/shared/prisma.js';
 
 describe('Products & Marketplace Module Tests', () => {
   let ownerToken: string;
@@ -97,7 +98,7 @@ describe('Products & Marketplace Module Tests', () => {
         pricePerDay: 50,
         securityDeposit: 200,
         condition: 'LIKE_NEW',
-        location: 'Seattle, WA',
+        location: 'Ahmedabad (SG Highway)',
       });
 
     expect(res.status).toBe(401);
@@ -114,7 +115,7 @@ describe('Products & Marketplace Module Tests', () => {
         pricePerDay: 50,
         securityDeposit: 200,
         condition: 'LIKE_NEW',
-        location: 'Seattle, WA',
+        location: 'Ahmedabad (SG Highway)',
       });
 
     expect(res.status).toBe(403);
@@ -132,7 +133,7 @@ describe('Products & Marketplace Module Tests', () => {
       .field('pricePerDay', '75')
       .field('securityDeposit', '400')
       .field('condition', 'LIKE_NEW')
-      .field('location', 'Downtown, Seattle, WA');
+      .field('location', 'Gandhinagar (Infocity)');
 
     expect(res.status).toBe(201);
     expect(res.body.success).toBe(true);
@@ -171,6 +172,13 @@ describe('Products & Marketplace Module Tests', () => {
     expect(res.status).toBe(200);
     expect(res.body.success).toBe(true);
     expect(res.body.product.listingStatus).toBe('INACTIVE');
+  });
+
+  afterAll(async () => {
+    if (createdProductId) {
+      await prisma.productImage.deleteMany({ where: { productId: createdProductId } });
+      await prisma.product.deleteMany({ where: { id: createdProductId } });
+    }
   });
 });
 
