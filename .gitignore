@@ -13,6 +13,8 @@ out/
 .env.local
 .env.*.local
 *.pem
+.origin-secret
+*.origin-secret
 
 # Uploaded files during local development
 uploads/

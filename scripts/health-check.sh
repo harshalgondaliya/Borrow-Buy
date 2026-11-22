@@ -12,12 +12,24 @@ export PATH="/usr/local/bin:/usr/bin:/bin:$PATH"
 HEALTH_URL="http://127.0.0.1:80/api/health"
 FRONTEND_URL="http://127.0.0.1:80/"
 PRODUCTS_URL="http://127.0.0.1:80/api/products?limit=1"
+BACKEND_DIRECT_URL="http://127.0.0.1:5000/api/health"
+
+# Detect Origin Secret for Nginx header verification
+ORIGIN_HEADER_ARG=()
+ORIGIN_SECRET_FILE="/home/ec2-user/app/.origin-secret"
+if [ ! -f "${ORIGIN_SECRET_FILE}" ] && [ -f "/etc/borrowbuy/origin-secret" ]; then
+  ORIGIN_SECRET_FILE="/etc/borrowbuy/origin-secret"
+fi
+
+if [ -f "${ORIGIN_SECRET_FILE}" ] && [ -s "${ORIGIN_SECRET_FILE}" ]; then
+  ORIGIN_HEADER_ARG=(-H "X-Origin-Verify: $(tr -d '\r\n' < "${ORIGIN_SECRET_FILE}")")
+fi
 
 echo "=== BORROWBUY POST-DEPLOYMENT HEALTH VERIFICATION ==="
 
-# 1. Backend Health Check
-echo -n "Checking Backend API (${HEALTH_URL})... "
-HEALTH_RESP=$(curl -s -f "${HEALTH_URL}" || echo "")
+# 1. Backend Health Check (via Nginx proxy with origin header)
+echo -n "Checking Backend API via Nginx (${HEALTH_URL})... "
+HEALTH_RESP=$(curl -s -f "${ORIGIN_HEADER_ARG[@]}" "${HEALTH_URL}" || echo "")
 if echo "${HEALTH_RESP}" | grep -q '"status":"healthy"'; then
   echo "PASSED [200 OK]"
   echo "Response: ${HEALTH_RESP}"
@@ -26,9 +38,19 @@ else
   exit 1
 fi
 
+# 1b. Direct Express Backend Check (bypass proxy on loopback)
+echo -n "Checking Direct Express Backend (${BACKEND_DIRECT_URL})... "
+BACKEND_RESP=$(curl -s -f "${BACKEND_DIRECT_URL}" || echo "")
+if echo "${BACKEND_RESP}" | grep -q '"status":"healthy"'; then
+  echo "PASSED [200 OK]"
+else
+  echo "FAILED!"
+  exit 1
+fi
+
 # 2. Database Connectivity via Products API
 echo -n "Checking PostgreSQL Database Connectivity (${PRODUCTS_URL})... "
-PROD_RESP=$(curl -s -f "${PRODUCTS_URL}" || echo "")
+PROD_RESP=$(curl -s -f "${ORIGIN_HEADER_ARG[@]}" "${PRODUCTS_URL}" || echo "")
 if echo "${PROD_RESP}" | grep -q '"success":true'; then
   TOTAL_PRODUCTS=$(echo "${PROD_RESP}" | grep -o '"total":[0-9]*' | cut -d':' -f2 || echo "unknown")
   echo "PASSED [200 OK] (Total Products: ${TOTAL_PRODUCTS})"
@@ -39,7 +61,7 @@ fi
 
 # 3. Frontend SPA Serving
 echo -n "Checking Frontend React Assets (${FRONTEND_URL})... "
-FRONTEND_RESP=$(curl -s "${FRONTEND_URL}" || echo "")
+FRONTEND_RESP=$(curl -s "${ORIGIN_HEADER_ARG[@]}" "${FRONTEND_URL}" || echo "")
 if echo "${FRONTEND_RESP}" | grep -q 'BorrowBuy'; then
   echo "PASSED [200 OK]"
 else

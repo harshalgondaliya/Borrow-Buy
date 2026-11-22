@@ -172,43 +172,26 @@ if [ ! -f "${ORIGIN_SECRET_FILE}" ] && [ -f "${APP_DIR}/.origin-secret" ]; then
 fi
 
 if [ -f "${ORIGIN_SECRET_FILE}" ] && [ -s "${ORIGIN_SECRET_FILE}" ]; then
-    log "Configuring Nginx with active X-Origin-Verify header validation..."
+    log "Configuring Nginx with strict X-Origin-Verify header validation..."
     ORIGIN_SECRET=$(tr -d '\r\n' < "${ORIGIN_SECRET_FILE}")
     cat << EOF > /tmp/borrowbuy-nginx.conf
-map \$remote_addr \$is_internal_client {
-    127.0.0.1 1;
-    "::1" 1;
-    172.17.0.1 1;
-    default 0;
-}
-
-map \$http_x_origin_verify \$is_valid_origin {
-    default 0;
-    "${ORIGIN_SECRET}" 1;
-}
-
 server {
     listen 80;
     server_name _;
 
-    set \$access_allowed 0;
-    if (\$is_internal_client = 1) {
-        set \$access_allowed 1;
-    }
-    if (\$is_valid_origin = 1) {
-        set \$access_allowed 1;
-    }
-    if (\$access_allowed = 0) {
-        return 403 '{"error":"Forbidden","message":"Direct origin access denied. Requests must route through CloudFront."}\n';
-    }
-
     location / {
+        if (\$http_x_origin_verify != "${ORIGIN_SECRET}") {
+            return 403 '{"error":"Forbidden","message":"Direct origin access denied. Valid X-Origin-Verify header required."}\n';
+        }
         root /usr/share/nginx/html;
         index index.html index.htm;
         try_files \$uri \$uri/ /index.html;
     }
 
     location /api/ {
+        if (\$http_x_origin_verify != "${ORIGIN_SECRET}") {
+            return 403 '{"error":"Forbidden","message":"Direct origin access denied. Valid X-Origin-Verify header required."}\n';
+        }
         proxy_pass http://172.17.0.1:5000;
         proxy_http_version 1.1;
         proxy_set_header Host \$host;
