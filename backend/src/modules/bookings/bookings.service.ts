@@ -2,6 +2,8 @@ import crypto from 'crypto';
 import { prisma } from '../../shared/prisma.js';
 import { BookingStatus, UserRole } from '@prisma/client';
 import { BookingStateMachine } from './bookings.state-machine.js';
+import { env } from '../../config/env.js';
+import { sqsQueueService } from '../../integrations/queue/sqs-queue.service.js';
 
 export class BookingsService {
   /**
@@ -214,6 +216,20 @@ export class BookingsService {
           },
         },
       });
+
+      // Asynchronously publish booking creation event to SQS queue if configured
+      if (env.QUEUE_DRIVER === 'sqs' && env.AWS_SQS_QUEUE_URL) {
+        sqsQueueService.publishEvent({
+          eventId: `EVT-${booking.id}`,
+          eventType: 'BOOKING_CREATED',
+          bookingId: booking.id,
+          customerId: booking.customerId,
+          ownerId: product.ownerId,
+          productTitle: product.name,
+          totalAmount: Number(booking.totalAmount),
+          timestamp: new Date().toISOString(),
+        }).catch(() => {});
+      }
 
       return booking;
     });

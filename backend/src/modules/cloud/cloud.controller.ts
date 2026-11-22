@@ -271,10 +271,10 @@ export class CloudOperationsController {
       // Emulate serverless Lambda execution event
       const startMs = performance.now();
       const quote = calculateQuote({
-        dailyRate: Number(pricePerDay),
-        startDate: new Date(startDate),
-        endDate: new Date(endDate),
-        securityDeposit: securityDeposit ? Number(securityDeposit) : undefined,
+        pricePerDay: Number(pricePerDay),
+        startDate: String(startDate),
+        endDate: String(endDate),
+        securityDeposit: Number(securityDeposit || 0),
       });
       const durationMs = parseFloat((performance.now() - startMs).toFixed(2));
 

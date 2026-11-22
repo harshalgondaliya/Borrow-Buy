@@ -382,12 +382,18 @@ export class ProductsService {
       });
     }
 
+    const { categoryId, ...restData } = data;
+    const updatePayload: Record<string, any> = {
+      ...restData,
+      images: updatedImages,
+    };
+    if (categoryId) {
+      updatePayload.categoryId = categoryId;
+    }
+
     const updated = await prisma.product.update({
       where: { id: productId },
-      data: {
-        ...data,
-        images: updatedImages,
-      },
+      data: updatePayload,
       include: {
         category: true,
         productImages: {

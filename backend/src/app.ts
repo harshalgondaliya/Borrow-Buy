@@ -15,8 +15,17 @@ import reviewRoutes from './modules/reviews/reviews.routes.js';
 import notificationRoutes from './modules/notifications/notifications.routes.js';
 import adminRoutes from './modules/admin/admin.routes.js';
 import cloudRoutes from './modules/cloud/cloud.routes.js';
+import { cloudWatchService } from './integrations/monitoring/cloudwatch.service.js';
 
 const app: Application = express();
+
+// Telemetry & Metrics Middleware
+app.use((req: Request, res: Response, next: NextFunction) => {
+  if (req.path.startsWith('/api') && env.NODE_ENV === 'production') {
+    cloudWatchService.recordMetric('ApiRequestCount', 1, 'Count', { Method: req.method }).catch(() => {});
+  }
+  next();
+});
 
 // Ensure local uploads directory exists
 const uploadsDir = path.resolve(process.cwd(), 'uploads');

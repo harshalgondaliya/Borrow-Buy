@@ -47,6 +47,9 @@ jobs:
           --health-timeout 5s
           --health-retries 5
 
+    env:
+      DATABASE_URL: postgresql://test_user:test_password@localhost:5432/borrowbuy_test_db?schema=public
+
     steps:
       - name: Checkout Code Repository (Exact Commit)
         uses: actions/checkout@v4
@@ -80,6 +83,11 @@ jobs:
       - name: Synchronize Test Database Schema
         run: npx prisma db push --schema=./database/prisma/schema.prisma
 
+      - name: Seed Isolated Test Database (116 Products & Users)
+        env:
+          NODE_ENV: test
+        run: npx tsx ./database/prisma/seed.ts
+
       - name: Execute Frontend Unit Tests (Vitest)
         run: npm run test --workspace=frontend
 
@@ -90,6 +98,7 @@ jobs:
           STORAGE_DRIVER: local
           NOTIFICATION_DRIVER: local
           PAYMENT_DRIVER: simulation
+          QUEUE_DRIVER: local
         run: npm run test --workspace=backend
 
       - name: Compile Frontend Production SPA Bundle

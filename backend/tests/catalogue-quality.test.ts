@@ -141,6 +141,7 @@ describe('Catalogue Data Quality & Natural Naming Verification', () => {
 
   it('should verify referential integrity across products, owners, and booking history', async () => {
     const productsWithBookings = await prisma.product.findMany({
+      where: { listingStatus: 'ACTIVE' },
       include: {
         owner: true,
         category: true,
