@@ -1,3 +1,4 @@
+
 name: BorrowBuy Continuous Integration (CI)
 
 on:
@@ -26,6 +27,10 @@ jobs:
     name: Lint, Test & Build Monorepo
     runs-on: ubuntu-latest
     timeout-minutes: 20
+
+    # FIX: Make the test database URL available to all CI steps
+    env:
+      DATABASE_URL: postgresql://test_user:test_password@localhost:5432/borrowbuy_test_db?schema=public
 
     services:
       postgres:
@@ -73,8 +78,6 @@ jobs:
         run: npx prisma generate --schema=./database/prisma/schema.prisma
 
       - name: Synchronize Test Database Schema
-        env:
-          DATABASE_URL: postgresql://test_user:test_password@localhost:5432/borrowbuy_test_db?schema=public
         run: npx prisma db push --schema=./database/prisma/schema.prisma
 
       - name: Execute Frontend Unit Tests (Vitest)
@@ -82,7 +85,6 @@ jobs:
 
       - name: Execute Backend Unit & Integration Tests (103 Tests)
         env:
-          DATABASE_URL: postgresql://test_user:test_password@localhost:5432/borrowbuy_test_db?schema=public
           JWT_SECRET: ci-test-jwt-secret-borrowbuy-32chars-min
           NODE_ENV: test
           STORAGE_DRIVER: local
@@ -98,15 +100,25 @@ jobs:
 
       - name: Verify Build Artifacts Generation
         run: |
-          test -f backend/dist/server.js || { echo "Missing backend/dist/server.js"; exit 1; }
-          test -f frontend/dist/index.html || { echo "Missing frontend/dist/index.html"; exit 1; }
+          test -f backend/dist/server.js || {
+            echo "Missing backend/dist/server.js"
+            exit 1
+          }
+
+          test -f frontend/dist/index.html || {
+            echo "Missing frontend/dist/index.html"
+            exit 1
+          }
+
           echo "All required production artifacts verified successfully."
 
-      - name: Validate Terraform Infrastructure Code (No Apply)
+      - name: Setup Terraform CLI
         uses: hashicorp/setup-terraform@v3
         with:
           terraform_version: 1.17.0
-      - run: |
+
+      - name: Validate Terraform Infrastructure Code (No Apply)
+        run: |
           terraform -chdir=infra/terraform fmt -check
           terraform -chdir=infra/terraform init -backend=false
           terraform -chdir=infra/terraform validate
