@@ -52,11 +52,19 @@ Write-Host "`n[3/10] Checking Security Group Ingress Rules..." -ForegroundColor 
 $sgRaw = aws ec2 describe-security-groups --group-ids "sg-033b02984ba31dc71" --profile $AwsProfile --region $Region 2>&1
 if ($LASTEXITCODE -eq 0) {
     $sg = ($sgRaw | ConvertFrom-Json).SecurityGroups[0]
-    $port80Open = $sg.IpPermissions | Where-Object { $_.FromPort -eq 80 }
-    if ($port80Open) {
-        Write-Host "  ✅ [PASS] Port 80 (HTTP) ingress is OPEN for CloudFront traffic" -ForegroundColor Green
+    $port80Rule = $sg.IpPermissions | Where-Object { $_.FromPort -eq 80 }
+    if ($port80Rule) {
+        $hasPrefixList = $port80Rule.PrefixListIds | Where-Object { $_.PrefixListId -eq "pl-9aa247f3" }
+        $hasCidrAll = $port80Rule.IpRanges | Where-Object { $_.CidrIp -eq "0.0.0.0/0" }
+        if ($hasPrefixList -and -not $hasCidrAll) {
+            Write-Host "  ✅ [PASS] Port 80 ingress is strictly restricted to CloudFront prefix list (pl-9aa247f3). Zero public 0.0.0.0/0 ingress." -ForegroundColor Green
+        } elseif ($hasCidrAll) {
+            Write-Host "  ⚠️  [WARNING] Port 80 is open to 0.0.0.0/0. Recommend restricting to CloudFront prefix list." -ForegroundColor Yellow
+        } else {
+            Write-Host "  ✅ [PASS] Port 80 ingress rule configured: $($port80Rule | ConvertTo-Json -Compress)" -ForegroundColor Green
+        }
     } else {
-        Write-Host "  ⚠️  [INFO] Port 80 is currently CLOSED in security group. (Requires CloudFormation deployment to open)" -ForegroundColor Yellow
+        Write-Host "  ℹ️  [INFO] Port 80 is currently CLOSED in security group. (Will be restricted to pl-9aa247f3 upon CloudFormation stack deployment)" -ForegroundColor Yellow
     }
 }
 

@@ -25,8 +25,9 @@
                             + Forward Authorization, Cookies & Query Strings
                 │
                 │ HTTP (Port 80) with 'X-Origin-Verify: <secret>' header
+                │ Source restricted to CloudFront Managed Prefix List (pl-9aa247f3)
                 ▼
-[EC2 Security Group: sg-033b02984ba31dc71] (Port 80 Allowed for CloudFront)
+[EC2 Security Group: sg-033b02984ba31dc71] (Port 80 Allowed for CloudFront IPs Only - NO 0.0.0.0/0)
                 │
                 ▼
 [EC2 Host: i-03347c2b6584c73cb] (Amazon Linux 2023)
@@ -55,14 +56,14 @@
 |---|---|---|
 | **Origin Domain** | `ec2-13-206-100-236.ap-south-1.compute.amazonaws.com` | Direct connection to our existing EC2 public DNS |
 | **Origin Protocol** | HTTP Only (Port 80) | Eliminates expensive ALB / commercial SSL costs; CloudFront terminates public HTTPS |
-| **Origin Custom Header** | `X-Origin-Verify: BorrowBuy-CloudFront-2026-SecureOrigin` | Verifies traffic originates from CloudFront |
+| **Origin Custom Header** | `X-Origin-Verify: <dynamic-secret>` | Secret header verified by origin Nginx (no committed secrets) |
 | **Viewer Protocol Policy** | `redirect-to-https` | Enforces 100% encrypted TLS 1.2/1.3 for all web visitors |
 | **Default Cache Policy** | `Managed-CachingOptimized` (`658327ea-...`) | Gzip/Brotli edge caching for fast SPA asset delivery |
 | **API Path Pattern** | `/api/*` | Matches all backend REST endpoints |
 | **API Cache Policy** | `Managed-CachingDisabled` (`4135ea2d-...`) | Prevents caching of authenticated user data and dynamic responses |
 | **API Request Policy** | `Managed-AllViewerExceptHostHeader` (`b689b0a8-...`) | Forwards `Authorization: Bearer <JWT>`, cookies, and query strings |
-| **SPA Error Handling** | 403 & 404 rewritten to `/index.html` (HTTP 200) | Enables direct page reload on React routes (`/browse`, `/bookings`, `/dashboard`) |
-| **Price Class** | `PriceClass_All` | Lowest latency for India (`ap-south-1`) and global edge locations |
+| **SPA Error Handling** | Nginx `try_files` route-aware fallback | Route fallback handled by Nginx; real `/api/*` error codes (400, 401, 403, 404, 500) preserved |
+| **Price Class** | `PriceClass_200` | Covers India, Asia, Europe, Middle East, and North America at $0.00 |
 
 ---
 

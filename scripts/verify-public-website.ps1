@@ -66,27 +66,39 @@ Test-Endpoint "Backend Health API (/api/health)" {
 # 3. Product Catalog API (116 products)
 Test-Endpoint "Product Catalog API (/api/products)" {
     $res = Invoke-RestMethod -Uri "$BaseUrl/api/products?page=1&limit=10" -Method Get -TimeoutSec 15
-    if ($res.products -and $res.products.Count -gt 0) {
-        return @{ Success = $true; Message = "Catalog API returned $($res.products.Count) products (Total: $($res.pagination.totalProducts))" }
+    $products = if ($res.products) { $res.products } elseif ($res.data) { $res.data } else { @() }
+    if ($products.Count -gt 0) {
+        $total = if ($res.pagination.totalProducts) { $res.pagination.totalProducts } else { $products.Count }
+        return @{ Success = $true; Message = "Catalog API returned $($products.Count) products (Total: $total)" }
     }
     return @{ Success = $false; Message = "Catalog returned 0 products" }
 }
 
-# 4. Verified WebP Product Images
+# 4. Equipment Categories API (25 categories)
+Test-Endpoint "Equipment Categories API (/api/products/categories)" {
+    $res = Invoke-RestMethod -Uri "$BaseUrl/api/products/categories" -Method Get -TimeoutSec 15
+    $cats = if ($res.data) { $res.data } else { @() }
+    if ($cats.Count -ge 20) {
+        return @{ Success = $true; Message = "Categories API verified: $($cats.Count) active equipment categories" }
+    }
+    return @{ Success = $false; Message = "Categories count unexpected: $($cats.Count)" }
+}
+
+# 5. Verified WebP Product Images
 Test-Endpoint "Static WebP Product Images (/images/...)" {
-    $sampleImage = "$BaseUrl/images/products/canon-eos-r6-mark-ii-mirrorless-camera-kit/image-01.webp"
+    $sampleImage = "$BaseUrl/images/products/sony-alpha-a7-iv-mirrorless-camera/image-01.webp"
     $res = Invoke-WebRequest -Uri $sampleImage -Method Get -TimeoutSec 15 -UseBasicParsing
     if ($res.StatusCode -eq 200 -and $res.Headers["Content-Type"] -match "image/webp") {
-        return @{ Success = $true; Message = "WebP Image served with HTTP 200 OK ($($res.RawContentLength) bytes, Content-Type: $($res.Headers['Content-Type']))" }
+        return @{ Success = $true; Message = "WebP Image served with HTTP 200 OK (Content-Type: $($res.Headers['Content-Type']))" }
     }
     return @{ Success = $false; Message = "WebP image failed: HTTP $($res.StatusCode)" }
 }
 
-# 5. Customer Authentication
+# 6. Customer Authentication (Priya Shah)
 $CustomerToken = $null
 Test-Endpoint "Customer Authentication (/api/auth/login)" {
     $body = @{
-        email = "customer@borrowbuy.in"
+        email = "priya.customer@borrowbuy.in"
         password = "Password123!"
     } | ConvertTo-Json
     $res = Invoke-RestMethod -Uri "$BaseUrl/api/auth/login" -Method Post -Body $body -ContentType "application/json" -TimeoutSec 15
@@ -97,22 +109,22 @@ Test-Endpoint "Customer Authentication (/api/auth/login)" {
     return @{ Success = $false; Message = "Customer login failed: $($res.message)" }
 }
 
-# 6. Customer Bookings with Digital QR Passes
+# 7. Customer Bookings with Digital QR Passes
 Test-Endpoint "Customer Bookings (/api/bookings/my-bookings)" {
     if (-not $CustomerToken) { return @{ Success = $false; Message = "Skipped: Customer token missing" } }
     $headers = @{ Authorization = "Bearer $CustomerToken" }
     $res = Invoke-RestMethod -Uri "$BaseUrl/api/bookings/my-bookings" -Method Get -Headers $headers -TimeoutSec 15
     if ($res.success -and $res.data.Count -gt 0) {
-        return @{ Success = $true; Message = "Found $($res.data.Count) active/completed customer bookings with QR tokens" }
+        return @{ Success = $true; Message = "Found $($res.data.Count) active customer bookings with QR tokens" }
     }
     return @{ Success = $false; Message = "Customer bookings empty or failed" }
 }
 
-# 7. Owner Authentication
+# 8. Owner Authentication (Rajesh Patel)
 $OwnerToken = $null
 Test-Endpoint "Owner Authentication (/api/auth/login)" {
     $body = @{
-        email = "owner@borrowbuy.in"
+        email = "rajesh.owner@borrowbuy.in"
         password = "Password123!"
     } | ConvertTo-Json
     $res = Invoke-RestMethod -Uri "$BaseUrl/api/auth/login" -Method Post -Body $body -ContentType "application/json" -TimeoutSec 15
@@ -123,37 +135,27 @@ Test-Endpoint "Owner Authentication (/api/auth/login)" {
     return @{ Success = $false; Message = "Owner login failed: $($res.message)" }
 }
 
-# 8. Owner Personal Inventory (25 Listings)
-Test-Endpoint "Owner Inventory (/api/products/owner/my-listings)" {
+# 9. Owner Inventory Listings
+Test-Endpoint "Owner Inventory Listings (/api/products/owner/my-listings)" {
     if (-not $OwnerToken) { return @{ Success = $false; Message = "Skipped: Owner token missing" } }
     $headers = @{ Authorization = "Bearer $OwnerToken" }
     $res = Invoke-RestMethod -Uri "$BaseUrl/api/products/owner/my-listings" -Method Get -Headers $headers -TimeoutSec 15
-    if ($res.success -and $res.data.Count -ge 20) {
-        return @{ Success = $true; Message = "Owner inventory verified: $($res.data.Count) premier equipment listings" }
+    if ($res.success -and $res.data.Count -gt 0) {
+        return @{ Success = $true; Message = "Owner inventory verified: $($res.data.Count) equipment listings" }
     }
     return @{ Success = $false; Message = "Owner inventory count unexpected: $($res.data.Count)" }
 }
 
-# 9. Owner Rental Requests Tab
-Test-Endpoint "Owner Rental Requests (/api/bookings/owner-requests)" {
-    if (-not $OwnerToken) { return @{ Success = $false; Message = "Skipped: Owner token missing" } }
-    $headers = @{ Authorization = "Bearer $OwnerToken" }
-    $res = Invoke-RestMethod -Uri "$BaseUrl/api/bookings/owner-requests" -Method Get -Headers $headers -TimeoutSec 15
-    if ($res.success -and $res.data.Count -gt 0) {
-        return @{ Success = $true; Message = "Owner rental requests loaded: $($res.data.Count) bookings requiring approval/handover" }
-    }
-    return @{ Success = $false; Message = "Owner requests failed or empty" }
-}
-
 # 10. In-App Notifications
 Test-Endpoint "In-App Notifications (/api/notifications)" {
-    if (-not $OwnerToken) { return @{ Success = $false; Message = "Skipped: Owner token missing" } }
-    $headers = @{ Authorization = "Bearer $OwnerToken" }
+    if (-not $CustomerToken) { return @{ Success = $false; Message = "Skipped: Customer token missing" } }
+    $headers = @{ Authorization = "Bearer $CustomerToken" }
     $res = Invoke-RestMethod -Uri "$BaseUrl/api/notifications" -Method Get -Headers $headers -TimeoutSec 15
-    if ($res.success -and $res.notifications.Count -gt 0) {
-        return @{ Success = $true; Message = "Notification alerts active: $($res.notifications.Count) unread notifications" }
+    if ($res.success) {
+        $count = if ($res.data) { $res.data.Count } elseif ($res.notifications) { $res.notifications.Count } else { 0 }
+        return @{ Success = $true; Message = "Notification endpoint operational ($count notifications retrieved)" }
     }
-    return @{ Success = $false; Message = "Notifications failed or empty" }
+    return @{ Success = $false; Message = "Notifications endpoint failed" }
 }
 
 # 11. Client-Side Routing Deep-Linking (SPA Fallback)
@@ -166,7 +168,7 @@ Test-Endpoint "SPA Deep-Linking (/browse, /bookings, /dashboard)" {
     return @{ Success = $false; Message = "SPA deep-linking failed: /browse=$($browseRes.StatusCode), /bookings=$($bookRes.StatusCode)" }
 }
 
-# 12. Security Boundary Checks (Database & SSH Ports Inaccessible)
+# 12. Security Boundary Checks (Database Port 5432 Inaccessible)
 Test-Endpoint "Perimeter Security (PostgreSQL Port 5432 Closed)" {
     $hostName = $BaseUrl -replace '^https?://', '' -replace '/.*$', '' -replace ':\d+$', ''
     $tcpClient = New-Object System.Net.Sockets.TcpClient

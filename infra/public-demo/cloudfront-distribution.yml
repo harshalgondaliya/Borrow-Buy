@@ -1,5 +1,5 @@
 AWSTemplateFormatVersion: '2010-09-09'
-Description: 'BorrowBuy — Public HTTPS CloudFront Distribution & Ingress Infrastructure'
+Description: 'BorrowBuy — Secure Public HTTPS CloudFront Distribution & Ingress Infrastructure'
 
 Parameters:
   EC2PublicDNS:
@@ -12,15 +12,32 @@ Parameters:
     Default: 'sg-033b02984ba31dc71'
     Description: 'Security Group ID of the BorrowBuy EC2 instance'
 
+  CloudFrontPrefixListId:
+    Type: String
+    Default: 'pl-9aa247f3'
+    Description: 'AWS-Managed Prefix List ID for CloudFront origin-facing IPs in ap-south-1 (com.amazonaws.global.cloudfront.origin-facing)'
+
   OriginVerifyHeaderValue:
     Type: String
-    Default: 'BorrowBuy-CloudFront-2026-SecureOrigin'
     NoEcho: true
-    Description: 'Custom secret header passed from CloudFront to origin Nginx for ingress verification'
+    MinLength: 24
+    MaxLength: 128
+    Description: 'Cryptographically random secret header passed from CloudFront to origin for ingress verification (no default value)'
+
+  PriceClass:
+    Type: String
+    Default: 'PriceClass_200'
+    AllowedValues:
+      - 'PriceClass_100'
+      - 'PriceClass_200'
+      - 'PriceClass_All'
+    Description: 'CloudFront edge price class (PriceClass_200 covers India, Asia, Europe, Middle East, North America)'
 
 Resources:
 
-  # 1. EC2 Security Group Ingress Rule (Port 80 for CloudFront)
+  # 1. EC2 Security Group Ingress Rule
+  # Strictly restricted to AWS CloudFront origin-facing IPs via Managed Prefix List.
+  # 0.0.0.0/0 raw public internet ingress is COMPLETELY REMOVED.
   EC2Port80Ingress:
     Type: AWS::EC2::SecurityGroupIngress
     Properties:
@@ -28,8 +45,8 @@ Resources:
       IpProtocol: tcp
       FromPort: 80
       ToPort: 80
-      CidrIp: '0.0.0.0/0'
-      Description: 'Allow HTTP ingress for CloudFront edge distribution requests'
+      SourcePrefixListId: !Ref CloudFrontPrefixListId
+      Description: 'Allow HTTP ingress strictly from AWS CloudFront edge proxies'
 
   # 2. Amazon CloudFront Distribution (HTTPS Edge CDN)
   CloudFrontDistribution:
@@ -37,8 +54,8 @@ Resources:
     Properties:
       DistributionConfig:
         Enabled: true
-        Comment: 'BorrowBuy Public HTTPS Edge Distribution (Equipment Rental Platform)'
-        PriceClass: PriceClass_All
+        Comment: 'BorrowBuy Secure Public HTTPS Edge Distribution (Equipment Rental Platform)'
+        PriceClass: !Ref PriceClass
         HttpVersion: http2and3
 
         # EC2 Origin Definition
@@ -112,16 +129,9 @@ Resources:
             # AWS Managed-CachingOptimized
             CachePolicyId: '658327ea-f89d-4fab-a63d-7e88639e58f6'
 
-        # Client-Side Routing Fallbacks for Single Page Application (SPA)
-        CustomErrorResponses:
-          - ErrorCode: 403
-            ResponseCode: 200
-            ResponsePagePath: '/index.html'
-            ErrorCachingMinTTL: 0
-          - ErrorCode: 404
-            ResponseCode: 200
-            ResponsePagePath: '/index.html'
-            ErrorCachingMinTTL: 0
+        # NOTE: CustomErrorResponses (403/404 distribution-wide mapping) REMOVED.
+        # Nginx on origin handles React SPA fallback (try_files $uri $uri/ /index.html).
+        # Real Express backend API error status codes (400, 401, 403, 404, 500) are fully preserved.
 
 Outputs:
   DistributionId:
