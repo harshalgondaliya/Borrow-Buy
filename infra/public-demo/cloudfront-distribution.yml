@@ -1,0 +1,137 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Description: 'BorrowBuy — Public HTTPS CloudFront Distribution & Ingress Infrastructure'
+
+Parameters:
+  EC2PublicDNS:
+    Type: String
+    Default: 'ec2-13-206-100-236.ap-south-1.compute.amazonaws.com'
+    Description: 'Public DNS address of the BorrowBuy EC2 instance (ap-south-1)'
+
+  EC2SecurityGroupId:
+    Type: String
+    Default: 'sg-033b02984ba31dc71'
+    Description: 'Security Group ID of the BorrowBuy EC2 instance'
+
+  OriginVerifyHeaderValue:
+    Type: String
+    Default: 'BorrowBuy-CloudFront-2026-SecureOrigin'
+    NoEcho: true
+    Description: 'Custom secret header passed from CloudFront to origin Nginx for ingress verification'
+
+Resources:
+
+  # 1. EC2 Security Group Ingress Rule (Port 80 for CloudFront)
+  EC2Port80Ingress:
+    Type: AWS::EC2::SecurityGroupIngress
+    Properties:
+      GroupId: !Ref EC2SecurityGroupId
+      IpProtocol: tcp
+      FromPort: 80
+      ToPort: 80
+      CidrIp: '0.0.0.0/0'
+      Description: 'Allow HTTP ingress for CloudFront edge distribution requests'
+
+  # 2. Amazon CloudFront Distribution (HTTPS Edge CDN)
+  CloudFrontDistribution:
+    Type: AWS::CloudFront::Distribution
+    Properties:
+      DistributionConfig:
+        Enabled: true
+        Comment: 'BorrowBuy Public HTTPS Edge Distribution (Equipment Rental Platform)'
+        PriceClass: PriceClass_All
+        HttpVersion: http2and3
+
+        # EC2 Origin Definition
+        Origins:
+          - Id: 'BorrowBuy-EC2-Origin'
+            DomainName: !Ref EC2PublicDNS
+            CustomOriginConfig:
+              HTTPPort: 80
+              HTTPSPort: 443
+              OriginProtocolPolicy: http-only
+              OriginKeepaliveTimeout: 60
+              OriginReadTimeout: 60
+              OriginSSLProtocols:
+                - TLSv1.2
+            OriginCustomHeaders:
+              - HeaderName: 'X-Origin-Verify'
+                HeaderValue: !Ref OriginVerifyHeaderValue
+
+        # Default Cache Behavior (React SPA Frontend & Static Assets)
+        DefaultCacheBehavior:
+          TargetOriginId: 'BorrowBuy-EC2-Origin'
+          ViewerProtocolPolicy: redirect-to-https
+          AllowedMethods:
+            - GET
+            - HEAD
+            - OPTIONS
+          CachedMethods:
+            - GET
+            - HEAD
+            - OPTIONS
+          Compress: true
+          # AWS Managed-CachingOptimized Cache Policy
+          CachePolicyId: '658327ea-f89d-4fab-a63d-7e88639e58f6'
+
+        # Cache Behavior for Express Backend API (/api/*)
+        CacheBehaviors:
+          - PathPattern: '/api/*'
+            TargetOriginId: 'BorrowBuy-EC2-Origin'
+            ViewerProtocolPolicy: redirect-to-https
+            AllowedMethods:
+              - GET
+              - HEAD
+              - OPTIONS
+              - PUT
+              - POST
+              - PATCH
+              - DELETE
+            CachedMethods:
+              - GET
+              - HEAD
+              - OPTIONS
+            Compress: true
+            # AWS Managed-CachingDisabled (zero caching on API requests)
+            CachePolicyId: '4135ea2d-6df8-44a3-9df3-4b3e42644bad'
+            # AWS Managed-AllViewerExceptHostHeader (forward headers, auth tokens & cookies)
+            OriginRequestPolicyId: 'b689b0a8-53d0-40ab-baf2-68738e2966ac'
+
+          # Cache Behavior for Local Product Images (/images/*)
+          - PathPattern: '/images/*'
+            TargetOriginId: 'BorrowBuy-EC2-Origin'
+            ViewerProtocolPolicy: redirect-to-https
+            AllowedMethods:
+              - GET
+              - HEAD
+              - OPTIONS
+            CachedMethods:
+              - GET
+              - HEAD
+              - OPTIONS
+            Compress: true
+            # AWS Managed-CachingOptimized
+            CachePolicyId: '658327ea-f89d-4fab-a63d-7e88639e58f6'
+
+        # Client-Side Routing Fallbacks for Single Page Application (SPA)
+        CustomErrorResponses:
+          - ErrorCode: 403
+            ResponseCode: 200
+            ResponsePagePath: '/index.html'
+            ErrorCachingMinTTL: 0
+          - ErrorCode: 404
+            ResponseCode: 200
+            ResponsePagePath: '/index.html'
+            ErrorCachingMinTTL: 0
+
+Outputs:
+  DistributionId:
+    Description: 'CloudFront Distribution ID'
+    Value: !Ref CloudFrontDistribution
+
+  CloudFrontDomainName:
+    Description: 'Public CloudFront Domain Name'
+    Value: !GetAtt CloudFrontDistribution.DomainName
+
+  PublicWebsiteURL:
+    Description: 'Public HTTPS URL for Faculty Demonstration & General Internet Access'
+    Value: !Sub 'https://${CloudFrontDistribution.DomainName}'

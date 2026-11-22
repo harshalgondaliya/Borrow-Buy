@@ -223,34 +223,26 @@ export const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose, initialTa
                 <div className="flex items-center justify-between mb-1.5 text-[11px] font-semibold text-[#66707A]">
                   <span className="flex items-center gap-1">
                     <Zap className="w-3.5 h-3.5 text-[#315CF5]" />
-                    <span>Instant Demo Sign In:</span>
+                    <span>Demo Accounts (Ahmedabad Hub):</span>
                   </span>
-                  <span className="text-[10px] text-[#315CF5] font-normal">Click role to auto-sign in</span>
+                  <span className="text-[10px] text-[#315CF5] font-normal">Pre-loaded inventory</span>
                 </div>
-                <div className="grid grid-cols-3 gap-1.5">
+                <div className="grid grid-cols-2 gap-2">
                   <button
                     type="button"
                     onClick={() => handleDemoFill('CUSTOMER', true)}
                     className="py-1.5 px-2 text-[11px] font-semibold rounded-lg bg-white border border-[#E5E8EA] hover:border-[#315CF5] hover:bg-[#EFF3FE] hover:text-[#315CF5] transition-all text-center cursor-pointer shadow-2xs"
-                    title="Sign in instantly as customer@borrowbuy.in"
+                    title="Sign in as customer@borrowbuy.in"
                   >
-                    Customer
+                    Demo Customer
                   </button>
                   <button
                     type="button"
                     onClick={() => handleDemoFill('OWNER', true)}
                     className="py-1.5 px-2 text-[11px] font-semibold rounded-lg bg-white border border-[#E5E8EA] hover:border-[#315CF5] hover:bg-[#EFF3FE] hover:text-[#315CF5] transition-all text-center cursor-pointer shadow-2xs"
-                    title="Sign in instantly as owner@borrowbuy.in"
+                    title="Sign in as owner@borrowbuy.in (25 active listings)"
                   >
-                    Owner
-                  </button>
-                  <button
-                    type="button"
-                    onClick={() => handleDemoFill('ADMIN', true)}
-                    className="py-1.5 px-2 text-[11px] font-semibold rounded-lg bg-white border border-[#E5E8EA] hover:border-[#315CF5] hover:bg-[#EFF3FE] hover:text-[#315CF5] transition-all text-center cursor-pointer shadow-2xs"
-                    title="Sign in instantly as admin@borrowbuy.in"
-                  >
-                    Admin
+                    Demo Owner
                   </button>
                 </div>
               </div>

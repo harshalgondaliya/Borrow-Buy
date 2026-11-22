@@ -3,24 +3,26 @@
  * Automatically detects whether running locally or on AWS CloudFront / EC2
  */
 
-// Host URL (e.g., "http://localhost:5000", "http://13.232.x.x:5000", or "https://api.borrowbuy.in")
+const isProd = import.meta.env.PROD;
+
+// Host URL: In production, relative empty string preserves same-origin over HTTPS
 export const API_HOST = (
   import.meta.env.VITE_API_URL ||
   import.meta.env.VITE_API_BASE_URL?.replace(/\/api\/?$/, '') ||
-  'http://localhost:5000'
+  (isProd ? '' : 'http://localhost:5000')
 ).replace(/\/+$/, '');
 
-// Full API endpoint base (e.g., "http://localhost:5000/api", "https://api.borrowbuy.in/api")
+// Full API endpoint base: In production, relative '/api' avoids mixed-content & hardcoded hostnames
 export const API_BASE_URL = (
   import.meta.env.VITE_API_BASE_URL ||
-  `${API_HOST}/api`
+  (isProd ? '/api' : `${API_HOST}/api`)
 ).replace(/\/+$/, '');
 
 /**
  * Resolves an image URL safely:
  * - External URLs (http/https): returns unchanged
- * - Local static assets (/images/products/...): returns unchanged for Vite public serving
- * - Backend uploads (/uploads/...): prepends API_HOST
+ * - Local static assets (/images/products/...): returns unchanged for public serving
+ * - Backend uploads (/uploads/...): returns relative or prepended API_HOST
  * - Missing/empty: returns high-quality fallback photo
  */
 export function resolveImageUrl(url?: string): string {
