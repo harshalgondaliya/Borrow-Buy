@@ -1,6 +1,6 @@
 import React from 'react';
 import { Category, ProductQueryParams } from '../../services/products';
-import { Search, SlidersHorizontal, RotateCcw, Sparkles, MapPin } from 'lucide-react';
+import { Search, SlidersHorizontal, RotateCcw, MapPin, Sparkles } from 'lucide-react';
 
 interface FilterSidebarProps {
   categories: Category[];
@@ -31,48 +31,48 @@ export const FilterSidebar: React.FC<FilterSidebarProps> = ({
   ];
 
   return (
-    <div className="bg-white rounded-2xl border border-[#E4E7EC] p-5 shadow-card space-y-6">
+    <div className="bg-white rounded-xl border border-[#E5E8EA] p-5 shadow-xs space-y-6">
       {/* Header */}
-      <div className="flex items-center justify-between pb-3.5 border-b border-[#E4E7EC]">
-        <div className="flex items-center gap-2 text-[#172B46] font-display font-bold text-sm">
-          <SlidersHorizontal className="w-4 h-4 text-[#F06449]" />
-          <span>Filters & Discovery</span>
+      <div className="flex items-center justify-between pb-3.5 border-b border-[#E5E8EA]">
+        <div className="flex items-center gap-2 text-[#17191C] font-semibold text-sm">
+          <SlidersHorizontal className="w-4 h-4 text-[#315CF5]" />
+          <span>Filter Gear</span>
         </div>
         <button
           onClick={onReset}
-          className="group text-xs text-[#667085] hover:text-[#F06449] flex items-center gap-1 font-medium transition"
+          className="text-xs text-[#66707A] hover:text-[#17191C] flex items-center gap-1 font-medium transition-colors cursor-pointer"
         >
-          <RotateCcw className="w-3 h-3 group-hover:-rotate-90 transition-transform duration-300" />
+          <RotateCcw className="w-3 h-3" />
           <span>Reset</span>
         </button>
       </div>
 
       {/* Keyword Search */}
       <div>
-        <label className="block text-xs font-semibold text-[#172B46] mb-1.5">Search Keywords</label>
+        <label className="block text-xs font-semibold text-[#17191C] mb-1.5">Keywords</label>
         <div className="relative">
-          <Search className="w-4 h-4 text-[#667085] absolute left-3 top-2.5" />
+          <Search className="w-4 h-4 text-[#66707A] absolute left-3 top-2.5 pointer-events-none" />
           <input
             type="text"
             value={filters.search || ''}
             onChange={(e) => onFilterChange({ search: e.target.value, page: 1 })}
-            placeholder="Sony FX3, MacBook, projector, drill..."
-            className="w-full pl-9 pr-3 py-2 text-xs bg-[#F5F6F8] border border-[#E4E7EC] rounded-xl focus:bg-white focus:ring-2 focus:ring-[#F06449]/20 focus:border-[#F06449] focus:outline-none transition text-[#202833] placeholder:text-[#667085]"
+            placeholder="Sony FX3, MacBook, drill..."
+            className="w-full pl-9 pr-3 py-2 text-xs bg-white border border-[#E5E8EA] rounded-lg focus:border-[#315CF5] focus:outline-none transition-colors text-[#17191C] placeholder:text-[#66707A]"
           />
         </div>
       </div>
 
-      {/* Location / City Filter */}
+      {/* Gujarat Cities Filter */}
       <div>
         <div className="flex items-center justify-between mb-1.5">
-          <label className="text-xs font-semibold text-[#172B46] flex items-center gap-1">
-            <MapPin className="w-3.5 h-3.5 text-[#172B46]" />
-            <span>Gujarat Cities</span>
+          <label className="text-xs font-semibold text-[#17191C] flex items-center gap-1">
+            <MapPin className="w-3.5 h-3.5 text-[#66707A]" />
+            <span>Gujarat Hubs</span>
           </label>
           {filters.location && (
             <button
               onClick={() => onFilterChange({ location: undefined, page: 1 })}
-              className="text-[11px] text-[#F06449] hover:underline font-medium"
+              className="text-[11px] text-[#315CF5] hover:underline font-medium cursor-pointer"
             >
               Clear
             </button>
@@ -83,8 +83,8 @@ export const FilterSidebar: React.FC<FilterSidebarProps> = ({
             type="text"
             value={filters.location || ''}
             onChange={(e) => onFilterChange({ location: e.target.value || undefined, page: 1 })}
-            placeholder="E.g. Ahmedabad, Surat, Infocity..."
-            className="w-full px-3 py-1.5 text-xs bg-[#F5F6F8] border border-[#E4E7EC] rounded-xl focus:bg-white focus:ring-2 focus:ring-[#F06449]/20 focus:border-[#F06449] focus:outline-none transition text-[#202833] placeholder:text-[#667085]"
+            placeholder="Search city or area..."
+            className="w-full px-3 py-1.5 text-xs bg-white border border-[#E5E8EA] rounded-lg focus:border-[#315CF5] focus:outline-none transition-colors text-[#17191C] placeholder:text-[#66707A]"
           />
         </div>
         {/* Quick city pills */}
@@ -100,10 +100,10 @@ export const FilterSidebar: React.FC<FilterSidebarProps> = ({
                     page: 1,
                   })
                 }
-                className={`px-2.5 py-1 text-[11px] font-medium rounded-lg border transition ${
+                className={`px-2 py-1 text-[11px] font-medium rounded-md border transition-colors cursor-pointer ${
                   isSelected
-                    ? 'bg-[#172B46] text-white border-[#172B46] shadow-xs'
-                    : 'bg-[#F5F6F8] border-[#E4E7EC] text-[#667085] hover:bg-white hover:text-[#172B46]'
+                    ? 'bg-[#17191C] text-white border-[#17191C]'
+                    : 'bg-[#FAFAF8] border-[#E5E8EA] text-[#66707A] hover:text-[#17191C] hover:bg-white'
                 }`}
               >
                 {loc}
@@ -116,23 +116,23 @@ export const FilterSidebar: React.FC<FilterSidebarProps> = ({
       {/* Category Selection */}
       <div>
         <div className="flex items-center justify-between mb-2">
-          <label className="text-xs font-semibold text-[#172B46]">Categories</label>
+          <label className="text-xs font-semibold text-[#17191C]">Categories</label>
           {filters.categoryId && (
             <button
               onClick={() => onFilterChange({ categoryId: undefined, page: 1 })}
-              className="text-[11px] text-[#F06449] hover:underline font-medium"
+              className="text-[11px] text-[#315CF5] hover:underline font-medium cursor-pointer"
             >
               Clear
             </button>
           )}
         </div>
-        <div className="space-y-1 max-h-56 overflow-y-auto pr-1">
+        <div className="space-y-1 max-h-52 overflow-y-auto pr-1">
           <button
             onClick={() => onFilterChange({ categoryId: undefined, page: 1 })}
-            className={`w-full text-left px-3 py-2 rounded-xl text-xs font-medium flex items-center justify-between transition ${
+            className={`w-full text-left px-2.5 py-1.5 rounded-lg text-xs font-medium flex items-center justify-between transition-colors cursor-pointer ${
               !filters.categoryId
-                ? 'bg-[#172B46] text-white font-bold border border-[#172B46]'
-                : 'text-[#667085] hover:bg-[#F5F6F8] hover:text-[#172B46]'
+                ? 'bg-[#17191C] text-white font-semibold'
+                : 'text-[#66707A] hover:bg-[#F1F3F3] hover:text-[#17191C]'
             }`}
           >
             <span>All Categories</span>
@@ -143,17 +143,17 @@ export const FilterSidebar: React.FC<FilterSidebarProps> = ({
               <button
                 key={cat.id}
                 onClick={() => onFilterChange({ categoryId: cat.id, page: 1 })}
-                className={`w-full text-left px-3 py-2 rounded-xl text-xs font-medium flex items-center justify-between transition ${
+                className={`w-full text-left px-2.5 py-1.5 rounded-lg text-xs font-medium flex items-center justify-between transition-colors cursor-pointer ${
                   isSelected
-                    ? 'bg-[#172B46] text-white font-bold border border-[#172B46]'
-                    : 'text-[#667085] hover:bg-[#F5F6F8] hover:text-[#172B46]'
+                    ? 'bg-[#17191C] text-white font-semibold'
+                    : 'text-[#66707A] hover:bg-[#F1F3F3] hover:text-[#17191C]'
                 }`}
               >
                 <span className="truncate">{cat.name}</span>
                 {cat._count?.products !== undefined && (
                   <span
-                    className={`text-[10px] px-2 py-0.5 rounded-full font-bold ${
-                      isSelected ? 'bg-[#F06449] text-white' : 'bg-[#E9EDF2] text-[#172B46]'
+                    className={`text-[10px] px-1.5 py-0.5 rounded font-medium ${
+                      isSelected ? 'bg-white/20 text-white' : 'bg-[#F1F3F3] text-[#66707A]'
                     }`}
                   >
                     {cat._count.products}
@@ -167,10 +167,10 @@ export const FilterSidebar: React.FC<FilterSidebarProps> = ({
 
       {/* Daily Price Range */}
       <div>
-        <label className="block text-xs font-semibold text-[#172B46] mb-2">Daily Price Range (₹)</label>
+        <label className="block text-xs font-semibold text-[#17191C] mb-2">Daily Rate (₹)</label>
         <div className="grid grid-cols-2 gap-2">
           <div className="relative">
-            <span className="absolute left-2.5 top-2 text-xs font-semibold text-[#667085]">₹</span>
+            <span className="absolute left-2.5 top-1.5 text-xs text-[#66707A]">₹</span>
             <input
               type="number"
               min="0"
@@ -182,11 +182,11 @@ export const FilterSidebar: React.FC<FilterSidebarProps> = ({
                 })
               }
               placeholder="Min"
-              className="w-full pl-6 pr-2.5 py-1.5 text-xs bg-[#F5F6F8] border border-[#E4E7EC] rounded-xl focus:bg-white focus:outline-none focus:ring-2 focus:ring-[#F06449]/20 focus:border-[#F06449] transition text-[#202833] placeholder:text-[#667085]"
+              className="w-full pl-6 pr-2 py-1.5 text-xs bg-white border border-[#E5E8EA] rounded-lg focus:border-[#315CF5] focus:outline-none transition-colors text-[#17191C] placeholder:text-[#66707A]"
             />
           </div>
           <div className="relative">
-            <span className="absolute left-2.5 top-2 text-xs font-semibold text-[#667085]">₹</span>
+            <span className="absolute left-2.5 top-1.5 text-xs text-[#66707A]">₹</span>
             <input
               type="number"
               min="0"
@@ -198,7 +198,7 @@ export const FilterSidebar: React.FC<FilterSidebarProps> = ({
                 })
               }
               placeholder="Max"
-              className="w-full pl-6 pr-2.5 py-1.5 text-xs bg-[#F5F6F8] border border-[#E4E7EC] rounded-xl focus:bg-white focus:outline-none focus:ring-2 focus:ring-[#F06449]/20 focus:border-[#F06449] transition text-[#202833] placeholder:text-[#667085]"
+              className="w-full pl-6 pr-2 py-1.5 text-xs bg-white border border-[#E5E8EA] rounded-lg focus:border-[#315CF5] focus:outline-none transition-colors text-[#17191C] placeholder:text-[#66707A]"
             />
           </div>
         </div>
@@ -206,7 +206,7 @@ export const FilterSidebar: React.FC<FilterSidebarProps> = ({
 
       {/* Condition Pills */}
       <div>
-        <label className="block text-xs font-semibold text-[#172B46] mb-2">Item Condition</label>
+        <label className="block text-xs font-semibold text-[#17191C] mb-2">Condition</label>
         <div className="grid grid-cols-2 gap-1.5">
           {conditions.map((c) => {
             const isSelected = (filters.condition || '') === c.value;
@@ -214,10 +214,10 @@ export const FilterSidebar: React.FC<FilterSidebarProps> = ({
               <button
                 key={c.value}
                 onClick={() => onFilterChange({ condition: c.value || undefined, page: 1 })}
-                className={`py-1.5 px-2.5 text-[11px] font-semibold rounded-xl border transition text-center ${
+                className={`py-1 px-2 text-[11px] font-medium rounded-lg border transition-colors text-center cursor-pointer ${
                   isSelected
-                    ? 'bg-[#172B46] text-white border-[#172B46] shadow-xs'
-                    : 'bg-[#F5F6F8] border-[#E4E7EC] text-[#667085] hover:bg-white hover:text-[#172B46]'
+                    ? 'bg-[#17191C] text-white border-[#17191C]'
+                    : 'bg-[#FAFAF8] border-[#E5E8EA] text-[#66707A] hover:bg-white hover:text-[#17191C]'
                 }`}
               >
                 {c.label}
@@ -229,11 +229,11 @@ export const FilterSidebar: React.FC<FilterSidebarProps> = ({
 
       {/* Sort By Dropdown */}
       <div>
-        <label className="block text-xs font-semibold text-[#172B46] mb-1.5">Sort Listings</label>
+        <label className="block text-xs font-semibold text-[#17191C] mb-1.5">Sort Order</label>
         <select
           value={filters.sortBy || 'newest'}
           onChange={(e) => onFilterChange({ sortBy: e.target.value as any, page: 1 })}
-          className="w-full px-3 py-2 text-xs bg-[#F5F6F8] border border-[#E4E7EC] rounded-xl focus:bg-white focus:ring-2 focus:ring-[#F06449]/20 focus:border-[#F06449] focus:outline-none font-medium text-[#202833] transition"
+          className="w-full px-2.5 py-1.5 text-xs bg-white border border-[#E5E8EA] rounded-lg focus:border-[#315CF5] focus:outline-none font-medium text-[#17191C] transition-colors cursor-pointer"
         >
           <option value="newest">Featured & Newest</option>
           <option value="price_asc">Price: Low to High</option>
@@ -242,10 +242,10 @@ export const FilterSidebar: React.FC<FilterSidebarProps> = ({
         </select>
       </div>
 
-      {/* Trust Guarantee Note */}
-      <div className="pt-3 border-t border-[#E4E7EC] text-[11px] text-[#667085] flex items-start gap-2">
-        <Sparkles className="w-3.5 h-3.5 text-[#F06449] shrink-0 mt-0.5" />
-        <span>All rentals include refundable deposit escrow & digital pass verification.</span>
+      {/* Trust Notice */}
+      <div className="pt-3 border-t border-[#E5E8EA] text-[11px] text-[#66707A] flex items-start gap-2">
+        <Sparkles className="w-3.5 h-3.5 text-[#315CF5] shrink-0 mt-0.5" />
+        <span>All listings include refundable deposit escrow & single-use QR handover tokens.</span>
       </div>
     </div>
   );

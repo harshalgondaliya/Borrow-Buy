@@ -3,14 +3,24 @@ output "dashboard_name" {
   value       = aws_cloudwatch_dashboard.system_dashboard.dashboard_name
 }
 
+output "ec2_cpu_alarm_arn" {
+  description = "ARN of the EC2 CPU alarm"
+  value       = length(aws_cloudwatch_metric_alarm.ec2_cpu_high) > 0 ? aws_cloudwatch_metric_alarm.ec2_cpu_high[0].arn : ""
+}
+
+output "ec2_status_check_alarm_arn" {
+  description = "ARN of the EC2 Status Check alarm"
+  value       = length(aws_cloudwatch_metric_alarm.ec2_status_check) > 0 ? aws_cloudwatch_metric_alarm.ec2_status_check[0].arn : ""
+}
+
 output "ecs_cpu_alarm_arn" {
   description = "ARN of the ECS CPU alarm"
-  value       = aws_cloudwatch_metric_alarm.ecs_cpu_high.arn
+  value       = length(aws_cloudwatch_metric_alarm.ecs_cpu_high) > 0 ? aws_cloudwatch_metric_alarm.ecs_cpu_high[0].arn : ""
 }
 
 output "rds_storage_alarm_arn" {
   description = "ARN of the RDS storage alarm"
-  value       = aws_cloudwatch_metric_alarm.rds_storage_low.arn
+  value       = length(aws_cloudwatch_metric_alarm.rds_storage_low) > 0 ? aws_cloudwatch_metric_alarm.rds_storage_low[0].arn : ""
 }
 
 output "api_log_group_arn" {

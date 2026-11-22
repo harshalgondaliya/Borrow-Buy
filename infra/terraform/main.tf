@@ -51,8 +51,15 @@ module "security" {
 module "cloudwatch" {
   source = "./modules/cloudwatch"
 
-  project_name = var.project_name
-  environment  = var.environment
+  project_name    = var.project_name
+  environment     = var.environment
+  aws_region      = var.aws_region
+  deploy_mode     = var.deploy_mode
+  ec2_instance_id = length(module.ec2) > 0 ? module.ec2[0].instance_id : ""
+  enable_rds      = var.enable_rds
+  enable_alb      = var.enable_alb
+  rds_instance_id = length(module.rds) > 0 ? module.rds[0].db_instance_id : ""
+  alb_arn_suffix  = length(module.alb) > 0 ? module.alb[0].alb_arn : ""
 }
 
 # -----------------------------------------------------------------------------

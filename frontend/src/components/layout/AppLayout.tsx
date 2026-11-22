@@ -53,7 +53,7 @@ export const AppLayout: React.FC = () => {
   }, []);
 
   return (
-    <div className="min-h-screen flex flex-col bg-[#F5F6F8] text-[#202833] antialiased selection:bg-[#F06449] selection:text-white font-sans">
+    <div className="min-h-screen flex flex-col bg-[#FAFAF8] text-[#17191C] antialiased selection:bg-[#315CF5] selection:text-white font-sans">
       <StartupSplash />
 
       <Navbar categoryCount={categories.length || 25} />

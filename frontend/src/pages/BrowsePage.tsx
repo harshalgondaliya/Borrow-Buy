@@ -1,6 +1,6 @@
 import React, { useEffect, useState, useCallback } from 'react';
 import { useSearchParams } from 'react-router-dom';
-import { Compass, SearchX, SlidersHorizontal, RotateCcw } from 'lucide-react';
+import { Compass, SearchX, SlidersHorizontal, RotateCcw, X, ChevronLeft, ChevronRight } from 'lucide-react';
 import {
   Product,
   Category,
@@ -22,6 +22,7 @@ export const BrowsePage: React.FC = () => {
   const [products, setProducts] = useState<Product[]>([]);
   const [totalCount, setTotalCount] = useState(0);
   const [loading, setLoading] = useState(true);
+  const [mobileFilterOpen, setMobileFilterOpen] = useState(false);
 
   // Initialize filters from URL params
   const [filters, setFilters] = useState<ProductQueryParams>(() => {
@@ -34,7 +35,6 @@ export const BrowsePage: React.FC = () => {
     };
   });
 
-  // Sync state back to URL when filters change
   const syncParamsToUrl = (newFilters: ProductQueryParams) => {
     const params = new URLSearchParams();
     if (newFilters.search) params.set('search', newFilters.search);
@@ -84,32 +84,53 @@ export const BrowsePage: React.FC = () => {
     info('All filters have been reset', 'Catalog Reset');
   };
 
+  const handlePageChange = (newPage: number) => {
+    setFilters((prev) => {
+      const updated = { ...prev, page: newPage };
+      syncParamsToUrl(updated);
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+      return updated;
+    });
+  };
+
+  const activeCategory = categories.find((c) => c.id === filters.categoryId);
+
   return (
-    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10">
-      {/* Header bar */}
-      <div className="flex flex-col sm:flex-row sm:items-end justify-between mb-8 gap-4 pb-4 border-b border-[#E4E7EC]">
+    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+      {/* Header Bar */}
+      <div className="flex flex-col sm:flex-row sm:items-end justify-between mb-6 pb-4 border-b border-[#E5E8EA] gap-4">
         <div>
-          <div className="flex items-center gap-2 text-xs font-bold text-[#F06449] uppercase tracking-wider mb-1 font-display">
-            <Compass className="w-4 h-4 text-[#F06449]" />
+          <div className="flex items-center gap-1.5 text-xs font-semibold text-[#315CF5] uppercase tracking-wider mb-1">
+            <Compass className="w-3.5 h-3.5" />
             <span>Equipment Catalog</span>
           </div>
-          <h1 className="font-display text-3xl font-extrabold text-[#172B46] tracking-tight">
-            Browse All Gear
+          <h1 className="font-display text-2xl sm:text-3xl font-extrabold text-[#17191C] tracking-tight">
+            {activeCategory ? activeCategory.name : 'Browse All Gear'}
           </h1>
-          <p className="text-xs text-[#667085] mt-1">
-            Verified equipment for rent across Gujarat with secure digital escrow.
+          <p className="text-xs text-[#66707A] mt-1">
+            Verified equipment for rent across Gujarat hubs with instant escrow protection.
           </p>
         </div>
 
         <div className="flex items-center gap-3">
-          <span className="text-xs font-semibold text-[#667085]">
-            Showing <span className="text-[#172B46] font-bold">{products.length}</span> of {totalCount || 116} listings
+          <button
+            type="button"
+            onClick={() => setMobileFilterOpen(true)}
+            className="lg:hidden px-3 py-1.5 bg-white border border-[#E5E8EA] text-xs font-medium text-[#17191C] rounded-lg shadow-xs flex items-center gap-1.5 cursor-pointer"
+          >
+            <SlidersHorizontal className="w-3.5 h-3.5" />
+            <span>Filters</span>
+          </button>
+
+          <span className="text-xs font-medium text-[#66707A]">
+            Showing <span className="font-semibold text-[#17191C]">{products.length}</span> of {totalCount || 116} listings
           </span>
-          {(filters.search || filters.categoryId || filters.location || filters.minPrice || filters.maxPrice) && (
+
+          {(filters.search || filters.categoryId || filters.location || filters.minPrice || filters.maxPrice || filters.condition) && (
             <button
               type="button"
               onClick={handleResetFilters}
-              className="text-xs font-bold text-[#F06449] hover:underline flex items-center gap-1 cursor-pointer"
+              className="text-xs font-semibold text-[#315CF5] hover:underline flex items-center gap-1 cursor-pointer"
             >
               <RotateCcw className="w-3 h-3" />
               <span>Reset</span>
@@ -118,15 +139,50 @@ export const BrowsePage: React.FC = () => {
         </div>
       </div>
 
-      {/* Main 2-column layout */}
-      <div className="grid lg:grid-cols-4 gap-8 items-start">
-        {/* Left: Filter Sidebar */}
-        <aside className="lg:col-span-1">
-          <div className="sticky top-28 bg-white p-5 rounded-2xl border border-[#E4E7EC] shadow-xs">
-            <div className="flex items-center gap-2 text-xs font-bold text-[#172B46] uppercase tracking-wider mb-4 font-display">
-              <SlidersHorizontal className="w-4 h-4 text-[#F06449]" />
-              <span>Filters</span>
-            </div>
+      {/* Active Filter Chips */}
+      {(filters.search || filters.categoryId || filters.location || filters.condition) && (
+        <div className="flex flex-wrap items-center gap-2 mb-6">
+          <span className="text-xs text-[#66707A]">Active filters:</span>
+          {filters.search && (
+            <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-md bg-[#F1F3F3] text-xs text-[#17191C] border border-[#E5E8EA]">
+              <span>Keyword: &quot;{filters.search}&quot;</span>
+              <button onClick={() => handleFilterChange({ search: undefined })} className="hover:text-red-500 cursor-pointer">
+                <X className="w-3 h-3" />
+              </button>
+            </span>
+          )}
+          {filters.categoryId && activeCategory && (
+            <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-md bg-[#EFF3FE] text-xs text-[#315CF5] border border-[#DBE4FD]">
+              <span>Category: {activeCategory.name}</span>
+              <button onClick={() => handleFilterChange({ categoryId: undefined })} className="hover:text-red-500 cursor-pointer">
+                <X className="w-3 h-3" />
+              </button>
+            </span>
+          )}
+          {filters.location && (
+            <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-md bg-[#F1F3F3] text-xs text-[#17191C] border border-[#E5E8EA]">
+              <span>City: {filters.location}</span>
+              <button onClick={() => handleFilterChange({ location: undefined })} className="hover:text-red-500 cursor-pointer">
+                <X className="w-3 h-3" />
+              </button>
+            </span>
+          )}
+          {filters.condition && (
+            <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-md bg-[#F1F3F3] text-xs text-[#17191C] border border-[#E5E8EA]">
+              <span>Condition: {filters.condition}</span>
+              <button onClick={() => handleFilterChange({ condition: undefined })} className="hover:text-red-500 cursor-pointer">
+                <X className="w-3 h-3" />
+              </button>
+            </span>
+          )}
+        </div>
+      )}
+
+      {/* Main Grid & Sidebar Layout */}
+      <div className="grid grid-cols-1 lg:grid-cols-4 gap-8">
+        {/* Desktop Sidebar */}
+        <div className="hidden lg:block lg:col-span-1">
+          <div className="sticky top-20">
             <FilterSidebar
               categories={categories}
               filters={filters}
@@ -134,10 +190,10 @@ export const BrowsePage: React.FC = () => {
               onReset={handleResetFilters}
             />
           </div>
-        </aside>
+        </div>
 
-        {/* Right: Listings */}
-        <section className="lg:col-span-3">
+        {/* Product Grid */}
+        <div className="lg:col-span-3">
           {loading ? (
             <div className="grid sm:grid-cols-2 xl:grid-cols-3 gap-6">
               {[1, 2, 3, 4, 5, 6].map((i) => (
@@ -145,37 +201,97 @@ export const BrowsePage: React.FC = () => {
               ))}
             </div>
           ) : products.length === 0 ? (
-            <div className="bg-white rounded-3xl border border-[#E4E7EC] p-12 text-center shadow-xs">
-              <div className="w-16 h-16 bg-[#F5F6F8] text-[#172B46] rounded-2xl flex items-center justify-center mx-auto mb-4 border border-[#E4E7EC]">
-                <SearchX className="w-8 h-8" />
+            <div className="text-center py-16 bg-white rounded-xl border border-[#E5E8EA] p-8">
+              <div className="w-12 h-12 rounded-xl bg-[#F1F3F3] text-[#66707A] flex items-center justify-center mx-auto mb-3">
+                <SearchX className="w-6 h-6" />
               </div>
-              <h3 className="font-display text-lg font-bold text-[#202833]">
-                No matching equipment found
-              </h3>
-              <p className="text-xs text-[#667085] mt-1.5 max-w-sm mx-auto leading-relaxed">
-                Try resetting your price filter, selecting another city or category, or searching with broader keywords.
+              <h3 className="font-semibold text-base text-[#17191C]">No Equipment Found</h3>
+              <p className="text-xs text-[#66707A] mt-1 max-w-sm mx-auto leading-relaxed">
+                No listings matched your active search criteria. Try loosening your keywords or reset all filters to view all available gear.
               </p>
               <button
                 type="button"
                 onClick={handleResetFilters}
-                className="mt-6 px-5 py-2.5 bg-[#F06449] text-white text-xs font-bold rounded-xl shadow-xs hover:bg-[#D95339] transition cursor-pointer"
+                className="mt-4 px-4 py-2 bg-[#315CF5] hover:bg-[#2447C9] text-white text-xs font-semibold rounded-lg shadow-xs transition-colors cursor-pointer"
               >
                 Reset All Filters
               </button>
             </div>
           ) : (
-            <div className="grid sm:grid-cols-2 xl:grid-cols-3 gap-6">
-              {products.map((product) => (
-                <ProductCard
-                  key={product.id}
-                  product={product}
-                  onSelect={(p) => openProduct(p)}
-                />
-              ))}
-            </div>
+            <>
+              <div className="grid sm:grid-cols-2 xl:grid-cols-3 gap-6">
+                {products.map((product) => (
+                  <ProductCard
+                    key={product.id}
+                    product={product}
+                    onSelect={(p) => openProduct(p)}
+                  />
+                ))}
+              </div>
+
+              {/* Pagination Bar */}
+              {totalCount > 12 && (
+                <div className="mt-10 pt-6 border-t border-[#E5E8EA] flex items-center justify-between">
+                  <button
+                    type="button"
+                    disabled={filters.page === 1}
+                    onClick={() => handlePageChange((filters.page || 1) - 1)}
+                    className="px-3.5 py-1.5 text-xs font-medium rounded-lg border border-[#E5E8EA] bg-white text-[#17191C] hover:bg-[#F1F3F3] disabled:opacity-40 disabled:cursor-not-allowed flex items-center gap-1 cursor-pointer"
+                  >
+                    <ChevronLeft className="w-3.5 h-3.5" />
+                    <span>Previous</span>
+                  </button>
+
+                  <div className="text-xs text-[#66707A] font-medium">
+                    Page <span className="font-semibold text-[#17191C]">{filters.page || 1}</span> of{' '}
+                    <span className="font-semibold text-[#17191C]">{Math.ceil(totalCount / 12)}</span>
+                  </div>
+
+                  <button
+                    type="button"
+                    disabled={products.length < 12 || (filters.page || 1) * 12 >= totalCount}
+                    onClick={() => handlePageChange((filters.page || 1) + 1)}
+                    className="px-3.5 py-1.5 text-xs font-medium rounded-lg border border-[#E5E8EA] bg-white text-[#17191C] hover:bg-[#F1F3F3] disabled:opacity-40 disabled:cursor-not-allowed flex items-center gap-1 cursor-pointer"
+                  >
+                    <span>Next</span>
+                    <ChevronRight className="w-3.5 h-3.5" />
+                  </button>
+                </div>
+              )}
+            </>
           )}
-        </section>
+        </div>
       </div>
+
+      {/* Mobile Filters Slide-over / Modal */}
+      {mobileFilterOpen && (
+        <div className="fixed inset-0 z-50 overflow-y-auto bg-black/40 backdrop-blur-xs flex justify-end">
+          <div className="bg-white w-full max-w-sm h-full overflow-y-auto p-5 shadow-2xl space-y-4">
+            <div className="flex items-center justify-between pb-3 border-b border-[#E5E8EA]">
+              <h3 className="font-semibold text-base text-[#17191C]">Filter Equipment</h3>
+              <button
+                type="button"
+                onClick={() => setMobileFilterOpen(false)}
+                className="p-1 rounded-lg text-[#66707A] hover:bg-[#F1F3F3]"
+              >
+                <X className="w-5 h-5" />
+              </button>
+            </div>
+            <FilterSidebar
+              categories={categories}
+              filters={filters}
+              onFilterChange={(f) => {
+                handleFilterChange(f);
+                setMobileFilterOpen(false);
+              }}
+              onReset={() => {
+                handleResetFilters();
+                setMobileFilterOpen(false);
+              }}
+            />
+          </div>
+        </div>
+      )}
     </div>
   );
 };

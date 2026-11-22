@@ -16,6 +16,7 @@ import {
   KeyRound,
   Eye,
   EyeOff,
+  Zap,
 } from 'lucide-react';
 
 interface AuthModalProps {
@@ -45,6 +46,21 @@ export const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose, initialTa
   const resetForm = () => {
     setError(null);
     setSuccessMsg(null);
+  };
+
+  const handleDemoFill = (demoRole: 'CUSTOMER' | 'OWNER' | 'ADMIN') => {
+    if (demoRole === 'CUSTOMER') {
+      setEmail('customer@borrowbuy.com');
+      setPassword('Password123!');
+    } else if (demoRole === 'OWNER') {
+      setEmail('owner@borrowbuy.com');
+      setPassword('Password123!');
+    } else if (demoRole === 'ADMIN') {
+      setEmail('admin@borrowbuy.com');
+      setPassword('Password123!');
+    }
+    setTab('login');
+    resetForm();
   };
 
   const handleLogin = async (e: React.FormEvent) => {
@@ -80,64 +96,64 @@ export const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose, initialTa
   return (
     <AnimatePresence>
       {isOpen && (
-        <div className="fixed inset-0 z-50 overflow-y-auto flex items-center justify-center p-4 sm:p-6">
+        <div className="fixed inset-0 z-50 overflow-y-auto flex items-center justify-center p-4 sm:p-6 font-sans">
           {/* Backdrop */}
           <motion.div
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
-            transition={{ duration: 0.2 }}
+            transition={{ duration: 0.15 }}
             onClick={onClose}
-            className="fixed inset-0 bg-slate-950/70 backdrop-blur-md"
+            className="fixed inset-0 bg-black/40 backdrop-blur-xs"
           />
 
           {/* Modal Container */}
           <motion.div
-            initial={{ opacity: 0, scale: 0.95, y: 10 }}
+            initial={{ opacity: 0, scale: 0.98, y: 8 }}
             animate={{ opacity: 1, scale: 1, y: 0 }}
-            exit={{ opacity: 0, scale: 0.95, y: 10 }}
-            transition={{ type: 'spring', damping: 25, stiffness: 300 }}
-            className="relative bg-white rounded-3xl shadow-2xl border border-slate-200/80 max-w-md w-full p-6 sm:p-8 overflow-hidden z-10"
+            exit={{ opacity: 0, scale: 0.98, y: 8 }}
+            transition={{ duration: 0.2 }}
+            className="relative bg-white rounded-2xl shadow-elevated border border-[#E5E8EA] max-w-md w-full p-6 sm:p-7 overflow-hidden z-10 text-[#17191C]"
           >
             {/* Close Button */}
             <button
               onClick={onClose}
-              className="absolute top-5 right-5 text-slate-400 hover:text-slate-700 p-2 rounded-xl hover:bg-slate-100 transition-colors"
+              className="absolute top-4 right-4 text-[#66707A] hover:text-[#17191C] p-2 rounded-lg hover:bg-[#F1F3F3] transition-colors cursor-pointer"
               aria-label="Close dialog"
             >
               <X className="w-5 h-5" />
             </button>
 
             {/* Brand Logo & Header */}
-            <div className="text-center mb-6">
-              <div className="inline-flex items-center justify-center mb-2.5">
-                <BorrowBuyLogo size="lg" variant="icon" />
+            <div className="text-center mb-5">
+              <div className="inline-flex items-center justify-center mb-2">
+                <BorrowBuyLogo size="md" variant="icon" />
               </div>
-              <h2 className="text-2xl font-display font-extrabold text-slate-900 tracking-tight">
-                {tab === 'login' && 'Welcome back'}
-                {tab === 'register' && 'Join BorrowBuy'}
+              <h2 className="text-xl font-semibold text-[#17191C] tracking-tight">
+                {tab === 'login' && 'Sign in to BorrowBuy'}
+                {tab === 'register' && 'Create your account'}
                 {tab === 'forgot' && 'Reset your password'}
               </h2>
-              <p className="text-xs text-slate-500 mt-1 max-w-xs mx-auto">
-                {tab === 'login' && 'Sign in to access your rentals, listings, and digital passes.'}
-                {tab === 'register' && 'Borrow equipment from neighbours or earn by sharing your own gear.'}
-                {tab === 'forgot' && 'Enter your registered email to receive a password reset token.'}
+              <p className="text-xs text-[#66707A] mt-1 max-w-xs mx-auto leading-relaxed">
+                {tab === 'login' && 'Access equipment rentals, digital passes, and owner listings.'}
+                {tab === 'register' && 'Borrow equipment from verified local owners or earn by renting your own.'}
+                {tab === 'forgot' && 'Enter your email to receive a password reset token.'}
               </p>
             </div>
 
             {/* Tab Navigation Pill */}
             {tab !== 'forgot' && (
-              <div className="flex p-1 bg-slate-100 rounded-2xl mb-6">
+              <div className="flex p-1 bg-[#F1F3F3] rounded-lg mb-5 text-xs font-medium">
                 <button
                   type="button"
                   onClick={() => {
                     setTab('login');
                     resetForm();
                   }}
-                  className={`flex-1 py-2 text-xs font-semibold rounded-xl transition-all duration-200 ${
+                  className={`flex-1 py-1.5 text-xs font-medium rounded-md transition-colors cursor-pointer ${
                     tab === 'login'
-                      ? 'bg-white text-slate-900 shadow-sm'
-                      : 'text-slate-500 hover:text-slate-800'
+                      ? 'bg-white text-[#17191C] font-semibold shadow-xs'
+                      : 'text-[#66707A] hover:text-[#17191C]'
                   }`}
                 >
                   Sign In
@@ -148,10 +164,10 @@ export const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose, initialTa
                     setTab('register');
                     resetForm();
                   }}
-                  className={`flex-1 py-2 text-xs font-semibold rounded-xl transition-all duration-200 ${
+                  className={`flex-1 py-1.5 text-xs font-medium rounded-md transition-colors cursor-pointer ${
                     tab === 'register'
-                      ? 'bg-white text-slate-900 shadow-sm'
-                      : 'text-slate-500 hover:text-slate-800'
+                      ? 'bg-white text-[#17191C] font-semibold shadow-xs'
+                      : 'text-[#66707A] hover:text-[#17191C]'
                   }`}
                 >
                   Create Account
@@ -159,77 +175,104 @@ export const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose, initialTa
               </div>
             )}
 
+            {/* Demo Quick-Fill Bar */}
+            {tab === 'login' && (
+              <div className="mb-4 p-2.5 bg-[#FAFAF8] rounded-xl border border-[#E5E8EA]">
+                <div className="flex items-center justify-between mb-1.5 text-[11px] font-semibold text-[#66707A]">
+                  <span className="flex items-center gap-1">
+                    <Zap className="w-3.5 h-3.5 text-[#315CF5]" />
+                    <span>Quick Demo Sign In:</span>
+                  </span>
+                </div>
+                <div className="grid grid-cols-3 gap-1.5">
+                  <button
+                    type="button"
+                    onClick={() => handleDemoFill('CUSTOMER')}
+                    className="py-1 px-2 text-[11px] font-medium rounded-md bg-white border border-[#E5E8EA] hover:border-[#315CF5] hover:text-[#315CF5] transition-colors text-center cursor-pointer"
+                  >
+                    Customer
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => handleDemoFill('OWNER')}
+                    className="py-1 px-2 text-[11px] font-medium rounded-md bg-white border border-[#E5E8EA] hover:border-[#315CF5] hover:text-[#315CF5] transition-colors text-center cursor-pointer"
+                  >
+                    Owner
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => handleDemoFill('ADMIN')}
+                    className="py-1 px-2 text-[11px] font-medium rounded-md bg-white border border-[#E5E8EA] hover:border-[#315CF5] hover:text-[#315CF5] transition-colors text-center cursor-pointer"
+                  >
+                    Admin
+                  </button>
+                </div>
+              </div>
+            )}
+
             {/* Error / Alert Messages */}
             {error && (
-              <motion.div
-                initial={{ opacity: 0, y: -4 }}
-                animate={{ opacity: 1, y: 0 }}
-                className="mb-4 p-3.5 bg-rose-50 border border-rose-200 text-rose-700 rounded-2xl text-xs flex items-start gap-2.5"
-              >
-                <AlertCircle className="w-4 h-4 shrink-0 mt-0.5 text-rose-600" />
+              <div className="mb-4 p-3 bg-[#FDF2F2] border border-[#FDE68A] text-[#C43838] rounded-xl text-xs flex items-start gap-2">
+                <AlertCircle className="w-4 h-4 shrink-0 mt-0.5 text-[#C43838]" />
                 <span className="font-medium leading-relaxed">{error}</span>
-              </motion.div>
+              </div>
             )}
 
             {successMsg && (
-              <motion.div
-                initial={{ opacity: 0, y: -4 }}
-                animate={{ opacity: 1, y: 0 }}
-                className="mb-4 p-3.5 bg-emerald-50 border border-emerald-200 text-emerald-800 rounded-2xl text-xs flex items-start gap-2.5"
-              >
-                <CheckCircle2 className="w-4 h-4 shrink-0 mt-0.5 text-emerald-600" />
+              <div className="mb-4 p-3 bg-[#EBF5F1] border border-[#13795B]/20 text-[#13795B] rounded-xl text-xs flex items-start gap-2">
+                <CheckCircle2 className="w-4 h-4 shrink-0 mt-0.5 text-[#13795B]" />
                 <span className="font-medium leading-relaxed">{successMsg}</span>
-              </motion.div>
+              </div>
             )}
 
             {/* Tab: LOGIN */}
             {tab === 'login' && (
-              <form onSubmit={handleLogin} className="space-y-4">
+              <form onSubmit={handleLogin} className="space-y-3.5">
                 <div>
-                  <label className="block text-xs font-bold text-slate-700 mb-1.5">
+                  <label className="block text-xs font-semibold text-[#17191C] mb-1">
                     Email address
                   </label>
                   <div className="relative">
-                    <Mail className="w-4 h-4 text-slate-400 absolute left-3.5 top-3.5" />
+                    <Mail className="w-4 h-4 text-[#66707A] absolute left-3 top-2.5 pointer-events-none" />
                     <input
                       type="email"
                       required
                       value={email}
                       onChange={(e) => setEmail(e.target.value)}
                       placeholder="name@example.com"
-                      className="w-full pl-10 pr-3.5 py-2.5 text-sm bg-white border border-slate-200 rounded-xl focus:border-brand-500 focus:ring-4 focus:ring-brand-500/10 focus:outline-none transition-all placeholder:text-slate-400"
+                      className="w-full pl-9 pr-3 py-2 text-xs bg-white border border-[#E5E8EA] rounded-lg focus:border-[#315CF5] focus:outline-none transition-colors text-[#17191C] placeholder:text-[#66707A]"
                     />
                   </div>
                 </div>
 
                 <div>
-                  <div className="flex justify-between items-center mb-1.5">
-                    <label className="text-xs font-bold text-slate-700">Password</label>
+                  <div className="flex justify-between items-center mb-1">
+                    <label className="text-xs font-semibold text-[#17191C]">Password</label>
                     <button
                       type="button"
                       onClick={() => {
                         setTab('forgot');
                         resetForm();
                       }}
-                      className="text-xs text-brand-600 hover:text-brand-700 font-semibold"
+                      className="text-xs text-[#315CF5] hover:underline font-medium cursor-pointer"
                     >
                       Forgot password?
                     </button>
                   </div>
                   <div className="relative">
-                    <Lock className="w-4 h-4 text-slate-400 absolute left-3.5 top-3.5" />
+                    <Lock className="w-4 h-4 text-[#66707A] absolute left-3 top-2.5 pointer-events-none" />
                     <input
                       type={showPassword ? 'text' : 'password'}
                       required
                       value={password}
                       onChange={(e) => setPassword(e.target.value)}
                       placeholder="••••••••"
-                      className="w-full pl-10 pr-10 py-2.5 text-sm bg-white border border-slate-200 rounded-xl focus:border-brand-500 focus:ring-4 focus:ring-brand-500/10 focus:outline-none transition-all placeholder:text-slate-400"
+                      className="w-full pl-9 pr-9 py-2 text-xs bg-white border border-[#E5E8EA] rounded-lg focus:border-[#315CF5] focus:outline-none transition-colors text-[#17191C] placeholder:text-[#66707A]"
                     />
                     <button
                       type="button"
                       onClick={() => setShowPassword(!showPassword)}
-                      className="absolute right-3.5 top-3 text-slate-400 hover:text-slate-600 focus:outline-none"
+                      className="absolute right-3 top-2.5 text-[#66707A] hover:text-[#17191C] focus:outline-none cursor-pointer"
                       title={showPassword ? 'Hide password' : 'Show password'}
                     >
                       {showPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
@@ -237,190 +280,182 @@ export const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose, initialTa
                   </div>
                 </div>
 
-                <motion.button
-                  whileHover={{ scale: 1.01 }}
-                  whileTap={{ scale: 0.99 }}
+                <button
                   type="submit"
                   disabled={loading}
-                  className="w-full py-3 px-4 bg-slate-900 hover:bg-slate-800 text-white font-bold rounded-xl text-sm shadow-md transition-all disabled:opacity-50 flex items-center justify-center gap-2"
+                  className="w-full py-2.5 px-4 bg-[#315CF5] hover:bg-[#2447C9] text-white font-semibold rounded-lg text-xs shadow-xs transition-colors disabled:opacity-50 flex items-center justify-center gap-2 cursor-pointer mt-2"
                 >
                   {loading ? (
-                    <span className="inline-block w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" />
+                    <span className="inline-block w-3.5 h-3.5 border-2 border-white/30 border-t-white rounded-full animate-spin" />
                   ) : (
                     <>
                       <span>Sign In</span>
-                      <ArrowRight className="w-4 h-4" />
+                      <ArrowRight className="w-3.5 h-3.5" />
                     </>
                   )}
-                </motion.button>
+                </button>
               </form>
             )}
 
             {/* Tab: REGISTER */}
             {tab === 'register' && (
-              <form onSubmit={handleRegister} className="space-y-3.5">
+              <form onSubmit={handleRegister} className="space-y-3">
                 {/* Role Switcher Cards */}
                 <div>
-                  <label className="block text-xs font-bold text-slate-700 mb-1.5">
-                    What would you like to do?
+                  <label className="block text-xs font-semibold text-[#17191C] mb-1">
+                    Select Your Role
                   </label>
-                  <div className="grid grid-cols-2 gap-2.5">
+                  <div className="grid grid-cols-2 gap-2">
                     <button
                       type="button"
                       onClick={() => setRole('CUSTOMER')}
-                      className={`p-3 rounded-2xl border text-left transition-all ${
+                      className={`p-2.5 rounded-lg border text-left transition-colors cursor-pointer ${
                         role === 'CUSTOMER'
-                          ? 'border-brand-600 bg-brand-50/70 ring-2 ring-brand-500/20'
-                          : 'border-slate-200 hover:border-slate-300 bg-white'
+                          ? 'border-[#315CF5] bg-[#EFF3FE]'
+                          : 'border-[#E5E8EA] hover:border-[#D0D5DD] bg-white'
                       }`}
                     >
-                      <div className="flex items-center justify-between mb-1">
-                        <span className="text-sm font-bold text-brand-700">Renter</span>
+                      <div className="flex items-center justify-between mb-0.5">
+                        <span className="text-xs font-semibold text-[#17191C]">Customer / Renter</span>
                         {role === 'CUSTOMER' && (
-                          <div className="w-2 h-2 rounded-full bg-brand-600" />
+                          <div className="w-2 h-2 rounded-full bg-[#315CF5]" />
                         )}
                       </div>
-                      <div className="font-bold text-xs text-slate-900">Rent Products</div>
-                      <div className="text-[10px] text-slate-500 leading-tight mt-0.5">
-                        Cameras, laptops, tools & bikes
+                      <div className="text-[10px] text-[#66707A] leading-tight">
+                        Rent cameras, tools & electronics
                       </div>
                     </button>
 
                     <button
                       type="button"
                       onClick={() => setRole('OWNER')}
-                      className={`p-3 rounded-2xl border text-left transition-all ${
+                      className={`p-2.5 rounded-lg border text-left transition-colors cursor-pointer ${
                         role === 'OWNER'
-                          ? 'border-brand-600 bg-brand-50/70 ring-2 ring-brand-500/20'
-                          : 'border-slate-200 hover:border-slate-300 bg-white'
+                          ? 'border-[#315CF5] bg-[#EFF3FE]'
+                          : 'border-[#E5E8EA] hover:border-[#D0D5DD] bg-white'
                       }`}
                     >
-                      <div className="flex items-center justify-between mb-1">
-                        <span className="text-sm font-bold text-brand-700">Owner</span>
+                      <div className="flex items-center justify-between mb-0.5">
+                        <span className="text-xs font-semibold text-[#17191C]">Owner / Lender</span>
                         {role === 'OWNER' && (
-                          <div className="w-2 h-2 rounded-full bg-brand-600" />
+                          <div className="w-2 h-2 rounded-full bg-[#315CF5]" />
                         )}
                       </div>
-                      <div className="font-bold text-xs text-slate-900">Lend Products</div>
-                      <div className="text-[10px] text-slate-500 leading-tight mt-0.5">
-                        Earn from your unused equipment
+                      <div className="text-[10px] text-[#66707A] leading-tight">
+                        List gear & earn monthly revenue
                       </div>
                     </button>
                   </div>
                 </div>
 
                 <div>
-                  <label className="block text-xs font-bold text-slate-700 mb-1">Full name</label>
+                  <label className="block text-xs font-semibold text-[#17191C] mb-1">Full name</label>
                   <div className="relative">
-                    <User className="w-4 h-4 text-slate-400 absolute left-3.5 top-3" />
+                    <User className="w-4 h-4 text-[#66707A] absolute left-3 top-2.5 pointer-events-none" />
                     <input
                       type="text"
                       required
                       value={fullName}
                       onChange={(e) => setFullName(e.target.value)}
                       placeholder="e.g. Hardik Patel"
-                      className="w-full pl-10 pr-3.5 py-2.5 text-sm bg-white border border-slate-200 rounded-xl focus:border-brand-500 focus:ring-4 focus:ring-brand-500/10 focus:outline-none transition-all placeholder:text-slate-400"
+                      className="w-full pl-9 pr-3 py-2 text-xs bg-white border border-[#E5E8EA] rounded-lg focus:border-[#315CF5] focus:outline-none transition-colors text-[#17191C] placeholder:text-[#66707A]"
                     />
                   </div>
                 </div>
 
                 <div>
-                  <label className="block text-xs font-bold text-slate-700 mb-1">Email address</label>
+                  <label className="block text-xs font-semibold text-[#17191C] mb-1">Email address</label>
                   <div className="relative">
-                    <Mail className="w-4 h-4 text-slate-400 absolute left-3.5 top-3" />
+                    <Mail className="w-4 h-4 text-[#66707A] absolute left-3 top-2.5 pointer-events-none" />
                     <input
                       type="email"
                       required
                       value={email}
                       onChange={(e) => setEmail(e.target.value)}
                       placeholder="name@example.com"
-                      className="w-full pl-10 pr-3.5 py-2.5 text-sm bg-white border border-slate-200 rounded-xl focus:border-brand-500 focus:ring-4 focus:ring-brand-500/10 focus:outline-none transition-all placeholder:text-slate-400"
+                      className="w-full pl-9 pr-3 py-2 text-xs bg-white border border-[#E5E8EA] rounded-lg focus:border-[#315CF5] focus:outline-none transition-colors text-[#17191C] placeholder:text-[#66707A]"
                     />
                   </div>
                 </div>
 
                 <div>
-                  <label className="block text-xs font-bold text-slate-700 mb-1">
-                    Phone number <span className="text-slate-400 font-normal">(optional)</span>
+                  <label className="block text-xs font-semibold text-[#17191C] mb-1">
+                    Phone number <span className="text-[#66707A] font-normal">(optional)</span>
                   </label>
                   <div className="relative">
-                    <Phone className="w-4 h-4 text-slate-400 absolute left-3.5 top-3" />
+                    <Phone className="w-4 h-4 text-[#66707A] absolute left-3 top-2.5 pointer-events-none" />
                     <input
                       type="tel"
                       value={phone}
                       onChange={(e) => setPhone(e.target.value)}
                       placeholder="+91 98765 43210"
-                      className="w-full pl-10 pr-3.5 py-2.5 text-sm bg-white border border-slate-200 rounded-xl focus:border-brand-500 focus:ring-4 focus:ring-brand-500/10 focus:outline-none transition-all placeholder:text-slate-400"
+                      className="w-full pl-9 pr-3 py-2 text-xs bg-white border border-[#E5E8EA] rounded-lg focus:border-[#315CF5] focus:outline-none transition-colors text-[#17191C] placeholder:text-[#66707A]"
                     />
                   </div>
                 </div>
 
                 <div>
-                  <label className="block text-xs font-bold text-slate-700 mb-1">
-                    Password <span className="text-slate-400 font-normal">(8+ characters, 1 uppercase, 1 number)</span>
+                  <label className="block text-xs font-semibold text-[#17191C] mb-1">
+                    Password <span className="text-[#66707A] font-normal">(8+ chars, 1 uppercase, 1 digit)</span>
                   </label>
                   <div className="relative">
-                    <Lock className="w-4 h-4 text-slate-400 absolute left-3.5 top-3" />
+                    <Lock className="w-4 h-4 text-[#66707A] absolute left-3 top-2.5 pointer-events-none" />
                     <input
                       type={showPassword ? 'text' : 'password'}
                       required
                       value={password}
                       onChange={(e) => setPassword(e.target.value)}
                       placeholder="••••••••"
-                      className="w-full pl-10 pr-10 py-2.5 text-sm bg-white border border-slate-200 rounded-xl focus:border-brand-500 focus:ring-4 focus:ring-brand-500/10 focus:outline-none transition-all placeholder:text-slate-400"
+                      className="w-full pl-9 pr-9 py-2 text-xs bg-white border border-[#E5E8EA] rounded-lg focus:border-[#315CF5] focus:outline-none transition-colors text-[#17191C] placeholder:text-[#66707A]"
                     />
                     <button
                       type="button"
                       onClick={() => setShowPassword(!showPassword)}
-                      className="absolute right-3.5 top-3 text-slate-400 hover:text-slate-600 focus:outline-none"
+                      className="absolute right-3 top-2.5 text-[#66707A] hover:text-[#17191C] focus:outline-none cursor-pointer"
                     >
                       {showPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
                     </button>
                   </div>
                 </div>
 
-                <motion.button
-                  whileHover={{ scale: 1.01 }}
-                  whileTap={{ scale: 0.99 }}
+                <button
                   type="submit"
                   disabled={loading}
-                  className="w-full py-3 px-4 bg-slate-900 hover:bg-slate-800 text-white font-bold rounded-xl text-sm shadow-md transition-all disabled:opacity-50 flex items-center justify-center gap-2 mt-2"
+                  className="w-full py-2.5 px-4 bg-[#315CF5] hover:bg-[#2447C9] text-white font-semibold rounded-lg text-xs shadow-xs transition-colors disabled:opacity-50 flex items-center justify-center gap-2 mt-2 cursor-pointer"
                 >
                   {loading ? (
-                    <span className="inline-block w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" />
+                    <span className="inline-block w-3.5 h-3.5 border-2 border-white/30 border-t-white rounded-full animate-spin" />
                   ) : (
                     <>
                       <span>Complete Registration</span>
-                      <ArrowRight className="w-4 h-4" />
+                      <ArrowRight className="w-3.5 h-3.5" />
                     </>
                   )}
-                </motion.button>
+                </button>
               </form>
             )}
 
             {/* Tab: FORGOT */}
             {tab === 'forgot' && (
-              <div className="space-y-4">
+              <div className="space-y-3.5">
                 <div>
-                  <label className="block text-xs font-bold text-slate-700 mb-1.5">
+                  <label className="block text-xs font-semibold text-[#17191C] mb-1">
                     Registered email
                   </label>
                   <div className="relative">
-                    <Mail className="w-4 h-4 text-slate-400 absolute left-3.5 top-3" />
+                    <Mail className="w-4 h-4 text-[#66707A] absolute left-3 top-2.5 pointer-events-none" />
                     <input
                       type="email"
                       required
                       value={email}
                       onChange={(e) => setEmail(e.target.value)}
                       placeholder="name@example.com"
-                      className="w-full pl-10 pr-3.5 py-2.5 text-sm bg-white border border-slate-200 rounded-xl focus:border-brand-500 focus:ring-4 focus:ring-brand-500/10 focus:outline-none transition-all"
+                      className="w-full pl-9 pr-3 py-2 text-xs bg-white border border-[#E5E8EA] rounded-lg focus:border-[#315CF5] focus:outline-none transition-colors text-[#17191C] placeholder:text-[#66707A]"
                     />
                   </div>
                 </div>
 
-                <motion.button
-                  whileHover={{ scale: 1.01 }}
-                  whileTap={{ scale: 0.99 }}
+                <button
                   type="button"
                   onClick={async () => {
                     setLoading(true);
@@ -435,17 +470,17 @@ export const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose, initialTa
                     }
                   }}
                   disabled={loading}
-                  className="w-full py-3 px-4 bg-slate-900 hover:bg-slate-800 text-white font-bold rounded-xl text-sm shadow-md transition-all disabled:opacity-50 flex items-center justify-center gap-2"
+                  className="w-full py-2.5 px-4 bg-[#315CF5] hover:bg-[#2447C9] text-white font-semibold rounded-lg text-xs shadow-xs transition-colors disabled:opacity-50 flex items-center justify-center gap-2 cursor-pointer"
                 >
                   {loading ? (
-                    <span className="inline-block w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" />
+                    <span className="inline-block w-3.5 h-3.5 border-2 border-white/30 border-t-white rounded-full animate-spin" />
                   ) : (
                     <>
                       <KeyRound className="w-4 h-4" />
                       <span>Send Reset Link</span>
                     </>
                   )}
-                </motion.button>
+                </button>
 
                 <button
                   type="button"
@@ -453,7 +488,7 @@ export const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose, initialTa
                     setTab('login');
                     resetForm();
                   }}
-                  className="w-full text-center text-xs font-semibold text-slate-500 hover:text-slate-800 transition-colors"
+                  className="w-full text-center text-xs font-medium text-[#66707A] hover:text-[#17191C] transition-colors cursor-pointer"
                 >
                   ← Back to Sign In
                 </button>

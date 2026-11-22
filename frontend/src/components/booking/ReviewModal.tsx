@@ -3,7 +3,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { Booking } from '../../services/bookings';
 import { reviewsService } from '../../services/reviews';
 import { useToast } from '../../features/toast/ToastContext';
-import { X, Star, AlertCircle, ShieldCheck, Sparkles } from 'lucide-react';
+import { X, Star, AlertCircle } from 'lucide-react';
 
 interface ReviewModalProps {
   booking: Booking | null;
@@ -52,43 +52,43 @@ export const ReviewModal: React.FC<ReviewModalProps> = ({
 
   return (
     <AnimatePresence>
-      <div className="fixed inset-0 z-50 overflow-y-auto flex items-center justify-center p-4 sm:p-6">
+      <div className="fixed inset-0 z-50 overflow-y-auto flex items-center justify-center p-4 sm:p-6 font-sans">
         {/* Backdrop */}
         <motion.div
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           exit={{ opacity: 0 }}
-          transition={{ duration: 0.2 }}
+          transition={{ duration: 0.15 }}
           onClick={onClose}
-          className="fixed inset-0 bg-slate-950/70 backdrop-blur-md"
+          className="fixed inset-0 bg-black/40 backdrop-blur-xs"
         />
 
         {/* Modal Window */}
         <motion.div
-          initial={{ opacity: 0, scale: 0.95, y: 10 }}
+          initial={{ opacity: 0, scale: 0.98, y: 8 }}
           animate={{ opacity: 1, scale: 1, y: 0 }}
-          exit={{ opacity: 0, scale: 0.95, y: 10 }}
-          transition={{ type: 'spring', damping: 25, stiffness: 300 }}
-          className="relative bg-white rounded-3xl shadow-2xl border border-slate-200 max-w-md w-full p-6 sm:p-8 z-10"
+          exit={{ opacity: 0, scale: 0.98, y: 8 }}
+          transition={{ duration: 0.2 }}
+          className="relative bg-white rounded-2xl shadow-elevated border border-[#E5E8EA] max-w-md w-full p-6 sm:p-7 z-10 text-[#17191C]"
         >
           {/* Close Button */}
           <button
             onClick={onClose}
-            className="absolute top-5 right-5 text-slate-400 hover:text-slate-700 p-2 rounded-xl hover:bg-slate-100 transition-colors"
+            className="absolute top-4 right-4 text-[#66707A] hover:text-[#17191C] p-2 rounded-lg hover:bg-[#F1F3F3] transition-colors cursor-pointer"
             aria-label="Close dialog"
           >
             <X className="w-5 h-5" />
           </button>
 
           {/* Header */}
-          <div className="text-center mb-6">
-            <div className="w-12 h-12 rounded-2xl bg-amber-50 text-amber-600 flex items-center justify-center mx-auto mb-2.5 border border-amber-200 shadow-sm">
-              <Star className="w-6 h-6 fill-amber-500 text-amber-500" />
+          <div className="text-center mb-5">
+            <div className="w-10 h-10 rounded-xl bg-[#FEF7ED] text-[#B76E16] flex items-center justify-center mx-auto mb-2 border border-[#FDE68A]">
+              <Star className="w-5 h-5 fill-[#B76E16] text-[#B76E16]" />
             </div>
-            <h2 className="text-xl font-display font-extrabold text-slate-900">
+            <h2 className="text-lg font-semibold text-[#17191C]">
               Rate Your Experience
             </h2>
-            <p className="text-xs text-slate-500 mt-1 max-w-xs mx-auto">
+            <p className="text-xs text-[#66707A] mt-1 max-w-xs mx-auto">
               How was your rental of <strong>{booking.product?.name}</strong> from{' '}
               {booking.product?.owner?.fullName || 'the owner'}?
             </p>
@@ -96,20 +96,16 @@ export const ReviewModal: React.FC<ReviewModalProps> = ({
 
           {/* Error Message */}
           {error && (
-            <motion.div
-              initial={{ opacity: 0, y: -4 }}
-              animate={{ opacity: 1, y: 0 }}
-              className="mb-4 p-3.5 bg-rose-50 border border-rose-200 text-rose-700 rounded-2xl text-xs flex items-center gap-2"
-            >
-              <AlertCircle className="w-4 h-4 shrink-0 text-rose-600" />
-              <span>{error}</span>
-            </motion.div>
+            <div className="mb-4 p-3 bg-[#FDF2F2] border border-[#FDE68A] text-[#C43838] rounded-xl text-xs flex items-start gap-2">
+              <AlertCircle className="w-4 h-4 shrink-0 mt-0.5 text-[#C43838]" />
+              <span className="font-medium leading-relaxed">{error}</span>
+            </div>
           )}
 
-          <form onSubmit={handleSubmit} className="space-y-5">
-            {/* Star Rating Selector */}
-            <div className="text-center bg-slate-50 p-4 rounded-2xl border border-slate-200">
-              <div className="flex justify-center items-center gap-2 mb-2">
+          <form onSubmit={handleSubmit} className="space-y-4">
+            {/* Star Rating Select */}
+            <div className="text-center">
+              <div className="flex justify-center items-center gap-2 mb-1.5">
                 {[1, 2, 3, 4, 5].map((star) => (
                   <button
                     key={star}
@@ -117,74 +113,58 @@ export const ReviewModal: React.FC<ReviewModalProps> = ({
                     onMouseEnter={() => setHoverRating(star)}
                     onMouseLeave={() => setHoverRating(rating)}
                     onClick={() => setRating(star)}
-                    className="p-1 transition-transform hover:scale-125 focus:outline-none"
+                    className="p-1 focus:outline-none transition-transform hover:scale-110 cursor-pointer"
                   >
                     <Star
-                      className={`w-8 h-8 transition-colors ${
+                      className={`w-7 h-7 ${
                         (hoverRating || rating) >= star
-                          ? 'fill-amber-400 text-amber-400 drop-shadow-xs'
-                          : 'text-slate-200 fill-transparent'
+                          ? 'fill-[#B76E16] text-[#B76E16]'
+                          : 'text-[#E5E8EA]'
                       }`}
                     />
                   </button>
                 ))}
               </div>
-              <span className="text-xs font-bold text-slate-700">
+              <div className="text-xs font-semibold text-[#B76E16] h-4">
                 {RATING_LABELS[hoverRating || rating]}
-              </span>
+              </div>
             </div>
 
-            {/* Comment / Feedback */}
+            {/* Comment Area */}
             <div>
-              <label className="block text-xs font-bold text-slate-700 mb-1.5">
-                Your Feedback & Review *
+              <label className="block text-xs font-semibold text-[#17191C] mb-1">
+                Your Review
               </label>
               <textarea
                 required
-                rows={4}
+                rows={3}
                 value={comment}
                 onChange={(e) => setComment(e.target.value)}
-                placeholder="How was the equipment condition? Was the owner on time and helpful during pickup and return?"
-                className="w-full px-3.5 py-2.5 text-xs bg-white border border-slate-200 rounded-2xl focus:border-brand-500 focus:ring-4 focus:ring-brand-500/10 focus:outline-none transition-all placeholder:text-slate-400"
+                placeholder="Share details about equipment condition, owner communication, and handover..."
+                className="w-full p-2.5 text-xs bg-white border border-[#E5E8EA] rounded-lg focus:border-[#315CF5] focus:outline-none transition-colors text-[#17191C] placeholder:text-[#66707A]"
               />
             </div>
 
-            {/* Trust system note */}
-            <div className="flex items-center gap-2 p-3 bg-brand-50/70 border border-brand-100 rounded-2xl text-xs text-brand-900">
-              <ShieldCheck className="w-4 h-4 text-brand-600 shrink-0" />
-              <span className="text-[11px] leading-relaxed">
-                Your review helps maintain trusted community equipment sharing in your city.
-              </span>
-            </div>
-
-            {/* Action Buttons */}
-            <div className="flex items-center justify-end gap-3 pt-1">
+            {/* Submit Button */}
+            <div className="flex items-center justify-end gap-2.5 pt-2">
               <button
                 type="button"
                 onClick={onClose}
-                className="px-4 py-2.5 text-xs font-bold text-slate-500 hover:text-slate-800 transition-colors"
+                className="px-4 py-2 text-xs font-semibold text-[#66707A] hover:text-[#17191C] transition-colors cursor-pointer"
               >
-                Cancel
+                Skip
               </button>
-              <motion.button
-                whileHover={{ scale: 1.01 }}
-                whileTap={{ scale: 0.99 }}
+              <button
                 type="submit"
-                disabled={loading || !comment.trim()}
-                className="flex-1 py-3 px-5 bg-slate-900 hover:bg-slate-800 text-white font-bold text-xs rounded-xl shadow-md transition-all disabled:opacity-50 flex items-center justify-center gap-2"
+                disabled={loading}
+                className="flex-1 py-2.5 px-4 bg-[#315CF5] hover:bg-[#2447C9] text-white font-semibold text-xs rounded-lg shadow-xs transition-colors disabled:opacity-50 flex items-center justify-center gap-1.5 cursor-pointer"
               >
                 {loading ? (
-                  <>
-                    <span className="inline-block w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" />
-                    <span>Submitting...</span>
-                  </>
+                  <span className="inline-block w-3.5 h-3.5 border-2 border-white/30 border-t-white rounded-full animate-spin" />
                 ) : (
-                  <>
-                    <Sparkles className="w-4 h-4 text-amber-400" />
-                    <span>Submit Review</span>
-                  </>
+                  <span>Submit Review</span>
                 )}
-              </motion.button>
+              </button>
             </div>
           </form>
         </motion.div>

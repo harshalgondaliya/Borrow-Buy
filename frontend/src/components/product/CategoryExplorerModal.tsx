@@ -299,7 +299,7 @@ export const CategoryExplorerModal: React.FC<CategoryExplorerModalProps> = ({
           exit={{ opacity: 0 }}
           transition={{ duration: 0.2 }}
           onClick={onClose}
-          className="fixed inset-0 bg-slate-950/75 backdrop-blur-md"
+          className="fixed inset-0 bg-slate-950/70 backdrop-blur-md"
         />
 
         {/* Modal Window */}
@@ -308,19 +308,19 @@ export const CategoryExplorerModal: React.FC<CategoryExplorerModalProps> = ({
           animate={{ opacity: 1, scale: 1, y: 0 }}
           exit={{ opacity: 0, scale: 0.95, y: 10 }}
           transition={{ type: 'spring', damping: 25, stiffness: 300 }}
-          className="relative bg-white rounded-3xl shadow-2xl border border-borderGrey max-w-4xl w-full max-h-[90vh] overflow-hidden flex flex-col z-10"
+          className="relative bg-white rounded-3xl shadow-2xl border border-bb-border max-w-4xl w-full max-h-[90vh] overflow-hidden flex flex-col z-10"
         >
           {/* Top Header */}
-          <div className="p-5 sm:p-6 border-b border-[#E4E7EC] bg-[#F5F6F8] flex items-center justify-between">
+          <div className="p-5 sm:p-6 border-b border-bb-border bg-bb-surface-subtle flex items-center justify-between">
             <div className="flex items-center gap-3">
-              <div className="w-10 h-10 rounded-2xl bg-[#172B46]/10 text-[#172B46] flex items-center justify-center border border-[#172B46]/20 shadow-xs">
+              <div className="w-10 h-10 rounded-2xl bg-bb-accent/10 text-bb-accent flex items-center justify-center border border-bb-accent/20 shadow-xs">
                 <Layers className="w-5 h-5" />
               </div>
               <div>
-                <h2 className="text-lg sm:text-xl font-display font-extrabold text-[#172B46]">
+                <h2 className="text-lg sm:text-xl font-display font-extrabold text-bb-text-primary">
                   Rental Categories Catalog
                 </h2>
-                <p className="text-xs text-[#667085]">
+                <p className="text-xs text-bb-text-secondary">
                   Explore {categories.length} curated product categories with real examples across India
                 </p>
               </div>
@@ -328,7 +328,7 @@ export const CategoryExplorerModal: React.FC<CategoryExplorerModalProps> = ({
 
             <button
               onClick={onClose}
-              className="p-2 text-[#667085] hover:text-[#202833] rounded-xl hover:bg-[#E9EDF2] transition"
+              className="p-2 text-bb-text-secondary hover:text-bb-text-primary rounded-xl hover:bg-slate-200 transition"
               aria-label="Close"
             >
               <X className="w-5 h-5" />
@@ -338,15 +338,15 @@ export const CategoryExplorerModal: React.FC<CategoryExplorerModalProps> = ({
           {/* Body Grid: Left Sidebar list + Right Details view */}
           <div className="flex-1 flex flex-col md:flex-row overflow-hidden min-h-0">
             {/* Left Column: Category selector list with search */}
-            <div className="w-full md:w-72 border-r border-[#E4E7EC] p-4 overflow-y-auto bg-[#F5F6F8] flex flex-col gap-2 shrink-0 max-h-60 md:max-h-none">
+            <div className="w-full md:w-72 border-r border-bb-border p-4 overflow-y-auto bg-bb-surface-subtle flex flex-col gap-2 shrink-0 max-h-60 md:max-h-none">
               <div className="relative mb-1">
-                <Search className="w-3.5 h-3.5 text-[#667085] absolute left-3 top-2.5" />
+                <Search className="w-3.5 h-3.5 text-bb-text-secondary absolute left-3 top-2.5" />
                 <input
                   type="text"
                   placeholder="Filter categories..."
                   value={searchTerm}
                   onChange={(e) => setSearchTerm(e.target.value)}
-                  className="w-full pl-8 pr-3 py-1.5 text-xs bg-white border border-[#E4E7EC] rounded-xl focus:outline-none focus:ring-2 focus:ring-[#F06449] text-[#202833]"
+                  className="w-full pl-8 pr-3 py-1.5 text-xs bg-white border border-bb-border rounded-xl focus:outline-none focus:ring-2 focus:ring-bb-accent text-bb-text-primary"
                 />
               </div>
 
@@ -359,15 +359,15 @@ export const CategoryExplorerModal: React.FC<CategoryExplorerModalProps> = ({
                       onClick={() => setActiveCategory(cat)}
                       className={`w-full text-left px-3 py-2.5 rounded-xl text-xs font-semibold flex items-center justify-between transition ${
                         isSelected
-                          ? 'bg-[#172B46] text-white shadow-xs'
-                          : 'text-[#202833] hover:bg-white hover:text-[#172B46]'
+                          ? 'bg-bb-text-primary text-white shadow-xs font-bold'
+                          : 'text-bb-text-secondary hover:bg-white hover:text-bb-text-primary'
                       }`}
                     >
                       <span className="truncate">{cat.name}</span>
                       {cat._count?.products !== undefined && (
                         <span
                           className={`text-[10px] px-2 py-0.5 rounded-full font-bold ${
-                            isSelected ? 'bg-white/20 text-white' : 'bg-[#E9EDF2] text-[#172B46]'
+                            isSelected ? 'bg-white/20 text-white' : 'bg-slate-200 text-bb-text-primary'
                           }`}
                         >
                           {cat._count.products}
@@ -384,20 +384,20 @@ export const CategoryExplorerModal: React.FC<CategoryExplorerModalProps> = ({
               <div className="flex-1 p-5 sm:p-6 overflow-y-auto flex flex-col justify-between space-y-6 bg-white">
                 <div>
                   {/* Category Cover Banner */}
-                  <div className="relative h-44 sm:h-52 rounded-2xl overflow-hidden border border-[#E4E7EC] shadow-xs mb-5 group">
+                  <div className="relative h-44 sm:h-52 rounded-2xl overflow-hidden border border-bb-border shadow-xs mb-5 group">
                     <img
                       src={activeVisual?.coverImage || 'https://images.unsplash.com/photo-1516035069371-29a1b244cc32?auto=format&fit=crop&w=1200&q=80'}
                       alt={activeCategory.name}
                       className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
                     />
-                    <div className="absolute inset-0 bg-gradient-to-t from-[#172B46]/90 via-[#172B46]/40 to-transparent flex flex-col justify-end p-5 text-white">
-                      <span className="text-[10px] uppercase font-bold tracking-wider text-[#F06449] mb-1">
+                    <div className="absolute inset-0 bg-gradient-to-t from-slate-950/90 via-slate-950/40 to-transparent flex flex-col justify-end p-5 text-white">
+                      <span className="text-[10px] uppercase font-bold tracking-wider text-blue-300 mb-1">
                         Curated Category
                       </span>
                       <h3 className="font-display font-black text-xl sm:text-2xl leading-tight text-white">
                         {activeCategory.name}
                       </h3>
-                      <p className="text-xs text-[#E4E7EC] mt-1 max-w-lg line-clamp-2">
+                      <p className="text-xs text-slate-200 mt-1 max-w-lg line-clamp-2">
                         {activeCategory.description}
                       </p>
                     </div>
@@ -406,10 +406,10 @@ export const CategoryExplorerModal: React.FC<CategoryExplorerModalProps> = ({
                   {/* Real Product Visual Examples from Database */}
                   <div>
                     <div className="flex items-center justify-between mb-3">
-                      <h4 className="font-display font-bold text-xs uppercase tracking-wider text-[#667085]">
+                      <h4 className="font-display font-bold text-xs uppercase tracking-wider text-bb-text-secondary">
                         Available Equipment in this Category
                       </h4>
-                      <span className="text-[11px] text-[#F06449] font-semibold">Click any item to view & rent</span>
+                      <span className="text-[11px] text-bb-accent font-semibold">Click any item to view & rent</span>
                     </div>
 
                     <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
@@ -438,9 +438,9 @@ export const CategoryExplorerModal: React.FC<CategoryExplorerModalProps> = ({
                                 onSelectCategory(activeCategory.id);
                               }
                             }}
-                            className="rounded-xl border border-[#E4E7EC] overflow-hidden bg-white shadow-xs group cursor-pointer hover:border-[#F06449] hover:shadow-card transition-all duration-200 text-left"
+                            className="rounded-xl border border-bb-border overflow-hidden bg-white shadow-xs group cursor-pointer hover:border-bb-accent hover:shadow-card transition-all duration-200 text-left"
                           >
-                            <div className="h-28 overflow-hidden bg-[#E9EDF2] relative">
+                            <div className="h-28 overflow-hidden bg-bb-surface-subtle relative">
                               <img
                                 src={imgSrc}
                                 alt={item.name}
@@ -449,20 +449,20 @@ export const CategoryExplorerModal: React.FC<CategoryExplorerModalProps> = ({
                                 }}
                                 className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
                               />
-                              <div className="absolute inset-0 bg-[#172B46]/30 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
-                                <span className="px-2.5 py-1 bg-white text-[#172B46] text-[10px] font-bold rounded-lg shadow-sm flex items-center gap-1">
+                              <div className="absolute inset-0 bg-slate-900/30 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
+                                <span className="px-2.5 py-1 bg-white text-bb-text-primary text-[10px] font-bold rounded-lg shadow-sm flex items-center gap-1">
                                   <span>View & Rent</span>
-                                  <ArrowRight className="w-3 h-3 text-[#F06449]" />
+                                  <ArrowRight className="w-3 h-3 text-bb-accent" />
                                 </span>
                               </div>
                             </div>
                             <div className="p-2.5">
-                              <div className="font-bold text-xs text-[#202833] truncate group-hover:text-[#F06449] transition-colors">
+                              <div className="font-bold text-xs text-bb-text-primary truncate group-hover:text-bb-accent transition-colors">
                                 {item.name}
                               </div>
-                              <div className="text-[10px] text-[#F06449] font-semibold mt-0.5 flex items-center justify-between">
+                              <div className="text-[10px] text-bb-accent font-semibold mt-0.5 flex items-center justify-between">
                                 <span>₹{item.pricePerDay || 1500}/day</span>
-                                <span className="text-[10px] text-[#667085] underline">Open &rarr;</span>
+                                <span className="text-[10px] text-bb-text-secondary underline">Open &rarr;</span>
                               </div>
                             </div>
                           </div>
@@ -473,8 +473,8 @@ export const CategoryExplorerModal: React.FC<CategoryExplorerModalProps> = ({
                 </div>
 
                 {/* Bottom CTA to Filter Catalog by this category */}
-                <div className="pt-4 border-t border-[#E4E7EC] flex items-center justify-between">
-                  <div className="text-xs text-[#667085]">
+                <div className="pt-4 border-t border-bb-border flex items-center justify-between">
+                  <div className="text-xs text-bb-text-secondary">
                     {activeCategory._count?.products || 0} active listings in Gujarat
                   </div>
 
@@ -483,7 +483,7 @@ export const CategoryExplorerModal: React.FC<CategoryExplorerModalProps> = ({
                       onSelectCategory(activeCategory.id);
                       onClose();
                     }}
-                    className="px-5 py-2.5 bg-[#F06449] hover:bg-[#D95339] text-white font-bold text-xs rounded-xl shadow-xs transition flex items-center gap-2"
+                    className="px-5 py-2.5 bg-bb-accent hover:bg-bb-accent-hover text-white font-bold text-xs rounded-xl shadow-xs transition flex items-center gap-2"
                   >
                     <span>View {activeCategory.name} Listings</span>
                     <ArrowRight className="w-4 h-4" />

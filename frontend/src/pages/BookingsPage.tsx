@@ -9,7 +9,6 @@ import {
   FileText,
   AlertCircle,
   Clock,
-  RotateCcw,
   ArrowRight,
 } from 'lucide-react';
 import { Booking, bookingsService } from '../services/bookings';
@@ -21,11 +20,12 @@ import { PaymentModal } from '../components/booking/PaymentModal';
 import { QRCodeModal } from '../components/booking/QRCodeModal';
 import { ReviewModal } from '../components/booking/ReviewModal';
 import { PaymentReceiptModal } from '../components/booking/PaymentReceiptModal';
+import { resolveImageUrl } from '../utils/apiUrl';
 
 export const BookingsPage: React.FC = () => {
   const navigate = useNavigate();
   const { isAuthenticated } = useAuth();
-  const { openAuth, openProduct } = useModals();
+  const { openAuth } = useModals();
   const { success, error: toastError } = useToast();
 
   const [bookings, setBookings] = useState<Booking[]>([]);
@@ -76,20 +76,20 @@ export const BookingsPage: React.FC = () => {
 
   if (!isAuthenticated) {
     return (
-      <div className="max-w-3xl mx-auto px-4 py-20 text-center">
-        <div className="w-16 h-16 bg-[#172B46] text-white rounded-3xl flex items-center justify-center mx-auto mb-5 shadow-lg">
-          <Calendar className="w-8 h-8" />
+      <div className="max-w-2xl mx-auto px-4 py-20 text-center">
+        <div className="w-12 h-12 bg-[#EFF3FE] text-[#315CF5] rounded-xl flex items-center justify-center mx-auto mb-4 border border-[#DBE4FD]">
+          <Calendar className="w-6 h-6" />
         </div>
-        <h2 className="font-display text-2xl font-black text-[#172B46]">
+        <h2 className="text-xl font-semibold text-[#17191C]">
           Sign In to Access Your Bookings
         </h2>
-        <p className="text-xs text-[#667085] mt-2 max-w-md mx-auto leading-relaxed">
+        <p className="text-xs text-[#66707A] mt-1.5 max-w-sm mx-auto leading-relaxed">
           Access your digital handover passes, reservation timelines, escrow security deposits, and rental receipts.
         </p>
         <button
           type="button"
           onClick={() => openAuth('login')}
-          className="mt-6 px-6 py-3 bg-[#F06449] hover:bg-[#D95339] text-white text-xs font-bold rounded-xl shadow-xs transition cursor-pointer"
+          className="mt-5 px-5 py-2.5 bg-[#315CF5] hover:bg-[#2447C9] text-white text-xs font-semibold rounded-lg shadow-xs transition-colors cursor-pointer"
         >
           Sign In Now
         </button>
@@ -98,116 +98,111 @@ export const BookingsPage: React.FC = () => {
   }
 
   const filteredBookings = bookings.filter((b) => {
-    if (filter === 'ALL') return true;
-    if (filter === 'ACTIVE')
-      return ['CONFIRMED', 'READY_FOR_PICKUP', 'ACTIVE'].includes(b.status);
-    if (filter === 'RESERVED') return b.status === 'RESERVED';
-    if (filter === 'COMPLETED')
-      return ['COMPLETED', 'RETURNED'].includes(b.status);
+    if (filter === 'ACTIVE') return b.status === 'ACTIVE' || b.status === 'CONFIRMED';
+    if (filter === 'RESERVED') return b.status === 'RESERVED' || b.status === 'PENDING';
+    if (filter === 'COMPLETED') return b.status === 'COMPLETED' || b.status === 'RETURNED';
     return true;
   });
 
-  const statusBadge = (status: string) => {
-    switch (status) {
-      case 'RESERVED':
-        return 'bg-amber-50 text-amber-800 border-amber-200';
-      case 'CONFIRMED':
-      case 'READY_FOR_PICKUP':
-        return 'bg-blue-50 text-blue-800 border-blue-200';
-      case 'ACTIVE':
-        return 'bg-emerald-50 text-emerald-800 border-emerald-200 font-bold';
-      case 'COMPLETED':
-        return 'bg-gray-100 text-gray-800 border-gray-200';
-      case 'CANCELLED':
-        return 'bg-rose-50 text-rose-800 border-rose-200';
-      default:
-        return 'bg-gray-50 text-gray-700 border-gray-200';
-    }
+  const getStatusBadge = (status: string) => {
+    const map: Record<string, { label: string; bg: string; text: string; border: string }> = {
+      RESERVED: { label: 'Hold Active (Pay Now)', bg: 'bg-[#FEF7ED]', text: 'text-[#B76E16]', border: 'border-[#FDE68A]' },
+      CONFIRMED: { label: 'Paid • Ready for Pickup', bg: 'bg-[#EFF3FE]', text: 'text-[#315CF5]', border: 'border-[#DBE4FD]' },
+      ACTIVE: { label: 'Active Rental', bg: 'bg-[#EBF5F1]', text: 'text-[#13795B]', border: 'border-[#13795B]/20' },
+      RETURN_REQUESTED: { label: 'Return Pending', bg: 'bg-[#FEF7ED]', text: 'text-[#B76E16]', border: 'border-[#FDE68A]' },
+      RETURNED: { label: 'Returned', bg: 'bg-[#F1F3F3]', text: 'text-[#17191C]', border: 'border-[#E5E8EA]' },
+      COMPLETED: { label: 'Completed', bg: 'bg-[#F1F3F3]', text: 'text-[#66707A]', border: 'border-[#E5E8EA]' },
+      CANCELLED: { label: 'Cancelled', bg: 'bg-[#FDF2F2]', text: 'text-[#C43838]', border: 'border-[#FDF2F2]' },
+      EXPIRED: { label: 'Hold Expired', bg: 'bg-[#FDF2F2]', text: 'text-[#C43838]', border: 'border-[#FDF2F2]' },
+    };
+    const s = map[status] || { label: status, bg: 'bg-[#F1F3F3]', text: 'text-[#66707A]', border: 'border-[#E5E8EA]' };
+    return (
+      <span className={`px-2 py-0.5 text-[11px] font-semibold rounded-md border ${s.bg} ${s.text} ${s.border}`}>
+        {s.label}
+      </span>
+    );
   };
 
   return (
-    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10">
-      {/* Top Header */}
-      <div className="flex flex-col sm:flex-row sm:items-end justify-between mb-8 gap-4 pb-4 border-b border-[#E4E7EC]">
+    <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+      {/* Header Bar */}
+      <div className="flex flex-col sm:flex-row sm:items-end justify-between pb-4 mb-6 border-b border-[#E5E8EA] gap-3">
         <div>
-          <div className="flex items-center gap-2 text-xs font-bold text-[#F06449] uppercase tracking-wider mb-1 font-display">
-            <Calendar className="w-4 h-4 text-[#F06449]" />
-            <span>Rental Activity</span>
+          <div className="flex items-center gap-1.5 text-xs font-semibold text-[#315CF5] uppercase tracking-wider mb-1">
+            <Calendar className="w-3.5 h-3.5" />
+            <span>Customer Portal</span>
           </div>
-          <h1 className="font-display text-3xl font-extrabold text-[#172B46] tracking-tight">
-            My Bookings & Passes
+          <h1 className="font-display text-2xl sm:text-3xl font-extrabold text-[#17191C] tracking-tight">
+            My Equipment Rentals
           </h1>
-          <p className="text-xs text-[#667085] mt-1">
-            Manage your equipment reservations, present digital QR passes, and download invoices.
+          <p className="text-xs text-[#66707A] mt-1">
+            Manage your rental reservations, digital QR handover passes, and security deposits.
           </p>
         </div>
 
         <button
           type="button"
-          onClick={fetchBookings}
-          className="text-xs font-semibold text-[#172B46] hover:text-[#F06449] flex items-center gap-1.5 cursor-pointer"
+          onClick={() => navigate('/browse')}
+          className="px-4 py-2 bg-white hover:bg-[#F1F3F3] text-[#17191C] text-xs font-medium rounded-lg border border-[#E5E8EA] shadow-xs transition-colors flex items-center gap-1.5 self-start sm:self-auto cursor-pointer"
         >
-          <RotateCcw className="w-3.5 h-3.5" />
-          <span>Refresh</span>
+          <span>Rent More Gear</span>
+          <ArrowRight className="w-3.5 h-3.5" />
         </button>
       </div>
 
-      {/* Tabs */}
-      <div className="flex gap-2 border-b border-[#E4E7EC] pb-3 mb-6 overflow-x-auto">
-        {(['ALL', 'ACTIVE', 'RESERVED', 'COMPLETED'] as const).map((t) => (
+      {/* Filter Tabs */}
+      <div className="flex p-1 bg-[#F1F3F3] rounded-lg mb-6 max-w-md text-xs font-medium">
+        {(['ALL', 'ACTIVE', 'RESERVED', 'COMPLETED'] as const).map((tabKey) => (
           <button
-            key={t}
+            key={tabKey}
             type="button"
-            onClick={() => setFilter(t)}
-            className={`px-4 py-2 text-xs font-bold rounded-xl transition cursor-pointer ${
-              filter === t
-                ? 'bg-[#172B46] text-white shadow-xs'
-                : 'text-[#667085] hover:text-[#172B46] hover:bg-[#F5F6F8]'
+            onClick={() => setFilter(tabKey)}
+            className={`flex-1 py-1.5 rounded-md transition-colors capitalize cursor-pointer ${
+              filter === tabKey
+                ? 'bg-white text-[#17191C] font-semibold shadow-xs'
+                : 'text-[#66707A] hover:text-[#17191C]'
             }`}
           >
-            {t === 'ALL'
-              ? `All Bookings (${bookings.length})`
-              : t === 'ACTIVE'
-              ? 'Active Rentals'
-              : t === 'RESERVED'
-              ? 'Reserved (Awaiting Payment)'
-              : 'Completed & Returned'}
+            {tabKey === 'ALL' ? 'All Bookings' : tabKey.toLowerCase()}
           </button>
         ))}
       </div>
 
-      {/* Main List */}
+      {/* Error Notice */}
+      {error && (
+        <div className="mb-6 p-3 bg-[#FDF2F2] border border-[#FDE68A] text-[#C43838] rounded-xl text-xs flex items-center justify-between">
+          <div className="flex items-center gap-2">
+            <AlertCircle className="w-4 h-4 shrink-0" />
+            <span>{error}</span>
+          </div>
+          <button onClick={fetchBookings} className="underline text-xs font-semibold cursor-pointer">
+            Retry
+          </button>
+        </div>
+      )}
+
+      {/* Bookings List */}
       {loading ? (
         <div className="space-y-4">
           {[1, 2, 3].map((i) => (
-            <div key={i} className="h-32 bg-white rounded-2xl border border-[#E4E7EC] animate-pulse" />
+            <div key={i} className="h-32 bg-white rounded-xl border border-[#E5E8EA] animate-pulse" />
           ))}
         </div>
-      ) : error ? (
-        <div className="p-4 bg-rose-50 border border-rose-200 text-rose-700 text-xs rounded-xl flex items-center gap-2">
-          <AlertCircle className="w-4 h-4 shrink-0" />
-          <span>{error}</span>
-        </div>
       ) : filteredBookings.length === 0 ? (
-        <div className="bg-white rounded-3xl border border-[#E4E7EC] p-12 text-center shadow-xs">
-          <div className="w-16 h-16 bg-[#F5F6F8] text-[#172B46] rounded-2xl flex items-center justify-center mx-auto mb-4 border border-[#E4E7EC]">
-            <Package className="w-8 h-8" />
+        <div className="text-center py-16 bg-white rounded-xl border border-[#E5E8EA] p-8">
+          <div className="w-12 h-12 rounded-xl bg-[#F1F3F3] text-[#66707A] flex items-center justify-center mx-auto mb-3">
+            <Package className="w-6 h-6" />
           </div>
-          <h3 className="font-display text-lg font-bold text-[#202833]">
-            No bookings found
-          </h3>
-          <p className="text-xs text-[#667085] mt-1.5 max-w-sm mx-auto leading-relaxed">
-            {filter === 'ALL'
-              ? "You haven't rented any equipment yet. Explore our verified listings across Gujarat."
-              : `No bookings currently match the "${filter}" filter.`}
+          <h3 className="font-semibold text-base text-[#17191C]">No Bookings Found</h3>
+          <p className="text-xs text-[#66707A] mt-1 max-w-sm mx-auto leading-relaxed">
+            You don&apos;t have any equipment rentals matching this status filter. Browse our catalog to reserve gear today.
           </p>
           <button
             type="button"
             onClick={() => navigate('/browse')}
-            className="mt-6 px-6 py-2.5 bg-[#F06449] hover:bg-[#D95339] text-white text-xs font-bold rounded-xl shadow-xs transition inline-flex items-center gap-2 cursor-pointer"
+            className="mt-4 px-4 py-2 bg-[#315CF5] hover:bg-[#2447C9] text-white text-xs font-semibold rounded-lg shadow-xs transition-colors cursor-pointer"
           >
-            <span>Explore Gear Catalog</span>
-            <ArrowRight className="w-3.5 h-3.5" />
+            Browse Equipment Catalog
           </button>
         </div>
       ) : (
@@ -215,112 +210,137 @@ export const BookingsPage: React.FC = () => {
           {filteredBookings.map((b) => (
             <div
               key={b.id}
-              className="bg-white rounded-2xl border border-[#E4E7EC] p-5 shadow-xs hover:border-[#172B46] transition-all"
+              className="bg-white rounded-xl border border-[#E5E8EA] p-5 shadow-xs hover:border-[#D0D5DD] transition-colors"
             >
-              <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
-                {/* Left Info */}
-                <div className="space-y-1.5 flex-1">
-                  <div className="flex items-center gap-2.5 flex-wrap">
-                    <span
-                      className={`px-2.5 py-0.5 rounded-full text-[10px] font-bold uppercase tracking-wider border ${statusBadge(
-                        b.status
-                      )}`}
-                    >
-                      {b.status.replace(/_/g, ' ')}
-                    </span>
-                    <span className="text-[11px] font-mono text-[#667085]">
-                      #{b.id.slice(0, 8)}
-                    </span>
-                    <span className="text-[11px] text-[#667085] flex items-center gap-1">
-                      <Clock className="w-3 h-3" />
-                      <span>
-                        {formatDateIN(b.startDate)} &rarr; {formatDateIN(b.endDate)}
-                      </span>
-                    </span>
-                  </div>
-
-                  <h3
-                    onClick={() => b.product && openProduct(b.product)}
-                    className="font-display font-bold text-base text-[#172B46] hover:text-[#F06449] cursor-pointer transition-colors"
-                  >
-                    {b.product?.name || 'Equipment Rental'}
-                  </h3>
-
-                  <div className="flex items-center gap-4 text-xs text-[#667085] flex-wrap">
-                    <span>
-                      Rental Total:{' '}
-                      <strong className="text-[#172B46]">{formatINR(b.rentalTotal)}</strong>
-                    </span>
-                    <span>
-                      Security Deposit:{' '}
-                      <strong className="text-[#2F6B65]">
-                        {formatINR(b.securityDeposit)} (Escrow)
-                      </strong>
-                    </span>
-                    {b.product?.owner?.fullName && (
-                      <span>
-                        Owner: <strong>{b.product.owner.fullName}</strong>
-                      </span>
-                    )}
+              <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 pb-4 border-b border-[#F1F3F3]">
+                <div className="flex items-start gap-4">
+                  <img
+                    src={
+                      resolveImageUrl(b.product?.images?.[0]) ||
+                      'https://images.unsplash.com/photo-1516035069371-29a1b244cc32?auto=format&fit=crop&w=150&q=80'
+                    }
+                    alt={b.product?.name || 'Equipment'}
+                    className="w-16 h-16 rounded-lg object-cover border border-[#E5E8EA] shrink-0"
+                  />
+                  <div>
+                    <div className="flex items-center gap-2 mb-1">
+                      {getStatusBadge(b.status)}
+                      <span className="text-xs text-[#66707A] font-mono">#{b.bookingNumber}</span>
+                    </div>
+                    <h3 className="font-semibold text-base text-[#17191C] leading-snug">
+                      {b.product?.name || 'Equipment Rental'}
+                    </h3>
+                    <div className="text-xs text-[#66707A] mt-1 flex items-center gap-3">
+                      <span>Owner: <strong className="text-[#17191C]">{b.product?.owner?.fullName || 'Verified Lender'}</strong></span>
+                      <span>•</span>
+                      <span>Location: {b.product?.location || 'Gujarat'}</span>
+                    </div>
                   </div>
                 </div>
 
-                {/* Right Actions */}
-                <div className="flex items-center gap-2 flex-wrap shrink-0">
-                  {['CONFIRMED', 'READY_FOR_PICKUP', 'ACTIVE'].includes(b.status) && (
-                    <button
-                      type="button"
-                      onClick={() => setQrBooking(b)}
-                      className="px-4 py-2 bg-[#172B46] hover:bg-[#202833] text-white text-xs font-bold rounded-xl shadow-xs transition flex items-center gap-1.5 cursor-pointer"
-                    >
-                      <QrCode className="w-3.5 h-3.5" />
-                      <span>Digital Pass</span>
-                    </button>
-                  )}
+                <div className="text-right">
+                  <div className="text-xs text-[#66707A]">Total Amount</div>
+                  <div className="font-bold text-lg text-[#17191C]">{formatINR(b.totalAmount)}</div>
+                  <div className="text-[11px] text-[#13795B]">
+                    Deposit: {formatINR(b.securityDeposit)} (Escrow)
+                  </div>
+                </div>
+              </div>
 
+              {/* Timeline & Actions Bar */}
+              <div className="pt-3 flex flex-col sm:flex-row sm:items-center justify-between gap-3 text-xs">
+                <div className="flex items-center gap-4 text-[#66707A]">
+                  <div className="flex items-center gap-1.5">
+                    <Clock className="w-3.5 h-3.5 text-[#315CF5]" />
+                    <span>{formatDateIN(b.startDate)} → {formatDateIN(b.endDate)}</span>
+                  </div>
+                  <span>•</span>
+                  <span>{b.totalDays} {b.totalDays === 1 ? 'day' : 'days'}</span>
+                </div>
+
+                {/* Status-Specific Interactive Actions */}
+                <div className="flex items-center gap-2">
                   {b.status === 'RESERVED' && (
-                    <button
-                      type="button"
-                      onClick={() => setPayingBooking(b)}
-                      className="px-4 py-2 bg-[#F06449] hover:bg-[#D95339] text-white text-xs font-bold rounded-xl shadow-xs transition flex items-center gap-1.5 cursor-pointer"
-                    >
-                      <CreditCard className="w-3.5 h-3.5" />
-                      <span>Pay Now</span>
-                    </button>
+                    <>
+                      <button
+                        type="button"
+                        onClick={() => handleCancel(b.id)}
+                        className="px-3 py-1.5 text-xs text-[#66707A] hover:text-[#C43838] transition-colors cursor-pointer"
+                      >
+                        Cancel
+                      </button>
+                      <button
+                        type="button"
+                        onClick={() => setPayingBooking(b)}
+                        className="px-4 py-1.5 bg-[#315CF5] hover:bg-[#2447C9] text-white font-semibold text-xs rounded-lg shadow-xs transition-colors flex items-center gap-1.5 cursor-pointer"
+                      >
+                        <CreditCard className="w-3.5 h-3.5" />
+                        <span>Pay {formatINR(b.totalAmount)}</span>
+                      </button>
+                    </>
                   )}
 
-                  {['CONFIRMED', 'READY_FOR_PICKUP', 'ACTIVE', 'COMPLETED'].includes(
-                    b.status
-                  ) && (
-                    <button
-                      type="button"
-                      onClick={() => setReceiptBooking(b)}
-                      className="px-3.5 py-2 bg-[#F5F6F8] hover:bg-[#E9EDF2] text-[#172B46] text-xs font-semibold rounded-xl border border-[#E4E7EC] transition flex items-center gap-1.5 cursor-pointer"
-                    >
-                      <FileText className="w-3.5 h-3.5" />
-                      <span>Receipt</span>
-                    </button>
+                  {(b.status === 'CONFIRMED' || b.status === 'READY_FOR_PICKUP') && (
+                    <>
+                      <button
+                        type="button"
+                        onClick={() => setReceiptBooking(b)}
+                        className="px-3 py-1.5 text-xs text-[#66707A] hover:text-[#17191C] border border-[#E5E8EA] rounded-lg bg-white flex items-center gap-1 cursor-pointer"
+                      >
+                        <FileText className="w-3.5 h-3.5" />
+                        <span>Receipt</span>
+                      </button>
+                      <button
+                        type="button"
+                        onClick={() => setQrBooking(b)}
+                        className="px-3.5 py-1.5 bg-[#17191C] hover:bg-[#24282D] text-white font-semibold text-xs rounded-lg shadow-xs transition-colors flex items-center gap-1.5 cursor-pointer"
+                      >
+                        <QrCode className="w-3.5 h-3.5" />
+                        <span>Show Handover QR Pass</span>
+                      </button>
+                    </>
+                  )}
+
+                  {b.status === 'ACTIVE' && (
+                    <>
+                      <button
+                        type="button"
+                        onClick={() => setReceiptBooking(b)}
+                        className="px-3 py-1.5 text-xs text-[#66707A] hover:text-[#17191C] border border-[#E5E8EA] rounded-lg bg-white flex items-center gap-1 cursor-pointer"
+                      >
+                        <FileText className="w-3.5 h-3.5" />
+                        <span>Receipt</span>
+                      </button>
+                      <button
+                        type="button"
+                        onClick={() => setQrBooking(b)}
+                        className="px-3.5 py-1.5 bg-[#13795B] hover:bg-[#0E5B44] text-white font-semibold text-xs rounded-lg shadow-xs transition-colors flex items-center gap-1.5 cursor-pointer"
+                      >
+                        <QrCode className="w-3.5 h-3.5" />
+                        <span>Return QR Pass</span>
+                      </button>
+                    </>
                   )}
 
                   {b.status === 'COMPLETED' && (
-                    <button
-                      type="button"
-                      onClick={() => setReviewBooking(b)}
-                      className="px-3.5 py-2 bg-amber-50 hover:bg-amber-100 text-amber-900 text-xs font-bold rounded-xl border border-amber-200 transition flex items-center gap-1.5 cursor-pointer"
-                    >
-                      <Star className="w-3.5 h-3.5 text-amber-500 fill-amber-500" />
-                      <span>Leave Review</span>
-                    </button>
-                  )}
-
-                  {['RESERVED', 'CONFIRMED'].includes(b.status) && (
-                    <button
-                      type="button"
-                      onClick={() => handleCancel(b.id)}
-                      className="px-3 py-2 text-xs font-bold text-rose-600 hover:bg-rose-50 rounded-xl transition cursor-pointer"
-                    >
-                      Cancel
-                    </button>
+                    <>
+                      <button
+                        type="button"
+                        onClick={() => setReceiptBooking(b)}
+                        className="px-3 py-1.5 text-xs text-[#66707A] hover:text-[#17191C] border border-[#E5E8EA] rounded-lg bg-white flex items-center gap-1 cursor-pointer"
+                      >
+                        <FileText className="w-3.5 h-3.5" />
+                        <span>Receipt</span>
+                      </button>
+                      <button
+                        type="button"
+                        onClick={() => setReviewBooking(b)}
+                        className="px-3.5 py-1.5 bg-white border border-[#E5E8EA] hover:border-[#315CF5] text-[#17191C] font-semibold text-xs rounded-lg shadow-xs transition-colors flex items-center gap-1.5 cursor-pointer"
+                      >
+                        <Star className="w-3.5 h-3.5 text-[#B76E16]" />
+                        <span>Leave Review</span>
+                      </button>
+                    </>
                   )}
                 </div>
               </div>
@@ -329,46 +349,32 @@ export const BookingsPage: React.FC = () => {
         </div>
       )}
 
-      {/* Sub Modals */}
-      {payingBooking && (
-        <PaymentModal
-          booking={payingBooking}
-          isOpen={!!payingBooking}
-          onClose={() => setPayingBooking(null)}
-          onPaymentSuccess={() => {
-            setPayingBooking(null);
-            fetchBookings();
-          }}
-        />
-      )}
+      {/* Sub-Modals */}
+      <PaymentModal
+        booking={payingBooking}
+        isOpen={!!payingBooking}
+        onClose={() => setPayingBooking(null)}
+        onPaymentSuccess={fetchBookings}
+      />
 
-      {qrBooking && (
-        <QRCodeModal
-          booking={qrBooking}
-          isOpen={!!qrBooking}
-          onClose={() => setQrBooking(null)}
-        />
-      )}
+      <QRCodeModal
+        booking={qrBooking}
+        isOpen={!!qrBooking}
+        onClose={() => setQrBooking(null)}
+      />
 
-      {reviewBooking && (
-        <ReviewModal
-          booking={reviewBooking}
-          isOpen={!!reviewBooking}
-          onClose={() => setReviewBooking(null)}
-          onReviewSuccess={() => {
-            setReviewBooking(null);
-            fetchBookings();
-          }}
-        />
-      )}
+      <ReviewModal
+        booking={reviewBooking}
+        isOpen={!!reviewBooking}
+        onClose={() => setReviewBooking(null)}
+        onReviewSuccess={fetchBookings}
+      />
 
-      {receiptBooking && (
-        <PaymentReceiptModal
-          booking={receiptBooking}
-          isOpen={!!receiptBooking}
-          onClose={() => setReceiptBooking(null)}
-        />
-      )}
+      <PaymentReceiptModal
+        booking={receiptBooking}
+        isOpen={!!receiptBooking}
+        onClose={() => setReceiptBooking(null)}
+      />
     </div>
   );
 };

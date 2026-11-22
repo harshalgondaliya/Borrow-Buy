@@ -20,19 +20,19 @@ export const DashboardPage: React.FC = () => {
   if (!isAuthenticated) {
     return (
       <div className="max-w-3xl mx-auto px-4 py-20 text-center">
-        <div className="w-16 h-16 bg-[#172B46] text-white rounded-3xl flex items-center justify-center mx-auto mb-5 shadow-lg">
-          <Wrench className="w-8 h-8" />
+        <div className="w-16 h-16 bg-bb-surface-subtle text-bb-text-primary rounded-2xl flex items-center justify-center mx-auto mb-5 border border-bb-border shadow-sm">
+          <Wrench className="w-8 h-8 text-bb-accent" />
         </div>
-        <h2 className="font-display text-2xl font-black text-[#172B46]">
+        <h2 className="font-display text-2xl font-black text-bb-text-primary">
           Sign In to Access Owner Portal
         </h2>
-        <p className="text-xs text-[#667085] mt-2 max-w-md mx-auto leading-relaxed">
+        <p className="text-xs text-bb-text-secondary mt-2 max-w-md mx-auto leading-relaxed">
           Manage your equipment listings, approve rental requests, view payouts, and track active handovers.
         </p>
         <button
           type="button"
           onClick={() => openAuth('login')}
-          className="mt-6 px-6 py-3 bg-[#F06449] hover:bg-[#D95339] text-white text-xs font-bold rounded-xl shadow-xs transition cursor-pointer"
+          className="mt-6 px-6 py-2.5 bg-bb-accent hover:bg-bb-accent-hover text-white text-xs font-bold rounded-xl shadow-sm transition cursor-pointer"
         >
           Sign In Now
         </button>

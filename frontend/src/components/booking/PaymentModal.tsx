@@ -12,7 +12,6 @@ import {
   Lock,
   Smartphone,
   Building2,
-  Info,
 } from 'lucide-react';
 
 interface PaymentModalProps {
@@ -61,29 +60,29 @@ export const PaymentModal: React.FC<PaymentModalProps> = ({
 
   return (
     <AnimatePresence>
-      <div className="fixed inset-0 z-50 overflow-y-auto flex items-center justify-center p-4 sm:p-6">
+      <div className="fixed inset-0 z-50 overflow-y-auto flex items-center justify-center p-4 sm:p-6 font-sans">
         {/* Backdrop */}
         <motion.div
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           exit={{ opacity: 0 }}
-          transition={{ duration: 0.2 }}
+          transition={{ duration: 0.15 }}
           onClick={onClose}
-          className="fixed inset-0 bg-slate-950/70 backdrop-blur-md"
+          className="fixed inset-0 bg-black/40 backdrop-blur-xs"
         />
 
         {/* Modal Window */}
         <motion.div
-          initial={{ opacity: 0, scale: 0.95, y: 10 }}
+          initial={{ opacity: 0, scale: 0.98, y: 8 }}
           animate={{ opacity: 1, scale: 1, y: 0 }}
-          exit={{ opacity: 0, scale: 0.95, y: 10 }}
-          transition={{ type: 'spring', damping: 25, stiffness: 300 }}
-          className="relative bg-white rounded-3xl shadow-2xl border border-slate-200/80 max-w-lg w-full p-6 sm:p-8 z-10 max-h-[92vh] overflow-y-auto"
+          exit={{ opacity: 0, scale: 0.98, y: 8 }}
+          transition={{ duration: 0.2 }}
+          className="relative bg-white rounded-2xl shadow-elevated border border-[#E5E8EA] max-w-lg w-full p-6 sm:p-7 z-10 max-h-[92vh] overflow-y-auto text-[#17191C]"
         >
           {/* Close Button */}
           <button
             onClick={onClose}
-            className="absolute top-5 right-5 text-slate-400 hover:text-slate-700 p-2 rounded-xl hover:bg-slate-100 transition-colors"
+            className="absolute top-4 right-4 text-[#66707A] hover:text-[#17191C] p-2 rounded-lg hover:bg-[#F1F3F3] transition-colors cursor-pointer"
             aria-label="Close dialog"
           >
             <X className="w-5 h-5" />
@@ -91,231 +90,204 @@ export const PaymentModal: React.FC<PaymentModalProps> = ({
 
           {/* Header */}
           <div className="mb-5">
-            <span className="inline-flex items-center gap-1.5 text-[11px] font-bold text-brand-600 uppercase tracking-wider mb-1">
+            <span className="inline-flex items-center gap-1 text-[11px] font-semibold text-[#315CF5] uppercase tracking-wider mb-0.5">
               <ShieldCheck className="w-3.5 h-3.5" />
-              Simulated Checkout
+              Simulated Payment Gateway
             </span>
-            <h2 className="text-xl font-display font-extrabold text-slate-900">
+            <h2 className="text-xl font-semibold text-[#17191C]">
               Confirm Rental Payment
             </h2>
-            <p className="text-xs text-slate-500 font-mono mt-0.5">
-              Booking Ref: {booking.bookingNumber}
+            <p className="text-xs text-[#66707A] mt-0.5">
+              Academic payment simulation • Escrow deposit isolation
             </p>
-          </div>
-
-          {/* Simulated Disclaimer Banner */}
-          <div className="mb-5 p-3.5 bg-brand-50/70 border border-brand-100 rounded-2xl flex items-start gap-2.5 text-xs text-brand-900">
-            <Info className="w-4 h-4 text-brand-600 shrink-0 mt-0.5" />
-            <div className="leading-relaxed text-[11px]">
-              <strong>Demonstration Environment:</strong> All payments are simulated for demo purposes. No real bank accounts, cards, or UPI handles are debited.
-            </div>
           </div>
 
           {/* Error Message */}
           {error && (
-            <motion.div
-              initial={{ opacity: 0, y: -4 }}
-              animate={{ opacity: 1, y: 0 }}
-              className="mb-4 p-3.5 bg-rose-50 border border-rose-200 text-rose-700 rounded-2xl text-xs flex items-start gap-2.5"
-            >
-              <AlertCircle className="w-4 h-4 shrink-0 mt-0.5 text-rose-600" />
+            <div className="mb-4 p-3 bg-[#FDF2F2] border border-[#FDE68A] text-[#C43838] rounded-xl text-xs flex items-start gap-2">
+              <AlertCircle className="w-4 h-4 shrink-0 mt-0.5 text-[#C43838]" />
               <span className="font-medium leading-relaxed">{error}</span>
-            </motion.div>
+            </div>
           )}
 
-          {/* Cost Breakdown Card */}
-          <div className="p-4 bg-slate-50 border border-slate-200/80 rounded-2xl mb-5 space-y-2.5 text-xs">
-            <div className="font-bold text-slate-900 text-sm truncate mb-1">
-              {booking.product?.name}
+          {/* Booking Summary Box */}
+          <div className="p-3.5 bg-[#FAFAF8] border border-[#E5E8EA] rounded-xl mb-5 space-y-2 text-xs">
+            <div className="flex justify-between">
+              <span className="text-[#66707A]">Equipment:</span>
+              <span className="font-semibold text-[#17191C] truncate max-w-[240px]">
+                {booking.product?.name || 'Equipment'}
+              </span>
             </div>
-            
-            <div className="flex justify-between text-slate-600">
-              <span>Rental Duration</span>
-              <span className="font-bold text-slate-900 font-display">
+            <div className="flex justify-between">
+              <span className="text-[#66707A]">Duration:</span>
+              <span className="font-semibold text-[#17191C]">
                 {booking.totalDays} {booking.totalDays === 1 ? 'day' : 'days'}
               </span>
             </div>
-
-            <div className="flex justify-between text-slate-600">
-              <span>Rental Charges</span>
-              <span className="font-bold text-slate-900">{formatINR(booking.rentalTotal)}</span>
-            </div>
-
-            <div className="flex justify-between text-slate-600">
-              <span className="flex items-center gap-1.5">
-                <span>Security Deposit</span>
-                <span className="text-[10px] text-emerald-700 font-bold bg-emerald-50 px-1.5 py-0.5 rounded border border-emerald-200">
-                  100% Refundable
-                </span>
+            <div className="flex justify-between">
+              <span className="text-[#66707A]">Rental Fee:</span>
+              <span className="font-semibold text-[#17191C]">
+                {formatINR(booking.totalAmount - booking.securityDeposit)}
               </span>
-              <span className="font-bold text-slate-900">{formatINR(booking.securityDeposit)}</span>
             </div>
-
-            <div className="pt-2.5 border-t border-slate-200 flex justify-between items-baseline text-slate-900">
-              <div>
-                <span className="font-bold text-sm block">Total Payable Now</span>
-                <span className="text-[10px] text-slate-500">Rental fee + deposit held in escrow</span>
-              </div>
-              <span className="text-xl font-display font-extrabold text-brand-600">
+            <div className="flex justify-between">
+              <span className="text-[#66707A]">Refundable Escrow Deposit:</span>
+              <span className="font-semibold text-[#13795B]">
+                {formatINR(booking.securityDeposit)}
+              </span>
+            </div>
+            <div className="pt-2 border-t border-[#E5E8EA] flex justify-between items-baseline">
+              <span className="font-semibold text-xs text-[#17191C]">Total Payable:</span>
+              <span className="text-lg font-bold text-[#315CF5]">
                 {formatINR(booking.totalAmount)}
               </span>
             </div>
           </div>
 
-          {/* Payment Method Selection */}
-          <div className="mb-5">
-            <label className="block text-xs font-bold text-slate-700 mb-2">
-              Select Simulated Payment Method
+          {/* Payment Method Tabs */}
+          <div className="mb-4">
+            <label className="block text-xs font-semibold text-[#17191C] mb-2">
+              Select Simulated Method
             </label>
-
-            <div className="grid grid-cols-3 gap-2 mb-3">
+            <div className="grid grid-cols-3 gap-2">
               <button
                 type="button"
                 onClick={() => setPaymentMethod('UPI')}
-                className={`p-3 rounded-2xl border text-center transition-all ${
+                className={`p-2.5 rounded-lg border text-center transition-colors cursor-pointer ${
                   paymentMethod === 'UPI'
-                    ? 'border-brand-600 bg-brand-50/70 ring-2 ring-brand-500/20'
-                    : 'border-slate-200 hover:border-slate-300 bg-white'
+                    ? 'border-[#315CF5] bg-[#EFF3FE] text-[#315CF5] font-semibold'
+                    : 'border-[#E5E8EA] hover:border-[#D0D5DD] bg-white text-[#66707A]'
                 }`}
               >
-                <Smartphone className="w-5 h-5 mx-auto mb-1 text-brand-600" />
-                <span className="font-bold text-xs block text-slate-900">UPI</span>
-                <span className="text-[10px] text-slate-500 block">GPay • PhonePe</span>
+                <Smartphone className="w-4 h-4 mx-auto mb-1" />
+                <span className="text-xs">UPI App</span>
               </button>
 
               <button
                 type="button"
                 onClick={() => setPaymentMethod('CARD')}
-                className={`p-3 rounded-2xl border text-center transition-all ${
+                className={`p-2.5 rounded-lg border text-center transition-colors cursor-pointer ${
                   paymentMethod === 'CARD'
-                    ? 'border-brand-600 bg-brand-50/70 ring-2 ring-brand-500/20'
-                    : 'border-slate-200 hover:border-slate-300 bg-white'
+                    ? 'border-[#315CF5] bg-[#EFF3FE] text-[#315CF5] font-semibold'
+                    : 'border-[#E5E8EA] hover:border-[#D0D5DD] bg-white text-[#66707A]'
                 }`}
               >
-                <CreditCard className="w-5 h-5 mx-auto mb-1 text-brand-600" />
-                <span className="font-bold text-xs block text-slate-900">Card</span>
-                <span className="text-[10px] text-slate-500 block">RuPay • Visa</span>
+                <CreditCard className="w-4 h-4 mx-auto mb-1" />
+                <span className="text-xs">Debit / Card</span>
               </button>
 
               <button
                 type="button"
                 onClick={() => setPaymentMethod('NET_BANKING')}
-                className={`p-3 rounded-2xl border text-center transition-all ${
+                className={`p-2.5 rounded-lg border text-center transition-colors cursor-pointer ${
                   paymentMethod === 'NET_BANKING'
-                    ? 'border-brand-600 bg-brand-50/70 ring-2 ring-brand-500/20'
-                    : 'border-slate-200 hover:border-slate-300 bg-white'
+                    ? 'border-[#315CF5] bg-[#EFF3FE] text-[#315CF5] font-semibold'
+                    : 'border-[#E5E8EA] hover:border-[#D0D5DD] bg-white text-[#66707A]'
                 }`}
               >
-                <Building2 className="w-5 h-5 mx-auto mb-1 text-brand-600" />
-                <span className="font-bold text-xs block text-slate-900">Net Banking</span>
-                <span className="text-[10px] text-slate-500 block">HDFC • SBI • ICICI</span>
+                <Building2 className="w-4 h-4 mx-auto mb-1" />
+                <span className="text-xs">Net Banking</span>
               </button>
-            </div>
-
-            {/* Contextual simulated inputs */}
-            <div className="p-3 bg-slate-50 border border-slate-200 rounded-2xl text-xs space-y-2">
-              {paymentMethod === 'UPI' && (
-                <div>
-                  <label className="block text-[11px] font-bold text-slate-600 mb-1">
-                    Simulated UPI ID / VPA
-                  </label>
-                  <input
-                    type="text"
-                    value={upiId}
-                    onChange={(e) => setUpiId(e.target.value)}
-                    className="w-full px-3 py-2 bg-white border border-slate-200 rounded-xl text-xs font-mono font-medium focus:border-brand-500 focus:outline-none"
-                  />
-                  <span className="text-[10px] text-slate-400 mt-1 block">
-                    Supported demo handles: @okhdfcbank, @oksbi, @ybl, @paytm
-                  </span>
-                </div>
-              )}
-
-              {paymentMethod === 'CARD' && (
-                <div className="space-y-2">
-                  <div>
-                    <label className="block text-[11px] font-bold text-slate-600 mb-1">
-                      Simulated Card Number
-                    </label>
-                    <input
-                      type="text"
-                      value={cardNumber}
-                      onChange={(e) => setCardNumber(e.target.value)}
-                      className="w-full px-3 py-2 bg-white border border-slate-200 rounded-xl text-xs font-mono font-medium focus:border-brand-500 focus:outline-none"
-                    />
-                  </div>
-                  <div className="grid grid-cols-2 gap-2 text-[11px]">
-                    <span className="text-slate-500">Network: RuPay / Visa</span>
-                    <span className="text-slate-500 text-right">Valid Thru: 12/28</span>
-                  </div>
-                </div>
-              )}
-
-              {paymentMethod === 'NET_BANKING' && (
-                <div>
-                  <label className="block text-[11px] font-bold text-slate-600 mb-1">
-                    Select Demonstration Bank
-                  </label>
-                  <select
-                    value={selectedBank}
-                    onChange={(e) => setSelectedBank(e.target.value)}
-                    className="w-full px-3 py-2 bg-white border border-slate-200 rounded-xl text-xs font-semibold focus:border-brand-500 focus:outline-none"
-                  >
-                    <option value="HDFC Bank">HDFC Bank</option>
-                    <option value="State Bank of India">State Bank of India (SBI)</option>
-                    <option value="ICICI Bank">ICICI Bank</option>
-                    <option value="Axis Bank">Axis Bank</option>
-                    <option value="Kotak Mahindra Bank">Kotak Mahindra Bank</option>
-                  </select>
-                </div>
-              )}
             </div>
           </div>
 
-          {/* Decline Simulator for Quality Assurance */}
-          <div className="mb-6 p-3 bg-slate-50 border border-slate-200/80 rounded-2xl text-xs">
-            <label className="flex items-center gap-2.5 cursor-pointer text-slate-700 font-medium select-none">
+          {/* Method Input Details */}
+          <div className="mb-4 space-y-3">
+            {paymentMethod === 'UPI' && (
+              <div>
+                <label className="block text-xs font-semibold text-[#17191C] mb-1">UPI ID</label>
+                <input
+                  type="text"
+                  value={upiId}
+                  onChange={(e) => setUpiId(e.target.value)}
+                  className="w-full px-3 py-2 text-xs bg-white border border-[#E5E8EA] rounded-lg focus:border-[#315CF5] focus:outline-none transition-colors text-[#17191C]"
+                />
+              </div>
+            )}
+
+            {paymentMethod === 'CARD' && (
+              <div className="space-y-2">
+                <div>
+                  <label className="block text-xs font-semibold text-[#17191C] mb-1">Card Number</label>
+                  <input
+                    type="text"
+                    value={cardNumber}
+                    onChange={(e) => setCardNumber(e.target.value)}
+                    className="w-full px-3 py-2 text-xs bg-white border border-[#E5E8EA] rounded-lg focus:border-[#315CF5] focus:outline-none transition-colors text-[#17191C]"
+                  />
+                </div>
+                <div className="grid grid-cols-2 gap-2">
+                  <input
+                    type="text"
+                    placeholder="MM/YY"
+                    defaultValue="12/28"
+                    className="px-3 py-2 text-xs bg-white border border-[#E5E8EA] rounded-lg focus:border-[#315CF5] focus:outline-none transition-colors text-[#17191C]"
+                  />
+                  <input
+                    type="password"
+                    placeholder="CVV"
+                    defaultValue="123"
+                    className="px-3 py-2 text-xs bg-white border border-[#E5E8EA] rounded-lg focus:border-[#315CF5] focus:outline-none transition-colors text-[#17191C]"
+                  />
+                </div>
+              </div>
+            )}
+
+            {paymentMethod === 'NET_BANKING' && (
+              <div>
+                <label className="block text-xs font-semibold text-[#17191C] mb-1">Select Bank</label>
+                <select
+                  value={selectedBank}
+                  onChange={(e) => setSelectedBank(e.target.value)}
+                  className="w-full px-3 py-2 text-xs bg-white border border-[#E5E8EA] rounded-lg focus:border-[#315CF5] focus:outline-none transition-colors text-[#17191C]"
+                >
+                  <option value="HDFC Bank">HDFC Bank</option>
+                  <option value="State Bank of India">State Bank of India</option>
+                  <option value="ICICI Bank">ICICI Bank</option>
+                  <option value="Axis Bank">Axis Bank</option>
+                </select>
+              </div>
+            )}
+          </div>
+
+          {/* Simulation Toggle Checkbox */}
+          <div className="mb-5 p-3 rounded-xl bg-[#FAFAF8] border border-[#E5E8EA] flex items-center justify-between">
+            <div className="flex items-center gap-2">
               <input
+                id="simFailure"
                 type="checkbox"
                 checked={simulateFailure}
                 onChange={(e) => setSimulateFailure(e.target.checked)}
-                className="w-4 h-4 rounded text-brand-600 focus:ring-brand-500/20 border-slate-300"
+                className="w-4 h-4 text-[#315CF5] rounded border-[#E5E8EA] focus:ring-0 cursor-pointer"
               />
-              <span className="text-[11px] text-slate-600">
-                Simulate payment decline (for testing error handling)
-              </span>
-            </label>
+              <label htmlFor="simFailure" className="text-xs text-[#17191C] cursor-pointer">
+                Simulate Payment Failure <span className="text-[#66707A]">(Test exception handling)</span>
+              </label>
+            </div>
+            <Lock className="w-3.5 h-3.5 text-[#66707A]" />
           </div>
 
-          {/* Submit Actions */}
-          <div className="flex items-center justify-end gap-3">
+          {/* Action CTAs */}
+          <div className="flex items-center justify-end gap-3 pt-3 border-t border-[#E5E8EA]">
             <button
               type="button"
               onClick={onClose}
-              className="px-4 py-2.5 text-xs font-bold text-slate-500 hover:text-slate-800 transition-colors"
+              className="px-4 py-2 text-xs font-semibold text-[#66707A] hover:text-[#17191C] transition-colors cursor-pointer"
             >
               Cancel
             </button>
-            <motion.button
-              whileHover={{ scale: 1.01 }}
-              whileTap={{ scale: 0.99 }}
+            <button
               type="button"
               disabled={loading}
               onClick={handlePay}
-              className="flex-1 py-3 px-5 bg-slate-900 hover:bg-slate-800 text-white font-bold text-xs rounded-xl shadow-md transition-all disabled:opacity-50 flex items-center justify-center gap-2"
+              className="flex-1 py-2.5 px-4 bg-[#315CF5] hover:bg-[#2447C9] text-white font-semibold text-xs rounded-lg shadow-xs transition-colors disabled:opacity-50 flex items-center justify-center gap-2 cursor-pointer"
             >
               {loading ? (
-                <>
-                  <span className="inline-block w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" />
-                  <span>Processing Payment...</span>
-                </>
+                <span className="inline-block w-3.5 h-3.5 border-2 border-white/30 border-t-white rounded-full animate-spin" />
               ) : (
-                <>
-                  <Lock className="w-3.5 h-3.5" />
-                  <span>Confirm Payment ({formatINR(booking.totalAmount)})</span>
-                </>
+                <span>Confirm {formatINR(booking.totalAmount)}</span>
               )}
-            </motion.button>
+            </button>
           </div>
         </motion.div>
       </div>

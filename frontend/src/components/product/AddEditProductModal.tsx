@@ -118,7 +118,7 @@ export const AddEditProductModal: React.FC<AddEditProductModalProps> = ({
 
   return (
     <AnimatePresence>
-      <div className="fixed inset-0 z-50 overflow-y-auto flex items-center justify-center p-4 sm:p-6">
+      <div className="fixed inset-0 z-50 overflow-y-auto flex items-center justify-center p-4 sm:p-6 font-sans">
         {/* Backdrop */}
         <motion.div
           initial={{ opacity: 0 }}
@@ -135,12 +135,12 @@ export const AddEditProductModal: React.FC<AddEditProductModalProps> = ({
           animate={{ opacity: 1, scale: 1, y: 0 }}
           exit={{ opacity: 0, scale: 0.95, y: 10 }}
           transition={{ type: 'spring', damping: 25, stiffness: 300 }}
-          className="relative bg-white rounded-3xl shadow-2xl border border-slate-200 max-w-2xl w-full max-h-[92vh] overflow-y-auto p-6 sm:p-8 z-10"
+          className="relative bg-white rounded-3xl shadow-2xl border border-bb-border max-w-2xl w-full max-h-[92vh] overflow-y-auto p-6 sm:p-8 z-10"
         >
           {/* Close Button */}
           <button
             onClick={onClose}
-            className="absolute top-5 right-5 text-slate-400 hover:text-slate-700 p-2 rounded-xl hover:bg-slate-100 transition-colors"
+            className="absolute top-5 right-5 text-bb-text-secondary hover:text-bb-text-primary p-2 rounded-xl hover:bg-bb-surface-subtle transition-colors"
             aria-label="Close dialog"
           >
             <X className="w-5 h-5" />
@@ -148,14 +148,14 @@ export const AddEditProductModal: React.FC<AddEditProductModalProps> = ({
 
           {/* Header */}
           <div className="mb-6">
-            <div className="inline-flex items-center gap-1.5 text-[11px] font-bold text-brand-600 uppercase tracking-wider mb-1">
+            <div className="inline-flex items-center gap-1.5 text-[11px] font-bold text-bb-accent uppercase tracking-wider mb-1">
               <Package className="w-3.5 h-3.5" />
               <span>{productToEdit ? 'Edit Equipment' : 'List Equipment for Rent'}</span>
             </div>
-            <h2 className="text-2xl font-display font-extrabold text-slate-900 tracking-tight">
+            <h2 className="text-2xl font-display font-extrabold text-bb-text-primary tracking-tight">
               {productToEdit ? 'Update Equipment Listing' : 'List Your Gear in Gujarat'}
             </h2>
-            <p className="text-xs text-slate-500 mt-1">
+            <p className="text-xs text-bb-text-secondary mt-1">
               Provide clear photos, accurate equipment condition, and local pickup instructions.
             </p>
           </div>
@@ -174,7 +174,7 @@ export const AddEditProductModal: React.FC<AddEditProductModalProps> = ({
 
           <form onSubmit={handleSubmit} className="space-y-4">
             <div>
-              <label className="block text-xs font-bold text-slate-700 mb-1.5">
+              <label className="block text-xs font-bold text-bb-text-primary mb-1.5">
                 Product Title *
               </label>
               <input
@@ -183,20 +183,20 @@ export const AddEditProductModal: React.FC<AddEditProductModalProps> = ({
                 value={name}
                 onChange={(e) => setName(e.target.value)}
                 placeholder="e.g. Sony Alpha a7 IV Mirrorless Camera Kit"
-                className="w-full px-3.5 py-2.5 text-sm bg-white border border-slate-200 rounded-xl focus:border-brand-500 focus:ring-4 focus:ring-brand-500/10 focus:outline-none transition-all placeholder:text-slate-400 font-medium"
+                className="w-full px-3.5 py-2.5 text-sm bg-white border border-bb-border rounded-xl focus:border-bb-accent focus:ring-4 focus:ring-bb-accent/10 focus:outline-none transition-all placeholder:text-bb-text-secondary font-medium text-bb-text-primary"
               />
             </div>
 
             <div className="grid grid-cols-2 gap-3.5">
               <div>
-                <label className="block text-xs font-bold text-slate-700 mb-1.5">
+                <label className="block text-xs font-bold text-bb-text-primary mb-1.5">
                   Category *
                 </label>
                 <select
                   required
                   value={categoryId}
                   onChange={(e) => setCategoryId(e.target.value)}
-                  className="w-full px-3.5 py-2.5 text-sm bg-white border border-slate-200 rounded-xl focus:border-brand-500 focus:ring-4 focus:ring-brand-500/10 focus:outline-none transition-all font-medium text-slate-800"
+                  className="w-full px-3.5 py-2.5 text-sm bg-white border border-bb-border rounded-xl focus:border-bb-accent focus:ring-4 focus:ring-bb-accent/10 focus:outline-none transition-all font-medium text-bb-text-primary"
                 >
                   {categories.map((cat) => (
                     <option key={cat.id} value={cat.id}>
@@ -207,13 +207,13 @@ export const AddEditProductModal: React.FC<AddEditProductModalProps> = ({
               </div>
 
               <div>
-                <label className="block text-xs font-bold text-slate-700 mb-1.5">
+                <label className="block text-xs font-bold text-bb-text-primary mb-1.5">
                   Condition *
                 </label>
                 <select
                   value={condition}
                   onChange={(e) => setCondition(e.target.value as any)}
-                  className="w-full px-3.5 py-2.5 text-sm bg-white border border-slate-200 rounded-xl focus:border-brand-500 focus:ring-4 focus:ring-brand-500/10 focus:outline-none transition-all font-medium text-slate-800"
+                  className="w-full px-3.5 py-2.5 text-sm bg-white border border-bb-border rounded-xl focus:border-bb-accent focus:ring-4 focus:ring-bb-accent/10 focus:outline-none transition-all font-medium text-bb-text-primary"
                 >
                   <option value="BRAND_NEW">Brand New (Pristine Box)</option>
                   <option value="LIKE_NEW">Like New (Mint Condition)</option>
@@ -225,34 +225,34 @@ export const AddEditProductModal: React.FC<AddEditProductModalProps> = ({
 
             <div className="grid grid-cols-2 gap-3.5">
               <div>
-                <label className="block text-xs font-bold text-slate-700 mb-1.5">
-                  Brand <span className="text-slate-400 font-normal">(optional)</span>
+                <label className="block text-xs font-bold text-bb-text-primary mb-1.5">
+                  Brand <span className="text-bb-text-secondary font-normal">(optional)</span>
                 </label>
                 <input
                   type="text"
                   value={brand}
                   onChange={(e) => setBrand(e.target.value)}
                   placeholder="e.g. Sony, Canon, Apple, DeWalt"
-                  className="w-full px-3.5 py-2.5 text-sm bg-white border border-slate-200 rounded-xl focus:border-brand-500 focus:ring-4 focus:ring-brand-500/10 focus:outline-none transition-all placeholder:text-slate-400"
+                  className="w-full px-3.5 py-2.5 text-sm bg-white border border-bb-border rounded-xl focus:border-bb-accent focus:ring-4 focus:ring-bb-accent/10 focus:outline-none transition-all placeholder:text-bb-text-secondary text-bb-text-primary"
                 />
               </div>
               <div>
-                <label className="block text-xs font-bold text-slate-700 mb-1.5">
-                  Model <span className="text-slate-400 font-normal">(optional)</span>
+                <label className="block text-xs font-bold text-bb-text-primary mb-1.5">
+                  Model <span className="text-bb-text-secondary font-normal">(optional)</span>
                 </label>
                 <input
                   type="text"
                   value={model}
                   onChange={(e) => setModel(e.target.value)}
                   placeholder="e.g. EOS R6 Mark II"
-                  className="w-full px-3.5 py-2.5 text-sm bg-white border border-slate-200 rounded-xl focus:border-brand-500 focus:ring-4 focus:ring-brand-500/10 focus:outline-none transition-all placeholder:text-slate-400"
+                  className="w-full px-3.5 py-2.5 text-sm bg-white border border-bb-border rounded-xl focus:border-bb-accent focus:ring-4 focus:ring-bb-accent/10 focus:outline-none transition-all placeholder:text-bb-text-secondary text-bb-text-primary"
                 />
               </div>
             </div>
 
             <div className="grid grid-cols-2 gap-3.5">
               <div>
-                <label className="block text-xs font-bold text-slate-700 mb-1.5">
+                <label className="block text-xs font-bold text-bb-text-primary mb-1.5">
                   Daily Rental Rate (₹) *
                 </label>
                 <input
@@ -263,12 +263,12 @@ export const AddEditProductModal: React.FC<AddEditProductModalProps> = ({
                   value={pricePerDay}
                   onChange={(e) => setPricePerDay(e.target.value)}
                   placeholder="e.g. 500"
-                  className="w-full px-3.5 py-2.5 text-sm bg-white border border-slate-200 rounded-xl focus:border-brand-500 focus:ring-4 focus:ring-brand-500/10 focus:outline-none transition-all placeholder:text-slate-400 font-display font-bold"
+                  className="w-full px-3.5 py-2.5 text-sm bg-white border border-bb-border rounded-xl focus:border-bb-accent focus:ring-4 focus:ring-bb-accent/10 focus:outline-none transition-all placeholder:text-bb-text-secondary font-display font-bold text-bb-text-primary"
                 />
               </div>
 
               <div>
-                <label className="block text-xs font-bold text-slate-700 mb-1.5">
+                <label className="block text-xs font-bold text-bb-text-primary mb-1.5">
                   Refundable Security Deposit (₹) *
                 </label>
                 <input
@@ -279,30 +279,30 @@ export const AddEditProductModal: React.FC<AddEditProductModalProps> = ({
                   value={securityDeposit}
                   onChange={(e) => setSecurityDeposit(e.target.value)}
                   placeholder="e.g. 3000"
-                  className="w-full px-3.5 py-2.5 text-sm bg-white border border-slate-200 rounded-xl focus:border-brand-500 focus:ring-4 focus:ring-brand-500/10 focus:outline-none transition-all placeholder:text-slate-400 font-display font-bold"
+                  className="w-full px-3.5 py-2.5 text-sm bg-white border border-bb-border rounded-xl focus:border-bb-accent focus:ring-4 focus:ring-bb-accent/10 focus:outline-none transition-all placeholder:text-bb-text-secondary font-display font-bold text-bb-text-primary"
                 />
               </div>
             </div>
 
             <div>
-              <label className="block text-xs font-bold text-slate-700 mb-1.5">
+              <label className="block text-xs font-bold text-bb-text-primary mb-1.5">
                 Pickup Locality & City *
               </label>
               <div className="relative">
-                <MapPin className="w-4 h-4 text-slate-400 absolute left-3.5 top-3" />
+                <MapPin className="w-4 h-4 text-bb-text-secondary absolute left-3.5 top-3" />
                 <input
                   type="text"
                   required
                   value={location}
                   onChange={(e) => setLocation(e.target.value)}
                   placeholder="e.g. Satellite, Ahmedabad, Gujarat"
-                  className="w-full pl-10 pr-3.5 py-2.5 text-sm bg-white border border-slate-200 rounded-xl focus:border-brand-500 focus:ring-4 focus:ring-brand-500/10 focus:outline-none transition-all placeholder:text-slate-400 font-medium"
+                  className="w-full pl-10 pr-3.5 py-2.5 text-sm bg-white border border-bb-border rounded-xl focus:border-bb-accent focus:ring-4 focus:ring-bb-accent/10 focus:outline-none transition-all placeholder:text-bb-text-secondary font-medium text-bb-text-primary"
                 />
               </div>
             </div>
 
             <div>
-              <label className="block text-xs font-bold text-slate-700 mb-1.5">
+              <label className="block text-xs font-bold text-bb-text-primary mb-1.5">
                 Description & What's Included *
               </label>
               <textarea
@@ -311,16 +311,16 @@ export const AddEditProductModal: React.FC<AddEditProductModalProps> = ({
                 value={description}
                 onChange={(e) => setDescription(e.target.value)}
                 placeholder="Detail what is included (batteries, cables, bag) and any usage rules..."
-                className="w-full px-3.5 py-2.5 text-xs bg-white border border-slate-200 rounded-xl focus:border-brand-500 focus:ring-4 focus:ring-brand-500/10 focus:outline-none transition-all placeholder:text-slate-400"
+                className="w-full px-3.5 py-2.5 text-xs bg-white border border-bb-border rounded-xl focus:border-bb-accent focus:ring-4 focus:ring-bb-accent/10 focus:outline-none transition-all placeholder:text-bb-text-secondary text-bb-text-primary"
               />
             </div>
 
             {/* Photo Upload Reel */}
             <div>
-              <label className="block text-xs font-bold text-slate-700 mb-1.5">
+              <label className="block text-xs font-bold text-bb-text-primary mb-1.5">
                 Product Photos
               </label>
-              <div className="border-2 border-dashed border-slate-300 rounded-2xl p-4 text-center hover:bg-slate-50 transition-all cursor-pointer relative group">
+              <div className="border-2 border-dashed border-bb-border rounded-2xl p-4 text-center hover:bg-bb-surface-subtle transition-all cursor-pointer relative group">
                 <input
                   type="file"
                   multiple
@@ -328,11 +328,11 @@ export const AddEditProductModal: React.FC<AddEditProductModalProps> = ({
                   onChange={handleFileChange}
                   className="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
                 />
-                <Upload className="w-6 h-6 text-slate-400 group-hover:text-brand-600 mx-auto mb-1.5 transition-colors" />
-                <div className="text-xs font-bold text-slate-800">
+                <Upload className="w-6 h-6 text-bb-text-secondary group-hover:text-bb-accent mx-auto mb-1.5 transition-colors" />
+                <div className="text-xs font-bold text-bb-text-primary">
                   Click to select images (Max 5MB each)
                 </div>
-                <div className="text-[11px] text-slate-400 mt-0.5">
+                <div className="text-[11px] text-bb-text-secondary mt-0.5">
                   JPEG, PNG, WEBP supported
                 </div>
               </div>
@@ -342,7 +342,7 @@ export const AddEditProductModal: React.FC<AddEditProductModalProps> = ({
                   {previewUrls.map((url, i) => (
                     <div
                       key={i}
-                      className="w-16 h-16 rounded-xl overflow-hidden border border-slate-200 shrink-0 shadow-sm"
+                      className="w-16 h-16 rounded-xl overflow-hidden border border-bb-border shrink-0 shadow-sm"
                     >
                       <img src={url} alt="" className="w-full h-full object-cover" />
                     </div>
@@ -352,11 +352,11 @@ export const AddEditProductModal: React.FC<AddEditProductModalProps> = ({
             </div>
 
             {/* Actions */}
-            <div className="pt-4 border-t border-slate-100 flex items-center justify-end gap-3">
+            <div className="pt-4 border-t border-bb-border flex items-center justify-end gap-3">
               <button
                 type="button"
                 onClick={onClose}
-                className="px-4 py-2 text-xs font-bold text-slate-500 hover:text-slate-800 transition-colors"
+                className="px-4 py-2 text-xs font-bold text-bb-text-secondary hover:text-bb-text-primary transition-colors"
               >
                 Cancel
               </button>
@@ -365,7 +365,7 @@ export const AddEditProductModal: React.FC<AddEditProductModalProps> = ({
                 whileTap={{ scale: 0.99 }}
                 type="submit"
                 disabled={loading}
-                className="px-6 py-2.5 bg-slate-900 hover:bg-slate-800 text-white font-bold text-xs rounded-xl shadow-md transition-all disabled:opacity-50 flex items-center gap-2"
+                className="px-6 py-2.5 bg-bb-accent hover:bg-bb-accent-hover text-white font-bold text-xs rounded-xl shadow-sm transition-all disabled:opacity-50 flex items-center gap-2"
               >
                 {loading ? (
                   <>

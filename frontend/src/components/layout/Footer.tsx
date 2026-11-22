@@ -1,12 +1,12 @@
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
-import { MapPin, Activity, ShieldCheck, Lock } from 'lucide-react';
+import { MapPin, ShieldCheck, ExternalLink } from 'lucide-react';
 import { BorrowBuyLogo } from '../common/BorrowBuyLogo';
 import { useModals } from '../../features/modal/ModalContext';
 
 export const Footer: React.FC = () => {
   const navigate = useNavigate();
-  const { openAuth, openAbout, openHelp, openCategoryExplorer } = useModals();
+  const { openAbout, openHelp, openCategoryExplorer } = useModals();
 
   const handleNavigate = (path: string) => {
     navigate(path);
@@ -14,38 +14,36 @@ export const Footer: React.FC = () => {
   };
 
   return (
-    <footer className="bg-[#172B46] border-t border-[#172B46] pt-16 pb-12 text-[#E4E7EC]">
+    <footer className="bg-white border-t border-[#E5E8EA] pt-14 pb-10 text-[#66707A]">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="grid grid-cols-2 md:grid-cols-5 gap-8 pb-12 border-b border-white/15">
-          {/* Col 1: Brand Info */}
-          <div className="col-span-2">
-            <div className="mb-4">
-              <BorrowBuyLogo size="md" variant="full" theme="dark" />
-            </div>
-            <p className="text-xs text-[#E4E7EC]/80 max-w-sm leading-relaxed mb-4">
-              BorrowBuy is India's trusted peer-to-peer equipment rental platform connecting equipment owners with creators, students, and local professionals.
+        <div className="grid grid-cols-1 md:grid-cols-5 gap-8 pb-10 border-b border-[#E5E8EA]">
+          {/* Col 1 & 2: Brand Info */}
+          <div className="md:col-span-2 space-y-4">
+            <BorrowBuyLogo size="md" variant="full" />
+            <p className="text-xs text-[#66707A] max-w-sm leading-relaxed">
+              India&apos;s trusted peer-to-peer equipment rental marketplace. Connect equipment owners with filmmakers, creators, builders, and students with verified digital escrow protection.
             </p>
-            <div className="flex items-center gap-2 text-xs text-[#E4E7EC] font-medium mb-3">
-              <MapPin className="w-3.5 h-3.5 text-[#F06449] shrink-0" />
-              <span>Serving Ahmedabad, Gandhinagar, Surat, Vadodara & across Gujarat</span>
+            <div className="flex items-center gap-2 text-xs text-[#17191C] font-medium">
+              <MapPin className="w-3.5 h-3.5 text-[#315CF5] shrink-0" />
+              <span>Serving Ahmedabad, Gandhinagar, Surat, Vadodara & Rajkot</span>
             </div>
-            <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-white/10 text-white text-[11px] font-semibold border border-white/15">
-              <Activity className="w-3.5 h-3.5 text-emerald-400" />
-              <span>AWS Enterprise Architecture • ap-south-1 (Mumbai)</span>
+            <div className="inline-flex items-center gap-2 px-2.5 py-1 rounded-md bg-[#F1F3F3] text-[#17191C] text-[11px] font-medium border border-[#E5E8EA]">
+              <span className="w-2 h-2 rounded-full bg-[#13795B]"></span>
+              <span>AWS Infrastructure • ap-south-1 (Mumbai)</span>
             </div>
           </div>
 
-          {/* Col 2: Categories */}
+          {/* Col 3: Rental Categories */}
           <div>
-            <div className="text-xs font-bold text-white uppercase tracking-wider mb-3 font-display">
-              Rental Categories
+            <div className="text-xs font-semibold text-[#17191C] uppercase tracking-wider mb-3">
+              Popular Gear
             </div>
-            <ul className="space-y-2 text-xs text-[#E4E7EC]">
+            <ul className="space-y-2 text-xs text-[#66707A]">
               <li>
                 <button
                   type="button"
-                  onClick={() => handleNavigate('/browse')}
-                  className="hover:text-white font-medium transition-colors text-left"
+                  onClick={() => handleNavigate('/browse?category=cat-cameras')}
+                  className="hover:text-[#17191C] transition-colors text-left"
                 >
                   Cameras & Photography
                 </button>
@@ -53,44 +51,35 @@ export const Footer: React.FC = () => {
               <li>
                 <button
                   type="button"
-                  onClick={() => handleNavigate('/browse')}
-                  className="hover:text-white font-medium transition-colors text-left"
+                  onClick={() => handleNavigate('/browse?category=cat-video')}
+                  className="hover:text-[#17191C] transition-colors text-left"
                 >
-                  Video Production Gear
+                  Cinema & Lighting Gear
                 </button>
               </li>
               <li>
                 <button
                   type="button"
-                  onClick={() => handleNavigate('/browse')}
-                  className="hover:text-white font-medium transition-colors text-left"
+                  onClick={() => handleNavigate('/browse?category=cat-audio')}
+                  className="hover:text-[#17191C] transition-colors text-left"
                 >
-                  Laptops & Computers
+                  Pro Audio & Mics
                 </button>
               </li>
               <li>
                 <button
                   type="button"
-                  onClick={() => handleNavigate('/browse')}
-                  className="hover:text-white font-medium transition-colors text-left"
+                  onClick={() => handleNavigate('/browse?category=cat-construction')}
+                  className="hover:text-[#17191C] transition-colors text-left"
                 >
-                  Construction & Tools
-                </button>
-              </li>
-              <li>
-                <button
-                  type="button"
-                  onClick={() => handleNavigate('/browse')}
-                  className="hover:text-white font-medium transition-colors text-left"
-                >
-                  Sound & Audio Systems
+                  Power Tools & Workshop
                 </button>
               </li>
               <li>
                 <button
                   type="button"
                   onClick={openCategoryExplorer}
-                  className="text-[#F06449] font-bold hover:underline"
+                  className="text-[#315CF5] font-semibold hover:underline"
                 >
                   View All 25 Categories &rarr;
                 </button>
@@ -98,101 +87,17 @@ export const Footer: React.FC = () => {
             </ul>
           </div>
 
-          {/* Col 3: Trust & Safety */}
+          {/* Col 4: Platform & Security */}
           <div>
-            <div className="text-xs font-bold text-white uppercase tracking-wider mb-3 font-display">
-              Trust & Safety
+            <div className="text-xs font-semibold text-[#17191C] uppercase tracking-wider mb-3">
+              Platform & Trust
             </div>
-            <ul className="space-y-2 text-xs text-[#E4E7EC]">
-              <li>
-                <button
-                  type="button"
-                  onClick={openHelp}
-                  className="hover:text-white font-medium transition-colors text-left flex items-center gap-1.5"
-                >
-                  <ShieldCheck className="w-3.5 h-3.5 text-[#2F6B65]" />
-                  <span>Verified Owners</span>
-                </button>
-              </li>
-              <li>
-                <button
-                  type="button"
-                  onClick={openHelp}
-                  className="hover:text-white font-medium transition-colors text-left flex items-center gap-1.5"
-                >
-                  <Lock className="w-3.5 h-3.5 text-[#2F6B65]" />
-                  <span>Refundable Deposits</span>
-                </button>
-              </li>
-              <li>
-                <button
-                  type="button"
-                  onClick={openHelp}
-                  className="hover:text-white font-medium transition-colors text-left"
-                >
-                  Digital QR Passes
-                </button>
-              </li>
-              <li>
-                <button
-                  type="button"
-                  onClick={openHelp}
-                  className="hover:text-white font-medium transition-colors text-left"
-                >
-                  Condition Handover Verification
-                </button>
-              </li>
-              <li>
-                <button
-                  type="button"
-                  onClick={openHelp}
-                  className="hover:text-white font-medium transition-colors text-left"
-                >
-                  Dispute Arbitration Policy
-                </button>
-              </li>
-            </ul>
-          </div>
-
-          {/* Col 4: Cloud & Academic */}
-          <div>
-            <div className="text-xs font-bold text-white uppercase tracking-wider mb-3 font-display">
-              Cloud Operations
-            </div>
-            <ul className="space-y-2 text-xs text-[#E4E7EC]">
-              <li>
-                <button
-                  type="button"
-                  onClick={() => handleNavigate('/cloud')}
-                  className="text-emerald-400 font-bold hover:underline text-left flex items-center gap-1.5"
-                >
-                  <Activity className="w-3.5 h-3.5" />
-                  <span>Live Operations Console</span>
-                </button>
-              </li>
-              <li>
-                <button
-                  type="button"
-                  onClick={() => openAuth('login')}
-                  className="hover:text-white font-medium transition-colors text-left"
-                >
-                  Sign In
-                </button>
-              </li>
-              <li>
-                <button
-                  type="button"
-                  onClick={() => openAuth('register')}
-                  className="hover:text-white font-medium transition-colors text-left"
-                >
-                  List Your Equipment
-                </button>
-              </li>
+            <ul className="space-y-2 text-xs text-[#66707A]">
               <li>
                 <button
                   type="button"
                   onClick={openAbout}
-                  className="hover:text-white font-medium transition-colors text-left"
+                  className="hover:text-[#17191C] transition-colors text-left"
                 >
                   About BorrowBuy
                 </button>
@@ -201,28 +106,88 @@ export const Footer: React.FC = () => {
                 <button
                   type="button"
                   onClick={openHelp}
-                  className="hover:text-white font-medium transition-colors text-left"
+                  className="hover:text-[#17191C] transition-colors text-left"
                 >
-                  Help & FAQs
+                  Escrow & Deposit Guarantee
                 </button>
               </li>
               <li>
-                <span className="text-white/60 font-mono text-[11px]">support@borrowbuy.in</span>
+                <button
+                  type="button"
+                  onClick={openHelp}
+                  className="hover:text-[#17191C] transition-colors text-left"
+                >
+                  Digital QR Handover Passes
+                </button>
+              </li>
+              <li>
+                <button
+                  type="button"
+                  onClick={openHelp}
+                  className="hover:text-[#17191C] transition-colors text-left"
+                >
+                  Damage & Dispute Policy
+                </button>
+              </li>
+              <li>
+                <button
+                  type="button"
+                  onClick={openHelp}
+                  className="hover:text-[#17191C] transition-colors text-left"
+                >
+                  FAQ & Knowledge Base
+                </button>
+              </li>
+            </ul>
+          </div>
+
+          {/* Col 5: AWS Cloud Operations */}
+          <div>
+            <div className="text-xs font-semibold text-[#17191C] uppercase tracking-wider mb-3">
+              Cloud & DevOps
+            </div>
+            <ul className="space-y-2 text-xs text-[#66707A]">
+              <li>
+                <button
+                  type="button"
+                  onClick={() => handleNavigate('/cloud')}
+                  className="hover:text-[#17191C] font-medium text-[#315CF5] transition-colors text-left flex items-center gap-1"
+                >
+                  <span>Cloud Operations Console</span>
+                  <ExternalLink className="w-3 h-3" />
+                </button>
+              </li>
+              <li>
+                <span className="text-[#66707A]">EC2 + EBS Persistent DB</span>
+              </li>
+              <li>
+                <span className="text-[#66707A]">S3 Media Asset Store</span>
+              </li>
+              <li>
+                <span className="text-[#66707A]">SQS Event Notification Pipeline</span>
+              </li>
+              <li>
+                <span className="text-[#66707A]">Lambda Serverless Engine</span>
+              </li>
+              <li>
+                <span className="text-[#66707A]">CloudWatch Active Telemetry</span>
               </li>
             </ul>
           </div>
         </div>
 
-        <div className="pt-8 flex flex-col sm:flex-row items-center justify-between text-xs text-[#E4E7EC]/70 gap-4">
+        {/* Bottom copyright & status row */}
+        <div className="pt-6 flex flex-col sm:flex-row items-center justify-between text-xs text-[#66707A] gap-4">
           <div>
-            BorrowBuy Platform &copy; 2026. All rights reserved. Good things are better shared.
+            &copy; {new Date().getFullYear()} BorrowBuy Technologies. All rights reserved. Peer-to-peer equipment rental.
           </div>
-          <div className="flex flex-wrap items-center gap-6">
-            <span className="text-[#E4E7EC]/70">Curated Equipment across Gujarat & India</span>
-            <span className="text-[#E4E7EC]/70">Secure Digital Escrow</span>
-            <span className="px-2 py-0.5 rounded bg-white/10 text-white/90 text-[10px] font-mono">
-              v3.0-cloud
+          <div className="flex items-center gap-4">
+            <span className="inline-flex items-center gap-1.5 text-xs text-[#13795B]">
+              <ShieldCheck className="w-4 h-4" />
+              <span>TLS / AES-256 Encrypted</span>
             </span>
+            <span>•</span>
+            <span>Version 1.0.0</span>
           </div>
         </div>
       </div>

@@ -4,7 +4,7 @@
 **Test Framework:** Vitest v2.1.8 + TypeScript 5.7  
 **Build Tool:** Vite v6.4.5  
 **Target Environment:** Node.js 20 LTS / AWS Linux 2023  
-**Overall Status:** **100% PASSED (95/95 Tests)**
+**Overall Status:** **100% PASSED (103/103 Tests)**
 
 ---
 
@@ -12,15 +12,16 @@
 
 | Test Domain | Target Scope | Total Tests | Passed | Failed | Duration | Status |
 |---|---|---|---|---|---|---|
-| **AWS Cloud Services** | S3, SNS, SQS, CloudWatch, DynamoDB, Cognito, Lambda, Cloud Ops API | 11 | 11 | 0 | 113ms | **PASSED** |
-| **End-to-End Lifecycle** | Complete 10-step renter & owner rental lifecycle, payments, escrow & reviews | 24 | 24 | 0 | 909ms | **PASSED** |
-| **Phase 5 (Payments & QR)** | Mock payment gateway, escrow isolation, HMAC QR tokens, inspection | 14 | 14 | 0 | 863ms | **PASSED** |
-| **Phase 6 (Jobs & Admin)** | 15-minute hold sweeper, overdue detector, in-app alerts, admin metrics | 12 | 12 | 0 | 458ms | **PASSED** |
-| **Bookings & Escrow** | ACID transactions, date overlap collision checks, status state machines | 10 | 10 | 0 | 735ms | **PASSED** |
-| **Product Catalogue** | Multi-category search, Gujarat city filtering, price filters, soft delete | 12 | 12 | 0 | 450ms | **PASSED** |
-| **Authentication & IAM** | Password hashing, JWT claims, role-based access control, password reset | 10 | 10 | 0 | 635ms | **PASSED** |
-| **Health & Telemetry** | `/api/health`, DB latency ping, memory/uptime stats | 2 | 2 | 0 | 44ms | **PASSED** |
-| **TOTAL** | **Full Application Test Suite** | **95** | **95** | **0** | **4.21s** | **100% PASSED** |
+| **AWS Cloud Services** | S3, SNS, SQS, CloudWatch, DynamoDB, Cognito, Lambda, Cloud Ops API | 11 | 11 | 0 | 392ms | **PASSED** |
+| **End-to-End Lifecycle** | Complete 10-step renter & owner rental lifecycle, payments, escrow & reviews | 24 | 24 | 0 | 2.19s | **PASSED** |
+| **Phase 5 (Payments & QR)** | Mock payment gateway, escrow isolation, HMAC QR tokens, inspection | 14 | 14 | 0 | 1.28s | **PASSED** |
+| **Phase 6 (Jobs & Admin)** | 15-minute hold sweeper, overdue detector, in-app alerts, admin metrics | 12 | 12 | 0 | 727ms | **PASSED** |
+| **Bookings & Escrow** | ACID transactions, date overlap collision checks, status state machines | 10 | 10 | 0 | 618ms | **PASSED** |
+| **Catalogue Quality** | Indian equipment synonyms ("drill machine", "mike", "cooler"), deduplication | 8 | 8 | 0 | 460ms | **PASSED** |
+| **Product Catalogue** | Multi-category search, Gujarat city filtering, price filters, soft delete | 12 | 12 | 0 | 1.01s | **PASSED** |
+| **Authentication & IAM** | Password hashing, JWT claims, role-based access control, password reset | 10 | 10 | 0 | 694ms | **PASSED** |
+| **Health & Telemetry** | `/api/health`, DB latency ping, memory/uptime stats | 2 | 2 | 0 | 64ms | **PASSED** |
+| **TOTAL** | **Full Application Test Suite (9 Suites)** | **103** | **103** | **0** | **7.45s** | **100% PASSED** |
 
 ---
 

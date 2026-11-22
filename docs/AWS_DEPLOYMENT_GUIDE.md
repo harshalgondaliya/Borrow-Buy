@@ -37,11 +37,31 @@ NODE_ENV=production
 PORT=5000
 AWS_REGION=ap-south-1
 STORAGE_DRIVER=s3
-AWS_S3_BUCKET=borrowbuy-product-assets
+AWS_S3_BUCKET_NAME=borrowbuy-product-assets
 NOTIFICATION_DRIVER=local
-PAYMENT_DRIVER=mock
+PAYMENT_DRIVER=simulation
 DATABASE_URL=postgresql://borrowbuy_user:secure_password_2026@localhost:5432/borrowbuy_db?schema=public
 ```
+
+#### Production Environment Variable Matrix:
+
+| Variable Name | Required? | Example Value | Description |
+|---|:---:|---|---|
+| `PORT` | No | `5000` | Port on which the Express REST API listens |
+| `NODE_ENV` | Yes | `production` | Enforces production error handling and secure headers |
+| `DATABASE_URL` | Yes | `postgresql://user:pass@host:5432/dbname?schema=public` | PostgreSQL connection string |
+| `JWT_SECRET` | Yes | `[Random 64-char string]` | Secret key for signing and verifying user session tokens |
+| `JWT_EXPIRES_IN` | No | `7d` | Session token validity duration |
+| `FRONTEND_URL` | Yes | `https://d12345abcdef.cloudfront.net` | Allowed CORS origin for browser requests |
+| `STORAGE_DRIVER` | Yes | `s3` (or `local` in dev) | Driver selection for product image storage |
+| `NOTIFICATION_DRIVER`| Yes | `sns` (or `local` in dev) | Driver selection for alert dispatches |
+| `PAYMENT_DRIVER` | Yes | `simulation` | Simulates payment checkout with security deposit hold |
+| `QUEUE_DRIVER` | No | `sqs` (or `local` in dev) | Driver selection for asynchronous event processing |
+| `AWS_REGION` | Yes | `ap-south-1` | AWS target region for all AWS SDK clients |
+| `AWS_S3_BUCKET_NAME` | Yes | `borrowbuy-dev-assets` | Target bucket for photo uploads |
+| `AWS_SNS_TOPIC_ARN` | No | `arn:aws:sns:ap-south-1:...` | SNS Topic for broadcast alerts |
+| `AWS_SQS_QUEUE_URL` | No | `https://sqs.ap-south-1.amazonaws.com/...` | SQS Queue URL for background tasks |
+| `CLOUDFRONT_DOMAIN` | No | `d12345abcdef.cloudfront.net` | CloudFront domain for fast asset delivery |
 
 ### Step 3: Initialize & Validate Terraform
 ```bash

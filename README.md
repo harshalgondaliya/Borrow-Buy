@@ -7,7 +7,7 @@
 [![PostgreSQL](https://img.shields.io/badge/PostgreSQL-16-336791.svg)](https://www.postgresql.org/)
 [![Prisma ORM](https://img.shields.io/badge/Prisma-5.22-2D3748.svg)](https://www.prisma.io/)
 [![AWS Architecture](https://img.shields.io/badge/AWS-16_Services_Integrated-orange.svg)](https://aws.amazon.com/)
-[![Tests Passing](https://img.shields.io/badge/Tests-95%2F95_Passing-emerald.svg)](https://vitest.dev/)
+[![Tests Passing](https://img.shields.io/badge/Tests-103%2F103_Passing-emerald.svg)](https://vitest.dev/)
 
 BorrowBuy is an enterprise-grade equipment rental and digital escrow platform localized for Gujarat, India. Designed as a comprehensive **Cloud Computing Capstone Architecture**, it integrates **16 AWS Cloud Services**, dual-AZ VPC private networking, Application Load Balancing, Horizontal Auto Scaling, Serverless Lambda computation, Amazon DynamoDB immutable audit streams, and a modern design system.
 
@@ -142,7 +142,7 @@ All 15 master documentation files are organized in `docs/`:
 10. [`docs/AWS_DEPLOYMENT_GUIDE.md`](docs/AWS_DEPLOYMENT_GUIDE.md) – Step-by-step deployment guide for Profile A and Profile B
 11. [`docs/AWS_COST_ANALYSIS.md`](docs/AWS_COST_ANALYSIS.md) – FinOps cost breakdown, Free Tier eligibility, and AWS Budgets (\$5.00 limit)
 12. [`docs/FACULTY_DEMO_GUIDE.md`](docs/FACULTY_DEMO_GUIDE.md) – Step-by-step faculty presentation script and natural language Q&A defense
-13. [`docs/TEST_REPORT.md`](docs/TEST_REPORT.md) – Automated test execution report: **95/95 tests passed (100%)**
+13. [`docs/TEST_REPORT.md`](docs/TEST_REPORT.md) – Automated test execution report: **103/103 tests passed (100%)** across 9 test suites
 14. [`docs/FINAL_VERIFICATION_REPORT.md`](docs/FINAL_VERIFICATION_REPORT.md) – Final engineering sign-off and service audit
 15. [`docs/demo-accounts.md`](docs/demo-accounts.md) – Local development demonstration credentials
 

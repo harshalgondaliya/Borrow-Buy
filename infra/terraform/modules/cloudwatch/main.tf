@@ -1,7 +1,60 @@
 # -----------------------------------------------------------------------------
-# Metric Alarm: ECS High CPU Utilization
+# Metric Alarm: EC2 High CPU Utilization (Profile A: Academic Baseline)
+# -----------------------------------------------------------------------------
+resource "aws_cloudwatch_metric_alarm" "ec2_cpu_high" {
+  count               = var.deploy_mode == "ec2" ? 1 : 0
+  alarm_name          = "${var.project_name}-${var.environment}-ec2-cpu-high"
+  comparison_operator = "GreaterThanThreshold"
+  evaluation_periods  = 2
+  metric_name         = "CPUUtilization"
+  namespace           = "AWS/EC2"
+  period              = 300
+  statistic           = "Average"
+  threshold           = 80
+  alarm_description   = "Triggers when EC2 Docker host CPU utilization exceeds 80% for 10 minutes"
+
+  dimensions = {
+    InstanceId = var.ec2_instance_id
+  }
+
+  tags = {
+    Environment = var.environment
+    ManagedBy   = "Terraform"
+    Tier        = "Profile-A"
+  }
+}
+
+# -----------------------------------------------------------------------------
+# Metric Alarm: EC2 Status Check Failed (Profile A: Academic Baseline)
+# -----------------------------------------------------------------------------
+resource "aws_cloudwatch_metric_alarm" "ec2_status_check" {
+  count               = var.deploy_mode == "ec2" ? 1 : 0
+  alarm_name          = "${var.project_name}-${var.environment}-ec2-status-check-failed"
+  comparison_operator = "GreaterThanThreshold"
+  evaluation_periods  = 2
+  metric_name         = "StatusCheckFailed"
+  namespace           = "AWS/EC2"
+  period              = 300
+  statistic           = "Maximum"
+  threshold           = 0
+  alarm_description   = "Triggers when EC2 Docker host fails system or instance status checks"
+
+  dimensions = {
+    InstanceId = var.ec2_instance_id
+  }
+
+  tags = {
+    Environment = var.environment
+    ManagedBy   = "Terraform"
+    Tier        = "Profile-A"
+  }
+}
+
+# -----------------------------------------------------------------------------
+# Metric Alarm: ECS High CPU Utilization (Profile B: Conditional)
 # -----------------------------------------------------------------------------
 resource "aws_cloudwatch_metric_alarm" "ecs_cpu_high" {
+  count               = var.deploy_mode == "ecs" ? 1 : 0
   alarm_name          = "${var.project_name}-${var.environment}-ecs-cpu-high"
   comparison_operator = "GreaterThanThreshold"
   evaluation_periods  = 2
@@ -20,13 +73,15 @@ resource "aws_cloudwatch_metric_alarm" "ecs_cpu_high" {
   tags = {
     Environment = var.environment
     ManagedBy   = "Terraform"
+    Tier        = "Profile-B"
   }
 }
 
 # -----------------------------------------------------------------------------
-# Metric Alarm: ECS High Memory Utilization
+# Metric Alarm: ECS High Memory Utilization (Profile B: Conditional)
 # -----------------------------------------------------------------------------
 resource "aws_cloudwatch_metric_alarm" "ecs_memory_high" {
+  count               = var.deploy_mode == "ecs" ? 1 : 0
   alarm_name          = "${var.project_name}-${var.environment}-ecs-memory-high"
   comparison_operator = "GreaterThanThreshold"
   evaluation_periods  = 2
@@ -45,13 +100,15 @@ resource "aws_cloudwatch_metric_alarm" "ecs_memory_high" {
   tags = {
     Environment = var.environment
     ManagedBy   = "Terraform"
+    Tier        = "Profile-B"
   }
 }
 
 # -----------------------------------------------------------------------------
-# Metric Alarm: RDS Low Storage Space (< 2 GB)
+# Metric Alarm: RDS Low Storage Space (Profile B: Conditional)
 # -----------------------------------------------------------------------------
 resource "aws_cloudwatch_metric_alarm" "rds_storage_low" {
+  count               = var.enable_rds ? 1 : 0
   alarm_name          = "${var.project_name}-${var.environment}-rds-storage-low"
   comparison_operator = "LessThanThreshold"
   evaluation_periods  = 2
@@ -69,13 +126,15 @@ resource "aws_cloudwatch_metric_alarm" "rds_storage_low" {
   tags = {
     Environment = var.environment
     ManagedBy   = "Terraform"
+    Tier        = "Profile-B"
   }
 }
 
 # -----------------------------------------------------------------------------
-# Metric Alarm: ALB 5XX Internal Server Errors
+# Metric Alarm: ALB 5XX Internal Server Errors (Profile B: Conditional)
 # -----------------------------------------------------------------------------
 resource "aws_cloudwatch_metric_alarm" "alb_5xx_errors" {
+  count               = var.enable_alb ? 1 : 0
   alarm_name          = "${var.project_name}-${var.environment}-alb-5xx-high"
   comparison_operator = "GreaterThanThreshold"
   evaluation_periods  = 1
@@ -94,6 +153,7 @@ resource "aws_cloudwatch_metric_alarm" "alb_5xx_errors" {
   tags = {
     Environment = var.environment
     ManagedBy   = "Terraform"
+    Tier        = "Profile-B"
   }
 }
 
@@ -113,13 +173,12 @@ resource "aws_cloudwatch_dashboard" "system_dashboard" {
         height = 6
         properties = {
           metrics = [
-            ["AWS/ECS", "CPUUtilization", "ServiceName", var.ecs_service_name, "ClusterName", var.ecs_cluster_name, { label = "CPU %" }],
-            ["AWS/ECS", "MemoryUtilization", "ServiceName", var.ecs_service_name, "ClusterName", var.ecs_cluster_name, { label = "Memory %" }]
+            ["AWS/EC2", "CPUUtilization", "InstanceId", var.ec2_instance_id, { label = "EC2 CPU %" }]
           ]
           view    = "timeSeries"
           stacked = false
-          region  = "us-east-1"
-          title   = "ECS Fargate Compute Utilization"
+          region  = var.aws_region
+          title   = "EC2 Docker Host Compute Utilization"
           period  = 300
         }
       },
@@ -131,13 +190,13 @@ resource "aws_cloudwatch_dashboard" "system_dashboard" {
         height = 6
         properties = {
           metrics = [
-            ["AWS/ApplicationELB", "RequestCount", "LoadBalancer", var.alb_arn_suffix, { stat = "Sum", label = "Total Requests" }],
-            ["AWS/ApplicationELB", "TargetResponseTime", "LoadBalancer", var.alb_arn_suffix, { stat = "Average", label = "Target Response (s)" }]
+            ["AWS/EC2", "NetworkIn", "InstanceId", var.ec2_instance_id, { stat = "Sum", label = "Network In (Bytes)" }],
+            ["AWS/EC2", "NetworkOut", "InstanceId", var.ec2_instance_id, { stat = "Sum", label = "Network Out (Bytes)" }]
           ]
           view    = "timeSeries"
           stacked = false
-          region  = "us-east-1"
-          title   = "ALB Request Volume & Latency"
+          region  = var.aws_region
+          title   = "EC2 Network Traffic"
           period  = 300
         }
       },
@@ -149,13 +208,13 @@ resource "aws_cloudwatch_dashboard" "system_dashboard" {
         height = 6
         properties = {
           metrics = [
-            ["AWS/ApplicationELB", "HTTPCode_Target_4XX_Count", "LoadBalancer", var.alb_arn_suffix, { stat = "Sum", label = "4XX Errors" }],
-            ["AWS/ApplicationELB", "HTTPCode_Target_5XX_Count", "LoadBalancer", var.alb_arn_suffix, { stat = "Sum", label = "5XX Errors" }]
+            ["AWS/ApiGateway", "Count", "ApiId", "${var.project_name}-http-api-${var.environment}", { stat = "Sum", label = "API Requests" }],
+            ["AWS/ApiGateway", "Latency", "ApiId", "${var.project_name}-http-api-${var.environment}", { stat = "Average", label = "Latency (ms)" }]
           ]
           view    = "timeSeries"
           stacked = false
-          region  = "us-east-1"
-          title   = "HTTP Error Code Distribution"
+          region  = var.aws_region
+          title   = "API Gateway Serverless Traffic"
           period  = 300
         }
       },
@@ -167,13 +226,13 @@ resource "aws_cloudwatch_dashboard" "system_dashboard" {
         height = 6
         properties = {
           metrics = [
-            ["AWS/RDS", "DatabaseConnections", "DBInstanceIdentifier", var.rds_instance_id, { stat = "Average", label = "Connections" }],
-            ["AWS/RDS", "FreeStorageSpace", "DBInstanceIdentifier", var.rds_instance_id, { stat = "Average", label = "Free Storage (bytes)" }]
+            ["AWS/Lambda", "Invocations", "FunctionName", "${var.project_name}-quote-calculator-${var.environment}", { stat = "Sum", label = "Quote Calc Invocations" }],
+            ["AWS/Lambda", "Duration", "FunctionName", "${var.project_name}-quote-calculator-${var.environment}", { stat = "Average", label = "Avg Duration (ms)" }]
           ]
           view    = "timeSeries"
           stacked = false
-          region  = "us-east-1"
-          title   = "RDS PostgreSQL Telemetry"
+          region  = var.aws_region
+          title   = "Serverless Lambda Execution"
           period  = 300
         }
       }

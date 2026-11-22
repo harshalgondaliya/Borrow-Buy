@@ -1,6 +1,5 @@
 import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { motion } from 'framer-motion';
 import {
   Sparkles,
   ShieldCheck,
@@ -18,7 +17,6 @@ import {
   Hammer,
   Tent,
   Layers,
-  Sparkle,
   Compass,
 } from 'lucide-react';
 import { Product, Category, productsService } from '../services/products';
@@ -71,7 +69,7 @@ export const HomePage: React.FC = () => {
     id: 'prod-featured-fallback',
     name: 'Sony FX3 Cinema Line Full-Frame Kit',
     description:
-      'Pro cinema camera with XLR audio handle, 2x 160GB CFexpress cards, 3x batteries, and 24-70mm f/2.8 GM lens. Ready for high-end commercials.',
+      'Pro cinema camera with XLR audio handle, 2x 160GB CFexpress cards, 3x batteries, and 24-70mm f/2.8 GM lens. Ready for commercial shoots.',
     pricePerDay: 2800,
     securityDeposit: 15000,
     condition: 'LIKE_NEW',
@@ -93,11 +91,11 @@ export const HomePage: React.FC = () => {
       isVerifiedOwner: true,
     },
     includedAccessories: [
-      'Top XLR Handle',
-      '2x CFexpress Type A',
+      'Top XLR Audio Handle',
+      '2x CFexpress Type A 160GB',
       '3x NP-FZ100 Batteries',
       'Dual Charger',
-      'Pelican Hard Case',
+      'Pelican Hard Shell Case',
     ],
     createdAt: new Date().toISOString(),
     updatedAt: new Date().toISOString(),
@@ -106,69 +104,45 @@ export const HomePage: React.FC = () => {
   const spotlightProduct = featuredProducts[0] || defaultFeaturedProduct;
 
   return (
-    <div className="space-y-0">
-      {/* HERO SECTION: Full-width Midnight Navy #172B46 with Coral #F06449 Search */}
-      <section className="relative overflow-hidden bg-[#172B46] text-white pt-14 pb-20 md:pt-18 md:pb-28 border-b border-[#172B46]">
-        {/* Soft decorative background accents */}
-        <div className="absolute top-1/4 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[700px] h-[380px] bg-[#2F6B65]/15 rounded-full blur-[140px] pointer-events-none" />
-        <div className="absolute top-1/3 right-10 w-[320px] h-[320px] bg-[#F06449]/10 rounded-full blur-[120px] pointer-events-none" />
-
+    <div className="space-y-0 bg-[#FAFAF8]">
+      {/* HERO SECTION: Editorial Light Theme */}
+      <section className="relative overflow-hidden pt-12 pb-16 md:pt-16 md:pb-24 border-b border-[#E5E8EA] bg-white">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
-          <div className="grid lg:grid-cols-12 gap-10 lg:gap-12 items-center">
-            {/* Left Column: Editorial Value Proposition & Discovery Search */}
+          <div className="grid lg:grid-cols-12 gap-8 lg:gap-12 items-center">
+            {/* Left Column: Value Proposition & Discovery Search */}
             <div className="lg:col-span-7">
-              <motion.div
-                initial={{ opacity: 0, y: -10 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.4 }}
-                className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-white/10 border border-white/15 text-xs font-semibold text-white/90 mb-6 backdrop-blur-sm shadow-xs"
-              >
-                <Sparkles className="w-3.5 h-3.5 text-[#F2C66D]" />
-                <span>Peer-to-Peer Rental Network • Verified across Gujarat</span>
-              </motion.div>
+              <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-[#EFF3FE] border border-[#DBE4FD] text-xs font-semibold text-[#315CF5] mb-5">
+                <Sparkles className="w-3.5 h-3.5 text-[#315CF5]" />
+                <span>Verified Peer-to-Peer Equipment Network • Gujarat Hubs</span>
+              </div>
 
-              <motion.h1
-                initial={{ opacity: 0, y: 15 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.5, delay: 0.1 }}
-                className="font-display text-4xl sm:text-5xl lg:text-6xl font-extrabold tracking-tight leading-[1.08] text-white"
-              >
-                Good things are better shared.
-              </motion.h1>
+              <h1 className="font-display text-4xl sm:text-5xl lg:text-6xl font-extrabold tracking-tight leading-[1.08] text-[#17191C]">
+                Rent professional gear without capital expense.
+              </h1>
 
-              <motion.p
-                initial={{ opacity: 0, y: 15 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.5, delay: 0.2 }}
-                className="text-base sm:text-lg text-[#E4E7EC] mt-5 leading-relaxed font-normal max-w-xl"
-              >
-                Find useful equipment and products to rent from verified owners near you. Get what you need, without buying everything.
-              </motion.p>
+              <p className="text-base sm:text-lg text-[#66707A] mt-4 leading-relaxed font-normal max-w-xl">
+                Find cinema cameras, audio rigs, workshop tools, and event technology from verified local owners across Gujarat. Protected by instant escrow.
+              </p>
 
-              {/* Integrated Quick Discovery Search Bar */}
-              <motion.div
-                initial={{ opacity: 0, y: 15 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.5, delay: 0.3 }}
-                className="mt-8 bg-white p-2.5 sm:p-3 rounded-2xl border border-[#E4E7EC] shadow-elevated text-[#202833]"
-              >
+              {/* Integrated Search Bar */}
+              <div className="mt-8 bg-[#FAFAF8] p-2.5 sm:p-3 rounded-2xl border border-[#E5E8EA] shadow-card text-[#17191C]">
                 <form onSubmit={handleHeroSearchSubmit} className="flex flex-col sm:flex-row items-stretch sm:items-center gap-2">
                   <div className="flex-1 relative flex items-center">
-                    <Search className="w-4 h-4 text-[#667085] absolute left-3 pointer-events-none" />
+                    <Search className="w-4 h-4 text-[#66707A] absolute left-3 pointer-events-none" />
                     <input
                       type="text"
-                      placeholder="What do you need? (e.g. Sony FX3, Tent, Projector)"
+                      placeholder="What gear do you need? (e.g. Sony FX3, Lens, Tent)"
                       value={heroKeyword}
                       onChange={(e) => setHeroKeyword(e.target.value)}
-                      className="w-full pl-9 pr-3 py-2.5 text-xs text-[#202833] placeholder:text-[#667085] bg-transparent focus:outline-none font-medium"
+                      className="w-full pl-9 pr-3 py-2 text-sm text-[#17191C] placeholder:text-[#66707A] bg-transparent focus:outline-none"
                     />
                   </div>
 
-                  <div className="sm:border-l border-[#E4E7EC] sm:pl-2">
+                  <div className="sm:border-l border-[#E5E8EA] sm:pl-2">
                     <select
                       value={heroCity}
                       onChange={(e) => setHeroCity(e.target.value)}
-                      className="w-full sm:w-auto px-3 py-2.5 text-xs text-[#202833] bg-transparent focus:outline-none font-medium cursor-pointer"
+                      className="w-full sm:w-auto px-3 py-2 text-xs text-[#17191C] bg-transparent focus:outline-none cursor-pointer font-medium"
                     >
                       <option value="">All Gujarat Hubs</option>
                       {GUJARAT_CITIES.map((city) => (
@@ -179,11 +153,11 @@ export const HomePage: React.FC = () => {
                     </select>
                   </div>
 
-                  <div className="sm:border-l border-[#E4E7EC] sm:pl-2">
+                  <div className="sm:border-l border-[#E5E8EA] sm:pl-2">
                     <select
                       value={heroCategory}
                       onChange={(e) => setHeroCategory(e.target.value)}
-                      className="w-full sm:w-auto px-3 py-2.5 text-xs text-[#202833] bg-transparent focus:outline-none font-medium cursor-pointer"
+                      className="w-full sm:w-auto px-3 py-2 text-xs text-[#17191C] bg-transparent focus:outline-none cursor-pointer font-medium"
                     >
                       <option value="">All Categories ({categories.length || 25})</option>
                       {categories.map((c) => (
@@ -196,120 +170,103 @@ export const HomePage: React.FC = () => {
 
                   <button
                     type="submit"
-                    className="px-6 py-2.5 bg-[#F06449] hover:bg-[#D95339] text-white font-bold text-xs rounded-xl shadow-xs transition-all duration-200 flex items-center justify-center gap-2 shrink-0 cursor-pointer"
+                    className="px-5 py-2.5 bg-[#315CF5] hover:bg-[#2447C9] text-white font-semibold text-xs rounded-xl shadow-xs transition-colors flex items-center justify-center gap-2 shrink-0 cursor-pointer"
                   >
                     <span>Search Gear</span>
                     <ArrowRight className="w-3.5 h-3.5" />
                   </button>
                 </form>
-              </motion.div>
+              </div>
 
-              {/* Micro Trust Indicators Bar */}
-              <motion.div
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
-                transition={{ duration: 0.6, delay: 0.4 }}
-                className="mt-8 grid grid-cols-2 sm:grid-cols-4 gap-3 text-left pt-6 border-t border-white/15"
-              >
+              {/* Trust Indicators Bar */}
+              <div className="mt-8 grid grid-cols-2 sm:grid-cols-4 gap-3 text-left pt-6 border-t border-[#E5E8EA]">
                 <div className="flex flex-col">
-                  <span className="font-display font-bold text-sm text-white flex items-center gap-1.5">
-                    <ShieldCheck className="w-4 h-4 text-[#2F6B65]" />
+                  <span className="font-semibold text-xs text-[#17191C] flex items-center gap-1.5">
+                    <ShieldCheck className="w-4 h-4 text-[#13795B]" />
                     100% Escrow
                   </span>
-                  <span className="text-[11px] text-[#E4E7EC] font-medium">Refundable deposit</span>
+                  <span className="text-[11px] text-[#66707A]">Refundable deposit</span>
                 </div>
                 <div className="flex flex-col">
-                  <span className="font-display font-bold text-sm text-white flex items-center gap-1.5">
-                    <Lock className="w-4 h-4 text-[#2F6B65]" />
-                    Instant Lock
+                  <span className="font-semibold text-xs text-[#17191C] flex items-center gap-1.5">
+                    <Lock className="w-4 h-4 text-[#13795B]" />
+                    Instant Hold
                   </span>
-                  <span className="text-[11px] text-[#E4E7EC] font-medium">Reserved dates</span>
+                  <span className="text-[11px] text-[#66707A]">Reserved calendar</span>
                 </div>
                 <div className="flex flex-col">
-                  <span className="font-display font-bold text-sm text-white flex items-center gap-1.5">
-                    <QrCode className="w-4 h-4 text-[#2F6B65]" />
+                  <span className="font-semibold text-xs text-[#17191C] flex items-center gap-1.5">
+                    <QrCode className="w-4 h-4 text-[#13795B]" />
                     Single-Use Pass
                   </span>
-                  <span className="text-[11px] text-[#E4E7EC] font-medium">Secure handover</span>
+                  <span className="text-[11px] text-[#66707A]">QR code handover</span>
                 </div>
                 <div className="flex flex-col">
-                  <span className="font-display font-bold text-sm text-white flex items-center gap-1.5">
-                    <Star className="w-4 h-4 text-[#F2C66D] fill-[#F2C66D]" />
-                    4.9 ★ Rated
+                  <span className="font-semibold text-xs text-[#17191C] flex items-center gap-1.5">
+                    <Star className="w-4 h-4 text-[#B76E16] fill-[#B76E16]" />
+                    4.9★ Community
                   </span>
-                  <span className="text-[11px] text-[#E4E7EC] font-medium">Local community</span>
+                  <span className="text-[11px] text-[#66707A]">Verified reviews</span>
                 </div>
-              </motion.div>
+              </div>
             </div>
 
-            {/* Right Column: Editorial Featured Gear Showcase Card */}
-            <motion.div
-              initial={{ opacity: 0, scale: 0.96 }}
-              animate={{ opacity: 1, scale: 1 }}
-              transition={{ duration: 0.5, delay: 0.2 }}
-              className="lg:col-span-5"
-            >
+            {/* Right Column: Featured Gear Showcase Card */}
+            <div className="lg:col-span-5">
               {spotlightProduct ? (
                 <div
                   onClick={() => openProduct(spotlightProduct)}
-                  className="editorial-card bg-white rounded-3xl border border-[#E4E7EC] p-4 shadow-elevated hover:-translate-y-1 transition-all duration-300 relative group cursor-pointer text-[#202833]"
+                  className="bg-white rounded-2xl border border-[#E5E8EA] p-4 shadow-card hover:shadow-card-hover hover:border-[#D0D5DD] transition-all duration-200 cursor-pointer text-[#17191C]"
                   title="Click to view full equipment details and rent"
                 >
                   <div className="flex items-center justify-between mb-3 px-1">
-                    <div className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-[#F5F6F8] border border-[#E4E7EC] text-[11px] font-bold text-[#172B46]">
-                      <Sparkle className="w-3 h-3 text-[#F2C66D]" />
-                      <span>Featured Gear</span>
+                    <div className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-md bg-[#EFF3FE] text-[11px] font-semibold text-[#315CF5]">
+                      <span>Featured Equipment</span>
                     </div>
-                    <div className="text-[11px] font-semibold text-[#667085] flex items-center gap-1">
-                      <MapPin className="w-3 h-3 text-[#F06449]" />
-                      <span>{spotlightProduct.location || 'Ahmedabad (SG Highway)'}</span>
+                    <div className="text-[11px] font-medium text-[#66707A] flex items-center gap-1">
+                      <MapPin className="w-3.5 h-3.5 text-[#66707A]" />
+                      <span>{spotlightProduct.location || 'Ahmedabad'}</span>
                     </div>
                   </div>
 
-                  <div className="relative aspect-4/3 rounded-2xl overflow-hidden bg-[#E9EDF2] mb-4 border border-[#E4E7EC]">
+                  <div className="relative aspect-4/3 rounded-xl overflow-hidden bg-[#F1F3F3] mb-4 border border-[#E5E8EA]">
                     <img
                       src={resolveImageUrl(spotlightProduct.images?.[0])}
                       alt={spotlightProduct.name}
-                      className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+                      className="w-full h-full object-cover group-hover:scale-102 transition-transform duration-300"
                     />
-                    <div className="absolute bottom-3 left-3 bg-[#172B46] px-3 py-1.5 rounded-xl text-white text-xs font-display font-bold shadow-xs">
+                    <div className="absolute bottom-2.5 left-2.5 bg-[#17191C]/90 px-2.5 py-1 rounded-md text-white text-xs font-semibold backdrop-blur-sm">
                       {formatINR(spotlightProduct.pricePerDay)}{' '}
-                      <span className="font-normal text-[10px] text-[#E4E7EC]">/ day</span>
+                      <span className="font-normal text-[10px] text-neutral-300">/ day</span>
                     </div>
-                    <div className="absolute top-3 right-3 bg-white/95 backdrop-blur-md px-2.5 py-1 rounded-lg text-[#202833] text-[10px] font-bold border border-[#E4E7EC] shadow-xs">
+                    <div className="absolute top-2.5 right-2.5 bg-white px-2 py-0.5 rounded-md text-[#17191C] text-[10px] font-semibold border border-[#E5E8EA] shadow-xs">
                       ★ 4.98 (24 rentals)
-                    </div>
-                    <div className="absolute inset-0 bg-[#172B46]/20 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
-                      <span className="px-3.5 py-1.5 bg-white text-[#172B46] text-xs font-bold rounded-xl shadow-md flex items-center gap-1.5 transform group-hover:scale-105 transition-transform">
-                        <span>Open Gear Details</span>
-                        <ChevronRight className="w-4 h-4 text-[#F06449]" />
-                      </span>
                     </div>
                   </div>
 
                   <div className="px-1 pb-1">
-                    <h3 className="font-display font-extrabold text-base text-[#202833] line-clamp-1 group-hover:text-[#F06449] transition-colors">
+                    <h3 className="font-sans font-semibold text-base text-[#17191C] line-clamp-1 hover:text-[#315CF5] transition-colors">
                       {spotlightProduct.name}
                     </h3>
-                    <p className="text-xs text-[#667085] mt-1 line-clamp-2 leading-relaxed">
+                    <p className="text-xs text-[#66707A] mt-1 line-clamp-2 leading-relaxed">
                       {spotlightProduct.description}
                     </p>
 
-                    <div className="mt-3 flex items-center gap-2 text-[11px] text-[#667085]">
-                      <span className="px-2 py-0.5 rounded-md bg-[#E9EDF2] text-[#172B46] font-medium">
+                    <div className="mt-3 flex items-center gap-2 text-[11px] text-[#66707A]">
+                      <span className="px-2 py-0.5 rounded bg-[#F1F3F3] text-[#17191C] font-medium">
                         Deposit: {formatINR(spotlightProduct.securityDeposit)}
                       </span>
-                      <span className="px-2 py-0.5 rounded-md bg-[#F5F6F8] border border-[#E4E7EC] text-[#202833] font-medium">
+                      <span className="px-2 py-0.5 rounded bg-[#EBF5F1] text-[#13795B] font-medium">
                         Instant Handover
                       </span>
                     </div>
 
-                    <div className="mt-4 pt-3 border-t border-[#E4E7EC] flex items-center justify-between">
+                    <div className="mt-4 pt-3 border-t border-[#E5E8EA] flex items-center justify-between">
                       <div className="flex items-center gap-2">
-                        <div className="w-7 h-7 rounded-full bg-[#172B46] text-white flex items-center justify-center font-bold text-xs">
+                        <div className="w-6 h-6 rounded-full bg-[#17191C] text-white flex items-center justify-center font-bold text-xs">
                           {spotlightProduct.owner?.fullName?.charAt(0) || 'R'}
                         </div>
-                        <span className="text-xs font-semibold text-[#202833]">
+                        <span className="text-xs font-medium text-[#17191C]">
                           {spotlightProduct.owner?.fullName || 'Verified Owner'}
                         </span>
                       </div>
@@ -320,63 +277,61 @@ export const HomePage: React.FC = () => {
                           e.stopPropagation();
                           openProduct(spotlightProduct);
                         }}
-                        className="px-4 py-2 bg-[#F06449] hover:bg-[#D95339] text-white font-bold text-xs rounded-xl shadow-xs transition flex items-center gap-1.5 cursor-pointer"
+                        className="px-3.5 py-1.5 bg-[#315CF5] hover:bg-[#2447C9] text-white font-medium text-xs rounded-lg shadow-xs transition-colors flex items-center gap-1.5 cursor-pointer"
                       >
-                        <span>View & Reserve</span>
+                        <span>View Details</span>
                         <ChevronRight className="w-3.5 h-3.5" />
                       </button>
                     </div>
                   </div>
                 </div>
               ) : (
-                <div className="h-80 bg-white rounded-3xl border border-[#E4E7EC] animate-pulse" />
+                <div className="h-80 bg-white rounded-2xl border border-[#E5E8EA] animate-pulse" />
               )}
-            </motion.div>
+            </div>
           </div>
         </div>
       </section>
 
-      {/* CURATED CATEGORIES SHOWCASE STRIP (25 Categories Supported) */}
-      <section className="bg-[#F5F6F8] border-b border-[#E4E7EC] py-10">
+      {/* CURATED CATEGORIES SHOWCASE STRIP */}
+      <section className="bg-white border-b border-[#E5E8EA] py-8">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex items-center justify-between mb-5">
+          <div className="flex items-center justify-between mb-4">
             <div>
-              <h3 className="text-xs font-bold text-[#667085] uppercase tracking-wider font-display">
-                Curated Rental Categories
+              <h3 className="text-xs font-semibold text-[#66707A] uppercase tracking-wider">
+                Rental Categories
               </h3>
-              <p className="text-sm text-[#172B46] font-bold mt-0.5">
+              <p className="text-sm text-[#17191C] font-semibold mt-0.5">
                 Explore equipment across {categories.length || 25} specialized categories
               </p>
             </div>
-            <div className="flex items-center gap-3">
-              <button
-                type="button"
-                onClick={openCategoryExplorer}
-                className="text-xs text-[#F06449] font-bold hover:underline flex items-center gap-1 cursor-pointer"
-              >
-                <span>Explore Visual Examples ({categories.length || 25})</span>
-                <ArrowRight className="w-3.5 h-3.5" />
-              </button>
-            </div>
+            <button
+              type="button"
+              onClick={openCategoryExplorer}
+              className="text-xs text-[#315CF5] font-semibold hover:underline flex items-center gap-1 cursor-pointer"
+            >
+              <span>View All ({categories.length || 25})</span>
+              <ArrowRight className="w-3.5 h-3.5" />
+            </button>
           </div>
 
-          <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 xl:grid-cols-8 gap-3">
+          <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 xl:grid-cols-8 gap-2.5">
             {categories.slice(0, 16).map((cat) => (
               <button
                 key={cat.id}
                 type="button"
                 onClick={() => navigate(`/browse?category=${cat.id}`)}
-                className="p-3 rounded-2xl border text-left transition-all duration-200 group flex flex-col justify-between bg-white border-[#E4E7EC] hover:border-[#F06449] hover:shadow-xs cursor-pointer"
+                className="p-3 rounded-xl border text-left transition-colors group flex flex-col justify-between bg-[#FAFAF8] border-[#E5E8EA] hover:border-[#315CF5] hover:bg-white cursor-pointer"
               >
-                <div className="w-8 h-8 rounded-xl flex items-center justify-center mb-2 transition bg-[#F5F6F8] text-[#172B46] group-hover:bg-[#F06449] group-hover:text-white shadow-xs">
-                  <Layers className="w-4 h-4" />
+                <div className="w-7 h-7 rounded-lg flex items-center justify-center mb-2 bg-white text-[#17191C] border border-[#E5E8EA] group-hover:border-[#315CF5] group-hover:text-[#315CF5]">
+                  <Layers className="w-3.5 h-3.5" />
                 </div>
                 <div>
-                  <div className="font-display font-bold text-xs truncate text-[#202833]">
+                  <div className="font-medium text-xs truncate text-[#17191C]">
                     {cat.name}
                   </div>
-                  <div className="text-[10px] mt-0.5 text-[#667085] font-medium">
-                    {cat._count?.products || 0} listings
+                  <div className="text-[10px] mt-0.5 text-[#66707A]">
+                    {cat._count?.products || 0} items
                   </div>
                 </div>
               </button>
@@ -385,131 +340,130 @@ export const HomePage: React.FC = () => {
         </div>
       </section>
 
-      {/* POPULAR LOCAL USE CASES */}
-      <section className="bg-white py-16 border-b border-[#E4E7EC]">
+      {/* USE CASE SECTIONS */}
+      <section className="bg-[#FAFAF8] py-14 border-b border-[#E5E8EA]">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex flex-col md:flex-row md:items-end justify-between mb-8 gap-4">
             <div>
-              <div className="flex items-center gap-1.5 text-xs font-bold text-[#F06449] uppercase tracking-wider mb-1 font-display">
-                <Sparkle className="w-3.5 h-3.5 text-[#F2C66D]" />
-                <span>Rent For What You Need</span>
+              <div className="text-xs font-semibold text-[#315CF5] uppercase tracking-wider mb-1">
+                Equipment Solutions
               </div>
-              <h2 className="font-display text-2xl sm:text-3xl font-extrabold text-[#172B46] tracking-tight">
-                Made for Your Needs & Projects
+              <h2 className="font-display text-2xl sm:text-3xl font-extrabold text-[#17191C] tracking-tight">
+                Gear for Every Project & Occasion
               </h2>
             </div>
-            <p className="text-xs text-[#667085] max-w-md leading-relaxed font-medium">
-              From college hackathons to commercial cinema shoots, weekend DIY home repairs to mountain treks — get quality equipment without high purchase costs.
+            <p className="text-xs text-[#66707A] max-w-md leading-relaxed">
+              From commercial cinema shoots to weekend DIY repairs, hackathons to outdoor expeditions — rent reliable tools without high purchase costs.
             </p>
           </div>
 
           <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-4">
             <div
               onClick={() => navigate('/browse?search=cinema')}
-              className="p-5 rounded-2xl bg-[#F5F6F8] border border-[#E4E7EC] shadow-xs hover:border-[#F06449] hover:bg-white hover:shadow-card hover:-translate-y-1 transition-all duration-300 cursor-pointer group flex flex-col justify-between"
+              className="p-5 rounded-xl bg-white border border-[#E5E8EA] hover:border-[#315CF5] transition-all duration-200 cursor-pointer group flex flex-col justify-between"
             >
               <div>
-                <div className="w-10 h-10 rounded-xl bg-white text-[#172B46] border border-[#E4E7EC] flex items-center justify-center mb-3 group-hover:bg-[#172B46] group-hover:text-white transition-colors">
-                  <Clapperboard className="w-5 h-5" />
+                <div className="w-9 h-9 rounded-lg bg-[#F1F3F3] text-[#17191C] flex items-center justify-center mb-3 group-hover:bg-[#EFF3FE] group-hover:text-[#315CF5] transition-colors">
+                  <Clapperboard className="w-4 h-4" />
                 </div>
-                <h3 className="font-display font-bold text-sm text-[#202833] mb-1 group-hover:text-[#F06449] transition-colors">
+                <h3 className="font-semibold text-sm text-[#17191C] mb-1 group-hover:text-[#315CF5] transition-colors">
                   Film & Video Production
                 </h3>
-                <p className="text-xs text-[#667085] leading-relaxed">
-                  Blackmagic Cinema 6K, Sony FX3, wireless Hollyland video transmitters, and Aputure studio lights.
+                <p className="text-xs text-[#66707A] leading-relaxed">
+                  Blackmagic Cinema 6K, Sony FX3, wireless audio transmitters, and Aputure studio lights.
                 </p>
               </div>
-              <div className="mt-4 pt-3 border-t border-[#E4E7EC] flex items-center justify-between text-xs font-bold text-[#F06449] group-hover:underline">
-                <span>Explore Cinema Gear</span>
-                <ArrowRight className="w-3.5 h-3.5 group-hover:translate-x-1 transition-transform" />
+              <div className="mt-4 pt-3 border-t border-[#F1F3F3] flex items-center justify-between text-xs font-semibold text-[#315CF5]">
+                <span>Explore Gear</span>
+                <ArrowRight className="w-3.5 h-3.5 group-hover:translate-x-0.5 transition-transform" />
               </div>
             </div>
 
             <div
               onClick={() => navigate('/browse?search=laptop')}
-              className="p-5 rounded-2xl bg-[#F5F6F8] border border-[#E4E7EC] shadow-xs hover:border-[#F06449] hover:bg-white hover:shadow-card hover:-translate-y-1 transition-all duration-300 cursor-pointer group flex flex-col justify-between"
+              className="p-5 rounded-xl bg-white border border-[#E5E8EA] hover:border-[#315CF5] transition-all duration-200 cursor-pointer group flex flex-col justify-between"
             >
               <div>
-                <div className="w-10 h-10 rounded-xl bg-white text-[#F06449] border border-[#E4E7EC] flex items-center justify-center mb-3 group-hover:bg-[#F06449] group-hover:text-white transition-colors">
-                  <GraduationCap className="w-5 h-5" />
+                <div className="w-9 h-9 rounded-lg bg-[#F1F3F3] text-[#17191C] flex items-center justify-center mb-3 group-hover:bg-[#EFF3FE] group-hover:text-[#315CF5] transition-colors">
+                  <GraduationCap className="w-4 h-4" />
                 </div>
-                <h3 className="font-display font-bold text-sm text-[#202833] mb-1 group-hover:text-[#F06449] transition-colors">
-                  College Hackathons & Fests
+                <h3 className="font-semibold text-sm text-[#17191C] mb-1 group-hover:text-[#315CF5] transition-colors">
+                  Hackathons & Research
                 </h3>
                 <p className="text-xs text-[#667085] leading-relaxed">
-                  MacBook Pros, Arduino kits, high-lumen laser projectors, and displays for DA-IICT and Nirma students.
+                  Apple Silicon workstations, Arduino hardware kits, and high-lumen projectors for student teams.
                 </p>
               </div>
-              <div className="mt-4 pt-3 border-t border-[#E4E7EC] flex items-center justify-between text-xs font-bold text-[#F06449] group-hover:underline">
-                <span>Explore Student Tech</span>
-                <ArrowRight className="w-3.5 h-3.5 group-hover:translate-x-1 transition-transform" />
+              <div className="mt-4 pt-3 border-t border-[#F1F3F3] flex items-center justify-between text-xs font-semibold text-[#315CF5]">
+                <span>Explore Tech</span>
+                <ArrowRight className="w-3.5 h-3.5 group-hover:translate-x-0.5 transition-transform" />
               </div>
             </div>
 
             <div
               onClick={() => navigate('/browse?search=bosch')}
-              className="p-5 rounded-2xl bg-[#F5F6F8] border border-[#E4E7EC] shadow-xs hover:border-[#F06449] hover:bg-white hover:shadow-card hover:-translate-y-1 transition-all duration-300 cursor-pointer group flex flex-col justify-between"
+              className="p-5 rounded-xl bg-white border border-[#E5E8EA] hover:border-[#315CF5] transition-all duration-200 cursor-pointer group flex flex-col justify-between"
             >
               <div>
-                <div className="w-10 h-10 rounded-xl bg-white text-[#2F6B65] border border-[#E4E7EC] flex items-center justify-center mb-3 group-hover:bg-[#2F6B65] group-hover:text-white transition-colors">
-                  <Hammer className="w-5 h-5" />
+                <div className="w-9 h-9 rounded-lg bg-[#F1F3F3] text-[#17191C] flex items-center justify-center mb-3 group-hover:bg-[#EFF3FE] group-hover:text-[#315CF5] transition-colors">
+                  <Hammer className="w-4 h-4" />
                 </div>
-                <h3 className="font-display font-bold text-sm text-[#202833] mb-1 group-hover:text-[#F06449] transition-colors">
-                  Home Renovations & DIY
+                <h3 className="font-semibold text-sm text-[#17191C] mb-1 group-hover:text-[#315CF5] transition-colors">
+                  DIY & Home Repairs
                 </h3>
-                <p className="text-xs text-[#667085] leading-relaxed">
-                  Bosch rotary hammers, DeWalt laser levels, Kärcher pressure washers, and industrial vacuums.
+                <p className="text-xs text-[#66707A] leading-relaxed">
+                  Bosch rotary hammers, DeWalt cross-line lasers, and Kärcher high-pressure washers.
                 </p>
               </div>
-              <div className="mt-4 pt-3 border-t border-[#E4E7EC] flex items-center justify-between text-xs font-bold text-[#F06449] group-hover:underline">
-                <span>Explore Tools & DIY</span>
-                <ArrowRight className="w-3.5 h-3.5 group-hover:translate-x-1 transition-transform" />
+              <div className="mt-4 pt-3 border-t border-[#F1F3F3] flex items-center justify-between text-xs font-semibold text-[#315CF5]">
+                <span>Explore Tools</span>
+                <ArrowRight className="w-3.5 h-3.5 group-hover:translate-x-0.5 transition-transform" />
               </div>
             </div>
 
             <div
               onClick={() => navigate('/browse?search=tent')}
-              className="p-5 rounded-2xl bg-[#F5F6F8] border border-[#E4E7EC] shadow-xs hover:border-[#F06449] hover:bg-white hover:shadow-card hover:-translate-y-1 transition-all duration-300 cursor-pointer group flex flex-col justify-between"
+              className="p-5 rounded-xl bg-white border border-[#E5E8EA] hover:border-[#315CF5] transition-all duration-200 cursor-pointer group flex flex-col justify-between"
             >
               <div>
-                <div className="w-10 h-10 rounded-xl bg-white text-[#172B46] border border-[#E4E7EC] flex items-center justify-center mb-3 group-hover:bg-[#172B46] group-hover:text-white transition-colors">
-                  <Tent className="w-5 h-5" />
+                <div className="w-9 h-9 rounded-lg bg-[#F1F3F3] text-[#17191C] flex items-center justify-center mb-3 group-hover:bg-[#EFF3FE] group-hover:text-[#315CF5] transition-colors">
+                  <Tent className="w-4 h-4" />
                 </div>
-                <h3 className="font-display font-bold text-sm text-[#202833] mb-1 group-hover:text-[#F06449] transition-colors">
-                  Weekend Treks & Expeditions
+                <h3 className="font-semibold text-sm text-[#17191C] mb-1 group-hover:text-[#315CF5] transition-colors">
+                  Outdoor & Expeditions
                 </h3>
-                <p className="text-xs text-[#667085] leading-relaxed">
-                  GoPro action cams, waterproof 4-person dome tents, trekking backpacks, and silent portable generators.
+                <p className="text-xs text-[#66707A] leading-relaxed">
+                  GoPro action kits, 4-person dome tents, trekking packs, and portable battery stations.
                 </p>
               </div>
-              <div className="mt-4 pt-3 border-t border-[#E4E7EC] flex items-center justify-between text-xs font-bold text-[#F06449] group-hover:underline">
-                <span>Explore Trekking Gear</span>
-                <ArrowRight className="w-3.5 h-3.5 group-hover:translate-x-1 transition-transform" />
+              <div className="mt-4 pt-3 border-t border-[#F1F3F3] flex items-center justify-between text-xs font-semibold text-[#315CF5]">
+                <span>Explore Outdoor</span>
+                <ArrowRight className="w-3.5 h-3.5 group-hover:translate-x-0.5 transition-transform" />
               </div>
             </div>
           </div>
         </div>
       </section>
 
-      {/* FEATURED GEAR SPOTLIGHT GRID (Top 6 listings) */}
+      {/* FEATURED GEAR SPOTLIGHT GRID (6 listings) */}
       <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
-        <div className="flex flex-col sm:flex-row sm:items-end justify-between mb-8 gap-4 pb-4 border-b border-[#E4E7EC]">
+        <div className="flex flex-col sm:flex-row sm:items-end justify-between mb-8 gap-4 pb-4 border-b border-[#E5E8EA]">
           <div>
-            <div className="flex items-center gap-2 text-xs font-bold text-[#F06449] uppercase tracking-wider mb-1 font-display">
-              <Compass className="w-4 h-4 text-[#F06449]" />
-              <span>Trending Equipment</span>
+            <div className="flex items-center gap-1.5 text-xs font-semibold text-[#315CF5] uppercase tracking-wider mb-1">
+              <Compass className="w-4 h-4" />
+              <span>Trending Gear</span>
             </div>
-            <h2 className="font-display text-3xl font-extrabold text-[#172B46] tracking-tight">
-              Featured Verified Gear
+            <h2 className="font-display text-2xl sm:text-3xl font-extrabold text-[#17191C] tracking-tight">
+              Featured Verified Equipment
             </h2>
           </div>
 
           <button
             type="button"
             onClick={() => navigate('/browse')}
-            className="text-xs font-bold text-[#F06449] hover:underline flex items-center gap-1.5 cursor-pointer"
+            className="text-xs font-semibold text-[#315CF5] hover:underline flex items-center gap-1.5 cursor-pointer"
           >
-            <span>Explore All 116 Listings in Catalog</span>
+            <span>Explore All 116 Items in Catalog</span>
             <ArrowRight className="w-3.5 h-3.5" />
           </button>
         </div>
@@ -536,7 +490,7 @@ export const HomePage: React.FC = () => {
           <button
             type="button"
             onClick={() => navigate('/browse')}
-            className="px-8 py-3.5 bg-[#172B46] hover:bg-[#202833] text-white font-bold text-xs rounded-xl shadow-xs transition flex items-center justify-center gap-2 mx-auto cursor-pointer"
+            className="px-6 py-3 bg-[#17191C] hover:bg-[#24282D] text-white font-medium text-xs rounded-xl shadow-xs transition-colors inline-flex items-center gap-2 cursor-pointer"
           >
             <span>Browse Full Catalog with Advanced Filters</span>
             <ArrowRight className="w-4 h-4" />
@@ -545,66 +499,66 @@ export const HomePage: React.FC = () => {
       </section>
 
       {/* HOW IT WORKS (3-STEP WORKFLOW) */}
-      <section className="bg-white border-y border-[#E4E7EC] py-20">
+      <section className="bg-white border-y border-[#E5E8EA] py-16">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="text-center max-w-2xl mx-auto mb-16">
-            <div className="text-xs font-bold text-[#F06449] uppercase tracking-wider mb-2 font-display">
-              Simple & Safe Process
+          <div className="text-center max-w-2xl mx-auto mb-12">
+            <div className="text-xs font-semibold text-[#315CF5] uppercase tracking-wider mb-1.5">
+              Transparent Rental Flow
             </div>
-            <h2 className="font-display text-3xl sm:text-4xl font-extrabold text-[#172B46] tracking-tight">
+            <h2 className="font-display text-2xl sm:text-3xl font-extrabold text-[#17191C] tracking-tight">
               How Renting on BorrowBuy Works
             </h2>
-            <p className="text-sm text-[#667085] mt-3 leading-relaxed font-medium">
+            <p className="text-xs text-[#66707A] mt-2 leading-relaxed">
               Designed for simple local handovers, transparent pricing, and complete peace of mind.
             </p>
           </div>
 
-          <div className="grid md:grid-cols-3 gap-8">
-            <div className="p-8 rounded-3xl bg-[#F5F6F8] border border-[#E4E7EC] relative group hover:bg-white hover:border-[#172B46] hover:shadow-card transition-all duration-300">
-              <div className="w-12 h-12 rounded-2xl bg-[#172B46] text-white font-display font-extrabold text-lg flex items-center justify-center mb-6 shadow-xs">
-                1
+          <div className="grid md:grid-cols-3 gap-6">
+            <div className="p-6 rounded-xl bg-[#FAFAF8] border border-[#E5E8EA] hover:border-[#D0D5DD] transition-colors">
+              <div className="w-10 h-10 rounded-lg bg-[#17191C] text-white font-bold text-sm flex items-center justify-center mb-5">
+                01
               </div>
-              <h3 className="font-display font-bold text-lg text-[#202833] mb-2">
-                Find & Reserve Dates
+              <h3 className="font-semibold text-base text-[#17191C] mb-1.5">
+                Find & Reserve Gear
               </h3>
-              <p className="text-xs text-[#667085] leading-relaxed">
-                Search equipment near you in Ahmedabad, Surat, or Gandhinagar. Pick your rental start and return dates with instant hold while you review.
+              <p className="text-xs text-[#66707A] leading-relaxed">
+                Search gear near you in Ahmedabad, Surat, or Gandhinagar. Select rental dates with an instant hold while your booking is reviewed.
               </p>
-              <div className="mt-6 flex items-center gap-1.5 text-xs font-bold text-[#172B46]">
-                <Lock className="w-3.5 h-3.5" />
-                <span>Instant date reservation</span>
+              <div className="mt-4 flex items-center gap-1.5 text-xs font-medium text-[#17191C]">
+                <Lock className="w-3.5 h-3.5 text-[#315CF5]" />
+                <span>Instant date reservation hold</span>
               </div>
             </div>
 
-            <div className="p-8 rounded-3xl bg-[#F5F6F8] border border-[#E4E7EC] relative group hover:bg-white hover:border-[#F06449] hover:shadow-card transition-all duration-300">
-              <div className="w-12 h-12 rounded-2xl bg-[#F06449] text-white font-display font-extrabold text-lg flex items-center justify-center mb-6 shadow-xs">
-                2
+            <div className="p-6 rounded-xl bg-[#FAFAF8] border border-[#E5E8EA] hover:border-[#D0D5DD] transition-colors">
+              <div className="w-10 h-10 rounded-lg bg-[#315CF5] text-white font-bold text-sm flex items-center justify-center mb-5">
+                02
               </div>
-              <h3 className="font-display font-bold text-lg text-[#202833] mb-2">
-                Collect with Digital Pass
+              <h3 className="font-semibold text-base text-[#17191C] mb-1.5">
+                Collect via Digital QR Pass
               </h3>
-              <p className="text-xs text-[#667085] leading-relaxed">
-                Meet the owner locally. Show your single-use QR pass on your phone, inspect the item together, and take it with you.
+              <p className="text-xs text-[#66707A] leading-relaxed">
+                Meet the owner locally. Present your single-use encrypted QR pass on your phone, inspect the equipment together, and take custody.
               </p>
-              <div className="mt-6 flex items-center gap-1.5 text-xs font-bold text-[#F06449]">
-                <QrCode className="w-3.5 h-3.5" />
-                <span>Fast, contactless check-in</span>
+              <div className="mt-4 flex items-center gap-1.5 text-xs font-medium text-[#17191C]">
+                <QrCode className="w-3.5 h-3.5 text-[#315CF5]" />
+                <span>Encrypted contactless check-in</span>
               </div>
             </div>
 
-            <div className="p-8 rounded-3xl bg-[#F5F6F8] border border-[#E4E7EC] relative group hover:bg-white hover:border-[#2F6B65] hover:shadow-card transition-all duration-300">
-              <div className="w-12 h-12 rounded-2xl bg-[#2F6B65] text-white font-display font-extrabold text-lg flex items-center justify-center mb-6 shadow-xs">
-                3
+            <div className="p-6 rounded-xl bg-[#FAFAF8] border border-[#E5E8EA] hover:border-[#D0D5DD] transition-colors">
+              <div className="w-10 h-10 rounded-lg bg-[#13795B] text-white font-bold text-sm flex items-center justify-center mb-5">
+                03
               </div>
-              <h3 className="font-display font-bold text-lg text-[#202833] mb-2">
-                Return & Deposit Release
+              <h3 className="font-semibold text-base text-[#17191C] mb-1.5">
+                Return & Automatic Refund
               </h3>
-              <p className="text-xs text-[#667085] leading-relaxed">
-                Return the item on the due date. The owner verifies the return pass and your security deposit is released back immediately.
+              <p className="text-xs text-[#66707A] leading-relaxed">
+                Return gear on the agreed date. The owner scans the return pass, verifies condition, and your security deposit releases automatically.
               </p>
-              <div className="mt-6 flex items-center gap-1.5 text-xs font-bold text-[#2F6B65]">
-                <CheckCircle2 className="w-3.5 h-3.5" />
-                <span>Immediate deposit release</span>
+              <div className="mt-4 flex items-center gap-1.5 text-xs font-medium text-[#13795B]">
+                <CheckCircle2 className="w-3.5 h-3.5 text-[#13795B]" />
+                <span>Automated escrow deposit release</span>
               </div>
             </div>
           </div>
@@ -612,40 +566,37 @@ export const HomePage: React.FC = () => {
       </section>
 
       {/* OWNER PASSIVE INCOME BANNER */}
-      <section className="py-16 bg-[#F5F6F8]">
+      <section className="py-14 bg-[#FAFAF8]">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="bg-[#172B46] text-white rounded-3xl p-8 md:p-14 relative overflow-hidden border border-[#172B46] shadow-xl">
-            <div className="absolute top-0 right-0 w-96 h-96 bg-[#2F6B65]/20 rounded-full blur-3xl pointer-events-none" />
-            <div className="absolute bottom-0 left-1/3 w-64 h-64 bg-[#F06449]/15 rounded-full blur-3xl pointer-events-none" />
-
+          <div className="bg-[#17191C] text-white rounded-2xl p-8 md:p-12 relative overflow-hidden border border-[#24282D] shadow-lg">
             <div className="relative z-10 max-w-3xl">
-              <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-white/10 text-[#E4E7EC] text-xs font-bold mb-4 border border-white/15">
-                <TrendingUp className="w-3.5 h-3.5 text-[#F2C66D]" />
-                <span>Host With Confidence</span>
+              <div className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-md bg-white/10 text-neutral-300 text-xs font-medium mb-3">
+                <TrendingUp className="w-3.5 h-3.5 text-[#315CF5]" />
+                <span>List With Confidence</span>
               </div>
-              <h2 className="font-display text-3xl sm:text-4xl font-extrabold text-white tracking-tight leading-tight">
-                Turn your idle gear into monthly earnings.
+              <h2 className="font-display text-2xl sm:text-3xl font-extrabold text-white tracking-tight leading-tight">
+                Turn your idle equipment into predictable monthly earnings.
               </h2>
-              <p className="text-sm text-[#E4E7EC]/90 mt-4 leading-relaxed font-normal">
-                High-value cameras, power tools, and audio systems often sit unused in cupboards for weeks. List them on BorrowBuy and earn predictable rental income backed by refundable deposits and ID-verified borrowers.
+              <p className="text-xs sm:text-sm text-neutral-300 mt-3 leading-relaxed">
+                Cameras, lenses, and power tools frequently sit unused in studios between projects. List them on BorrowBuy and earn rental revenue backed by verified borrower identities and refundable security deposits.
               </p>
 
-              <div className="mt-8 flex flex-wrap items-center gap-6 text-xs">
-                <div className="flex items-center gap-2">
-                  <CheckCircle2 className="w-4 h-4 text-[#F2C66D]" />
-                  <span className="text-white font-medium">Average owner earns ₹18,500/month</span>
+              <div className="mt-6 flex flex-wrap items-center gap-6 text-xs text-neutral-300">
+                <div className="flex items-center gap-1.5">
+                  <CheckCircle2 className="w-4 h-4 text-[#13795B]" />
+                  <span>100% deposit coverage held in escrow</span>
                 </div>
-                <div className="flex items-center gap-2">
-                  <CheckCircle2 className="w-4 h-4 text-[#F2C66D]" />
-                  <span className="text-white font-medium">100% deposit coverage in escrow</span>
+                <div className="flex items-center gap-1.5">
+                  <CheckCircle2 className="w-4 h-4 text-[#13795B]" />
+                  <span>Single-use digital QR handover verification</span>
                 </div>
-                <div className="flex items-center gap-2">
-                  <CheckCircle2 className="w-4 h-4 text-[#F2C66D]" />
-                  <span className="text-white font-medium">₹0 listing fees</span>
+                <div className="flex items-center gap-1.5">
+                  <CheckCircle2 className="w-4 h-4 text-[#13795B]" />
+                  <span>Zero listing or hosting fees</span>
                 </div>
               </div>
 
-              <div className="mt-8 flex flex-col sm:flex-row gap-3">
+              <div className="mt-6 flex flex-col sm:flex-row gap-3">
                 <button
                   type="button"
                   onClick={() => {
@@ -655,15 +606,15 @@ export const HomePage: React.FC = () => {
                       navigate('/dashboard');
                     }
                   }}
-                  className="px-6 py-3 bg-[#F06449] hover:bg-[#D95339] text-white font-bold text-xs rounded-xl shadow-xs transition flex items-center justify-center gap-2 cursor-pointer"
+                  className="px-5 py-2.5 bg-[#315CF5] hover:bg-[#2447C9] text-white font-medium text-xs rounded-lg shadow-xs transition-colors flex items-center justify-center gap-2 cursor-pointer"
                 >
                   <span>List Your Equipment</span>
-                  <ArrowRight className="w-4 h-4" />
+                  <ArrowRight className="w-3.5 h-3.5" />
                 </button>
                 <button
                   type="button"
                   onClick={openHelp}
-                  className="px-6 py-3 bg-white/10 hover:bg-white/15 text-white font-bold text-xs rounded-xl border border-white/20 transition cursor-pointer"
+                  className="px-5 py-2.5 bg-white/10 hover:bg-white/15 text-white font-medium text-xs rounded-lg border border-white/15 transition-colors cursor-pointer"
                 >
                   Learn How Lending Works
                 </button>
@@ -674,94 +625,95 @@ export const HomePage: React.FC = () => {
       </section>
 
       {/* TRUST & PLATFORM PROTECTION */}
-      <section className="py-20 bg-white border-b border-[#E4E7EC] text-[#202833]">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
-          <div className="grid lg:grid-cols-2 gap-12 items-center">
+      <section className="py-16 bg-white border-b border-[#E5E8EA] text-[#17191C]">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="grid lg:grid-cols-2 gap-10 items-center">
             <div>
-              <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-[#2F6B65]/10 text-[#2F6B65] text-xs font-bold mb-4 border border-[#2F6B65]/20 font-display">
-                <ShieldCheck className="w-4 h-4 text-[#2F6B65]" />
-                <span>Trusted Platform Protection</span>
+              <div className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-md bg-[#EBF5F1] text-[#13795B] text-xs font-semibold mb-3">
+                <ShieldCheck className="w-4 h-4 text-[#13795B]" />
+                <span>Verified Platform Security</span>
               </div>
-              <h2 className="font-display text-3xl sm:text-4xl font-extrabold tracking-tight leading-tight text-[#172B46]">
-                Designed for Trust Between Neighbors & Creators.
+              <h2 className="font-display text-2xl sm:text-3xl font-extrabold tracking-tight text-[#17191C]">
+                Built for Safety Between Creators and Equipment Owners.
               </h2>
-              <p className="text-sm text-[#667085] mt-4 leading-relaxed font-normal">
-                BorrowBuy replaces informal lending with secure verification, refundable deposit protection, and clear return policies.
+              <p className="text-xs text-[#66707A] mt-3 leading-relaxed">
+                BorrowBuy replaces informal, risky equipment lending with legally backed security deposits, condition photo audits, and verified digital timestamps.
               </p>
 
-              <div className="mt-8 space-y-4">
+              <div className="mt-6 space-y-3.5">
                 <div className="flex items-start gap-3">
-                  <div className="p-1.5 rounded-lg bg-[#2F6B65]/10 text-[#2F6B65] shrink-0 mt-0.5">
-                    <CheckCircle2 className="w-4 h-4 text-[#2F6B65]" />
+                  <div className="p-1 rounded bg-[#EBF5F1] text-[#13795B] shrink-0 mt-0.5">
+                    <CheckCircle2 className="w-4 h-4 text-[#13795B]" />
                   </div>
                   <div>
-                    <div className="text-xs font-bold text-[#172B46] font-display">Verified Local Members</div>
-                    <div className="text-xs text-[#667085] mt-0.5">
-                      Every lender and borrower is verified with phone confirmation and community ratings.
+                    <div className="text-xs font-semibold text-[#17191C]">Verified User Profiles</div>
+                    <div className="text-xs text-[#66707A] mt-0.5">
+                      Every lender and borrower completes mobile verification and community trust scoring.
                     </div>
                   </div>
                 </div>
 
                 <div className="flex items-start gap-3">
-                  <div className="p-1.5 rounded-lg bg-[#2F6B65]/10 text-[#2F6B65] shrink-0 mt-0.5">
-                    <CheckCircle2 className="w-4 h-4 text-[#2F6B65]" />
+                  <div className="p-1 rounded bg-[#EBF5F1] text-[#13795B] shrink-0 mt-0.5">
+                    <CheckCircle2 className="w-4 h-4 text-[#13795B]" />
                   </div>
                   <div>
-                    <div className="text-xs font-bold text-[#172B46] font-display">Condition Photos at Handover</div>
-                    <div className="text-xs text-[#667085] mt-0.5">
-                      Photos taken at pickup ensure clarity on existing condition and protect both parties.
+                    <div className="text-xs font-semibold text-[#17191C]">Condition Inspection Checkpoints</div>
+                    <div className="text-xs text-[#66707A] mt-0.5">
+                      Pre-pickup and post-return inspection records document equipment state, preventing disputes.
                     </div>
                   </div>
                 </div>
 
                 <div className="flex items-start gap-3">
-                  <div className="p-1.5 rounded-lg bg-[#2F6B65]/10 text-[#2F6B65] shrink-0 mt-0.5">
-                    <CheckCircle2 className="w-4 h-4 text-[#2F6B65]" />
+                  <div className="p-1 rounded bg-[#EBF5F1] text-[#13795B] shrink-0 mt-0.5">
+                    <CheckCircle2 className="w-4 h-4 text-[#13795B]" />
                   </div>
                   <div>
-                    <div className="text-xs font-bold text-[#172B46] font-display">
-                      Transparent Pricing & Refundable Deposits
+                    <div className="text-xs font-semibold text-[#17191C]">
+                      Transparent Escrow Deposits
                     </div>
-                    <div className="text-xs text-[#667085] mt-0.5">
-                      No hidden charges. Daily rental fee, refundable security deposit, and exact return dates are agreed upfront.
+                    <div className="text-xs text-[#66707A] mt-0.5">
+                      Daily rates and refundable deposits are defined upfront with zero hidden fees.
                     </div>
                   </div>
                 </div>
               </div>
             </div>
 
-            <div className="p-8 rounded-3xl bg-[#172B46] text-white border border-[#172B46] shadow-2xl space-y-4">
-              <div className="flex items-center justify-between pb-4 border-b border-white/15">
-                <div className="text-xs font-bold text-[#E4E7EC] uppercase tracking-wider font-display">
-                  Refundable Security Deposit
+            {/* Visual Trust Card */}
+            <div className="p-6 rounded-2xl bg-[#FAFAF8] border border-[#E5E8EA] space-y-4">
+              <div className="flex items-center justify-between pb-3 border-b border-[#E5E8EA]">
+                <div className="text-xs font-semibold text-[#17191C]">
+                  Refundable Security Deposit Escrow
                 </div>
-                <span className="px-2.5 py-0.5 rounded-full text-[10px] font-bold bg-[#2F6B65]/40 text-white border border-[#2F6B65]/60">
-                  PROTECTED IN ESCROW
+                <span className="px-2 py-0.5 rounded text-[10px] font-semibold bg-[#EBF5F1] text-[#13795B]">
+                  ESCROW PROTECTED
                 </span>
               </div>
 
-              <div className="p-4 rounded-2xl bg-white/10 border border-white/15 flex items-center justify-between">
+              <div className="p-4 rounded-xl bg-white border border-[#E5E8EA] flex items-center justify-between">
                 <div>
-                  <div className="text-xs text-[#E4E7EC]">Held in Escrow</div>
-                  <div className="font-display text-2xl font-black text-white mt-0.5">{formatINR(2500)}</div>
+                  <div className="text-xs text-[#66707A]">Escrow Account Sample</div>
+                  <div className="font-sans text-xl font-bold text-[#17191C] mt-0.5">{formatINR(5000)}</div>
                 </div>
                 <div className="text-right">
-                  <div className="text-xs text-[#F2C66D] font-semibold">100% Refundable</div>
-                  <div className="text-[10px] text-[#E4E7EC]/80">Released upon verified return</div>
+                  <div className="text-xs text-[#13795B] font-semibold">100% Refundable</div>
+                  <div className="text-[10px] text-[#66707A]">Released on verified return</div>
                 </div>
               </div>
 
-              <div className="p-4 rounded-2xl bg-white/10 border border-white/15 flex items-center justify-between">
+              <div className="p-4 rounded-xl bg-white border border-[#E5E8EA] flex items-center justify-between">
                 <div className="flex items-center gap-3">
-                  <div className="w-10 h-10 rounded-xl bg-[#2F6B65] text-white flex items-center justify-center font-bold">
+                  <div className="w-8 h-8 rounded-lg bg-[#EFF3FE] text-[#315CF5] flex items-center justify-center font-bold text-xs">
                     QR
                   </div>
                   <div>
-                    <div className="text-xs font-bold text-white font-display">Digital Handover Pass</div>
-                    <div className="text-[10px] text-[#E4E7EC]/80">Pass #BB-2026-GUJ • Verified for Handover</div>
+                    <div className="text-xs font-semibold text-[#17191C]">Digital Handover Pass</div>
+                    <div className="text-[10px] text-[#66707A]">Pass #BB-2026-GUJ • Single-Use Handover Token</div>
                   </div>
                 </div>
-                <CheckCircle2 className="w-5 h-5 text-[#F2C66D]" />
+                <CheckCircle2 className="w-4 h-4 text-[#13795B]" />
               </div>
             </div>
           </div>

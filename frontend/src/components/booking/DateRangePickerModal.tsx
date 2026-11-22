@@ -112,53 +112,53 @@ export const DateRangePickerModal: React.FC<DateRangePickerModalProps> = ({
 
   return (
     <AnimatePresence>
-      <div className="fixed inset-0 z-50 overflow-y-auto flex items-center justify-center p-4 sm:p-6">
+      <div className="fixed inset-0 z-50 overflow-y-auto flex items-center justify-center p-4 sm:p-6 font-sans">
         {/* Backdrop */}
         <motion.div
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           exit={{ opacity: 0 }}
-          transition={{ duration: 0.2 }}
+          transition={{ duration: 0.15 }}
           onClick={onClose}
-          className="fixed inset-0 bg-slate-950/70 backdrop-blur-md"
+          className="fixed inset-0 bg-black/40 backdrop-blur-xs"
         />
 
         {/* Modal Window */}
         <motion.div
-          initial={{ opacity: 0, scale: 0.95, y: 10 }}
+          initial={{ opacity: 0, scale: 0.98, y: 8 }}
           animate={{ opacity: 1, scale: 1, y: 0 }}
-          exit={{ opacity: 0, scale: 0.95, y: 10 }}
-          transition={{ type: 'spring', damping: 25, stiffness: 300 }}
-          className="relative bg-white rounded-3xl shadow-2xl border border-slate-200/80 max-w-lg w-full p-6 sm:p-8 z-10"
+          exit={{ opacity: 0, scale: 0.98, y: 8 }}
+          transition={{ duration: 0.2 }}
+          className="relative bg-white rounded-2xl shadow-elevated border border-[#E5E8EA] max-w-lg w-full p-6 sm:p-7 z-10 text-[#17191C]"
         >
           {/* Close button */}
           <button
             onClick={onClose}
-            className="absolute top-5 right-5 text-slate-400 hover:text-slate-700 p-2 rounded-xl hover:bg-slate-100 transition-colors"
+            className="absolute top-4 right-4 text-[#66707A] hover:text-[#17191C] p-2 rounded-lg hover:bg-[#F1F3F3] transition-colors cursor-pointer"
             aria-label="Close dialog"
           >
             <X className="w-5 h-5" />
           </button>
 
           {/* Header */}
-          <div className="flex items-start gap-4 mb-6">
+          <div className="flex items-start gap-3.5 mb-5">
             <img
               src={
                 product.images?.[0] ||
                 'https://images.unsplash.com/photo-1516035069371-29a1b244cc32?auto=format&fit=crop&w=150&q=80'
               }
               alt={product.name}
-              className="w-16 h-16 rounded-2xl object-cover border border-slate-200 shadow-sm shrink-0"
+              className="w-14 h-14 rounded-xl object-cover border border-[#E5E8EA] shrink-0"
             />
             <div className="min-w-0 pr-6">
-              <span className="inline-flex items-center gap-1 text-[11px] font-bold text-brand-600 uppercase tracking-wider mb-0.5">
+              <span className="inline-flex items-center gap-1 text-[11px] font-semibold text-[#315CF5] uppercase tracking-wider mb-0.5">
                 <Calendar className="w-3.5 h-3.5" />
                 Select Rental Dates
               </span>
-              <h2 className="text-lg font-display font-extrabold text-slate-900 truncate">
+              <h2 className="text-base font-semibold text-[#17191C] truncate">
                 {product.name}
               </h2>
-              <p className="text-xs text-slate-500 mt-0.5">
+              <p className="text-xs text-[#66707A] mt-0.5">
                 {formatINR(product.pricePerDay)}/day • {formatINR(product.securityDeposit)} refundable deposit
               </p>
             </div>
@@ -166,28 +166,24 @@ export const DateRangePickerModal: React.FC<DateRangePickerModalProps> = ({
 
           {/* Error Message */}
           {error && (
-            <motion.div
-              initial={{ opacity: 0, y: -4 }}
-              animate={{ opacity: 1, y: 0 }}
-              className="mb-4 p-3.5 bg-rose-50 border border-rose-200 text-rose-700 rounded-2xl text-xs flex items-start gap-2.5"
-            >
-              <AlertCircle className="w-4 h-4 shrink-0 mt-0.5 text-rose-600" />
+            <div className="mb-4 p-3 bg-[#FDF2F2] border border-[#FDE68A] text-[#C43838] rounded-xl text-xs flex items-start gap-2.5">
+              <AlertCircle className="w-4 h-4 shrink-0 mt-0.5 text-[#C43838]" />
               <span className="font-medium leading-relaxed">{error}</span>
-            </motion.div>
+            </div>
           )}
 
           {/* Booked Dates Notice */}
           {calendarDates.length > 0 && (
-            <div className="mb-5 p-3.5 bg-amber-50/70 border border-amber-200/80 rounded-2xl text-xs">
-              <div className="font-bold text-amber-900 mb-1 flex items-center gap-1.5">
-                <Clock className="w-3.5 h-3.5 text-amber-600" />
-                Already Booked On These Dates:
+            <div className="mb-4 p-3 bg-[#FEF7ED] border border-[#FDE68A] rounded-xl text-xs">
+              <div className="font-semibold text-[#B76E16] mb-1 flex items-center gap-1.5">
+                <Clock className="w-3.5 h-3.5" />
+                <span>Reserved Dates:</span>
               </div>
-              <div className="flex flex-wrap gap-1.5 mt-1.5">
+              <div className="flex flex-wrap gap-1.5 mt-1">
                 {calendarDates.map((c, i) => (
                   <span
                     key={i}
-                    className="inline-flex items-center px-2.5 py-0.5 bg-white border border-amber-200 text-amber-900 rounded-lg text-[11px] font-medium"
+                    className="inline-flex items-center px-2 py-0.5 bg-white border border-[#E5E8EA] text-[#B76E16] rounded-md text-[11px] font-medium"
                   >
                     {formatDateIN(c.startDate)} – {formatDateIN(c.endDate)}
                   </span>
@@ -197,9 +193,9 @@ export const DateRangePickerModal: React.FC<DateRangePickerModalProps> = ({
           )}
 
           {/* Date Range Inputs */}
-          <div className="grid grid-cols-2 gap-3 mb-5">
-            <div className="bg-slate-50 p-3 rounded-2xl border border-slate-200">
-              <label className="block text-[11px] font-bold text-slate-600 uppercase tracking-wider mb-1">
+          <div className="grid grid-cols-2 gap-3 mb-4">
+            <div className="bg-[#FAFAF8] p-3 rounded-xl border border-[#E5E8EA]">
+              <label className="block text-[11px] font-semibold text-[#66707A] uppercase tracking-wider mb-1">
                 Pickup Date
               </label>
               <input
@@ -207,12 +203,12 @@ export const DateRangePickerModal: React.FC<DateRangePickerModalProps> = ({
                 min={todayStr}
                 value={startDate}
                 onChange={(e) => setStartDate(e.target.value)}
-                className="w-full bg-white px-3 py-2 text-xs font-semibold text-slate-900 border border-slate-200 rounded-xl focus:border-brand-500 focus:ring-2 focus:ring-brand-500/20 focus:outline-none transition-all cursor-pointer"
+                className="w-full bg-white px-2.5 py-1.5 text-xs font-semibold text-[#17191C] border border-[#E5E8EA] rounded-lg focus:border-[#315CF5] focus:outline-none transition-colors cursor-pointer"
               />
             </div>
 
-            <div className="bg-slate-50 p-3 rounded-2xl border border-slate-200">
-              <label className="block text-[11px] font-bold text-slate-600 uppercase tracking-wider mb-1">
+            <div className="bg-[#FAFAF8] p-3 rounded-xl border border-[#E5E8EA]">
+              <label className="block text-[11px] font-semibold text-[#66707A] uppercase tracking-wider mb-1">
                 Return Date
               </label>
               <input
@@ -220,26 +216,26 @@ export const DateRangePickerModal: React.FC<DateRangePickerModalProps> = ({
                 min={startDate || todayStr}
                 value={endDate}
                 onChange={(e) => setEndDate(e.target.value)}
-                className="w-full bg-white px-3 py-2 text-xs font-semibold text-slate-900 border border-slate-200 rounded-xl focus:border-brand-500 focus:ring-2 focus:ring-brand-500/20 focus:outline-none transition-all cursor-pointer"
+                className="w-full bg-white px-2.5 py-1.5 text-xs font-semibold text-[#17191C] border border-[#E5E8EA] rounded-lg focus:border-[#315CF5] focus:outline-none transition-colors cursor-pointer"
               />
             </div>
           </div>
 
           {/* Availability Status Indicator */}
-          <div className="mb-5 flex items-center justify-between px-3.5 py-2.5 bg-slate-50 border border-slate-100 rounded-2xl text-xs">
-            <span className="text-slate-500 font-medium">Availability:</span>
+          <div className="mb-4 flex items-center justify-between px-3 py-2 bg-[#FAFAF8] border border-[#E5E8EA] rounded-xl text-xs">
+            <span className="text-[#66707A]">Availability:</span>
             {checkingAvailability ? (
-              <span className="text-amber-600 font-bold flex items-center gap-1.5 animate-pulse">
-                <span className="w-2 h-2 rounded-full bg-amber-500 animate-ping" />
+              <span className="text-[#B76E16] font-medium flex items-center gap-1.5">
+                <span className="w-2 h-2 rounded-full bg-[#B76E16] animate-ping" />
                 Checking calendar...
               </span>
             ) : isAvailable ? (
-              <span className="text-emerald-700 font-bold flex items-center gap-1.5">
-                <CheckCircle2 className="w-4 h-4 text-emerald-600" />
+              <span className="text-[#13795B] font-semibold flex items-center gap-1.5">
+                <CheckCircle2 className="w-4 h-4 text-[#13795B]" />
                 Available to Book
               </span>
             ) : (
-              <span className="text-rose-600 font-bold flex items-center gap-1.5">
+              <span className="text-[#C43838] font-semibold flex items-center gap-1.5">
                 <AlertCircle className="w-4 h-4" />
                 Dates Unavailable
               </span>
@@ -247,45 +243,45 @@ export const DateRangePickerModal: React.FC<DateRangePickerModalProps> = ({
           </div>
 
           {/* Pricing Breakdown */}
-          <div className="p-4 bg-slate-50 border border-slate-200/80 rounded-2xl space-y-2.5 text-xs mb-5">
-            <div className="flex justify-between text-slate-600">
-              <span>Rental Duration</span>
-              <span className="font-bold text-slate-900 font-display">
+          <div className="p-3.5 bg-[#FAFAF8] border border-[#E5E8EA] rounded-xl space-y-2 text-xs mb-4">
+            <div className="flex justify-between text-[#66707A]">
+              <span>Duration</span>
+              <span className="font-semibold text-[#17191C]">
                 {diffDays} {diffDays === 1 ? 'day' : 'days'}
               </span>
             </div>
 
-            <div className="flex justify-between text-slate-600">
-              <span>Rental Charge ({formatINR(product.pricePerDay)} × {diffDays} days)</span>
-              <span className="font-bold text-slate-900">{formatINR(rentalTotal)}</span>
+            <div className="flex justify-between text-[#66707A]">
+              <span>Rental Charge ({formatINR(product.pricePerDay)} × {diffDays} d)</span>
+              <span className="font-semibold text-[#17191C]">{formatINR(rentalTotal)}</span>
             </div>
 
-            <div className="flex justify-between text-slate-600">
+            <div className="flex justify-between text-[#66707A]">
               <span className="flex items-center gap-1">
                 <span>Security Deposit</span>
-                <span className="text-[10px] text-emerald-700 font-bold bg-emerald-50 px-1.5 py-0.5 rounded border border-emerald-200">
+                <span className="text-[10px] text-[#13795B] font-semibold bg-[#EBF5F1] px-1.5 py-0.2 rounded">
                   Refundable
                 </span>
               </span>
-              <span className="font-bold text-slate-900">{formatINR(securityDeposit)}</span>
+              <span className="font-semibold text-[#17191C]">{formatINR(securityDeposit)}</span>
             </div>
 
-            <div className="pt-2.5 border-t border-slate-200 flex justify-between items-baseline text-slate-900">
+            <div className="pt-2 border-t border-[#E5E8EA] flex justify-between items-baseline text-[#17191C]">
               <div>
-                <span className="font-bold text-sm block">Total Payable Now</span>
-                <span className="text-[10px] text-slate-500">Includes rental charge + refundable deposit</span>
+                <span className="font-semibold text-xs block">Total Amount</span>
+                <span className="text-[10px] text-[#66707A]">Rental fee + refundable deposit</span>
               </div>
-              <span className="text-xl font-display font-extrabold text-brand-600">
+              <span className="text-lg font-bold text-[#315CF5]">
                 {formatINR(totalAmount)}
               </span>
             </div>
           </div>
 
           {/* 15-Minute Hold Notice */}
-          <div className="flex items-center gap-2 p-3 bg-brand-50/70 border border-brand-100 rounded-2xl mb-6 text-xs text-brand-900">
-            <ShieldCheck className="w-4 h-4 text-brand-600 shrink-0" />
-            <span className="text-[11px] leading-relaxed">
-              Reserving holds these dates exclusively for <strong>15 minutes</strong> while you complete checkout.
+          <div className="flex items-center gap-2 p-2.5 bg-[#EFF3FE] border border-[#DBE4FD] rounded-xl mb-5 text-xs text-[#315CF5]">
+            <ShieldCheck className="w-4 h-4 shrink-0 text-[#315CF5]" />
+            <span className="text-[11px]">
+              Reserving holds dates for <strong>15 minutes</strong> while you complete payment simulation.
             </span>
           </div>
 
@@ -294,30 +290,28 @@ export const DateRangePickerModal: React.FC<DateRangePickerModalProps> = ({
             <button
               type="button"
               onClick={onClose}
-              className="px-4 py-2.5 text-xs font-bold text-slate-500 hover:text-slate-800 transition-colors"
+              className="px-3.5 py-2 text-xs font-semibold text-[#66707A] hover:text-[#17191C] transition-colors cursor-pointer"
             >
               Cancel
             </button>
-            <motion.button
-              whileHover={{ scale: 1.01 }}
-              whileTap={{ scale: 0.99 }}
+            <button
               type="button"
               disabled={!isAvailable || checkingAvailability || bookingLoading}
               onClick={handleReserve}
-              className="flex-1 py-3 px-5 bg-slate-900 hover:bg-slate-800 text-white font-bold text-xs rounded-xl shadow-md transition-all disabled:opacity-40 flex items-center justify-center gap-2"
+              className="flex-1 py-2.5 px-4 bg-[#315CF5] hover:bg-[#2447C9] text-white font-semibold text-xs rounded-lg shadow-xs transition-colors disabled:opacity-40 flex items-center justify-center gap-2 cursor-pointer"
             >
               {bookingLoading ? (
                 <>
-                  <span className="inline-block w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" />
+                  <span className="inline-block w-3.5 h-3.5 border-2 border-white/30 border-t-white rounded-full animate-spin" />
                   <span>Holding Dates...</span>
                 </>
               ) : (
                 <>
                   <span>Reserve & Proceed to Payment</span>
-                  <ArrowRight className="w-4 h-4" />
+                  <ArrowRight className="w-3.5 h-3.5" />
                 </>
               )}
-            </motion.button>
+            </button>
           </div>
         </motion.div>
       </div>
