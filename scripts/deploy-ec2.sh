@@ -165,8 +165,62 @@ log "Deploying static assets to Nginx container (borrowbuy-proxy)..."
 docker exec borrowbuy-proxy rm -rf /usr/share/nginx/html/*
 docker cp "${APP_DIR}/frontend/dist/." borrowbuy-proxy:/usr/share/nginx/html/
 
-# Ensure Nginx configuration includes SPA fallback & /api/ proxy
-cat << 'EOF' > /tmp/borrowbuy-nginx.conf
+# Ensure Nginx configuration includes origin verification, SPA fallback & /api/ proxy
+ORIGIN_SECRET_FILE="/etc/borrowbuy/origin-secret"
+if [ ! -f "${ORIGIN_SECRET_FILE}" ] && [ -f "${APP_DIR}/.origin-secret" ]; then
+    ORIGIN_SECRET_FILE="${APP_DIR}/.origin-secret"
+fi
+
+if [ -f "${ORIGIN_SECRET_FILE}" ] && [ -s "${ORIGIN_SECRET_FILE}" ]; then
+    log "Configuring Nginx with active X-Origin-Verify header validation..."
+    ORIGIN_SECRET=$(tr -d '\r\n' < "${ORIGIN_SECRET_FILE}")
+    cat << EOF > /tmp/borrowbuy-nginx.conf
+map \$remote_addr \$is_internal_client {
+    127.0.0.1 1;
+    "::1" 1;
+    172.17.0.1 1;
+    default 0;
+}
+
+map \$http_x_origin_verify \$is_valid_origin {
+    default 0;
+    "${ORIGIN_SECRET}" 1;
+}
+
+server {
+    listen 80;
+    server_name _;
+
+    set \$access_allowed 0;
+    if (\$is_internal_client = 1) {
+        set \$access_allowed 1;
+    }
+    if (\$is_valid_origin = 1) {
+        set \$access_allowed 1;
+    }
+    if (\$access_allowed = 0) {
+        return 403 '{"error":"Forbidden","message":"Direct origin access denied. Requests must route through CloudFront."}\n';
+    }
+
+    location / {
+        root /usr/share/nginx/html;
+        index index.html index.htm;
+        try_files \$uri \$uri/ /index.html;
+    }
+
+    location /api/ {
+        proxy_pass http://172.17.0.1:5000;
+        proxy_http_version 1.1;
+        proxy_set_header Host \$host;
+        proxy_set_header X-Real-IP \$remote_addr;
+        proxy_set_header X-Forwarded-For \$proxy_add_x_forwarded_for;
+        proxy_set_header X-Forwarded-Proto \$scheme;
+    }
+}
+EOF
+else
+    log "No origin secret file found; configuring standard Nginx reverse proxy..."
+    cat << 'EOF' > /tmp/borrowbuy-nginx.conf
 server {
     listen 80;
     server_name _;
@@ -183,10 +237,14 @@ server {
         proxy_set_header Host $host;
         proxy_set_header X-Real-IP $remote_addr;
         proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+        proxy_set_header X-Forwarded-Proto $scheme;
     }
 }
 EOF
+fi
+
 docker cp /tmp/borrowbuy-nginx.conf borrowbuy-proxy:/etc/nginx/conf.d/default.conf
+docker exec borrowbuy-proxy nginx -t
 docker exec borrowbuy-proxy nginx -s reload
 rm -f /tmp/borrowbuy-nginx.conf
 
