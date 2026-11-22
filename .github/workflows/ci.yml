@@ -1,19 +1,31 @@
 name: BorrowBuy Continuous Integration (CI)
 
 on:
-  push:
-    branches: [main, master, develop]
+  # Reusable workflow call from CD or other workflows
+  workflow_call:
+    inputs:
+      target_commit:
+        description: 'Exact Git commit SHA to checkout and verify'
+        required: false
+        type: string
+        default: ''
+
+  # Direct pull request verification
   pull_request:
     branches: [main, master]
+
+  # Direct push verification on non-production branches
+  push:
+    branches: [master, develop]
 
 permissions:
   contents: read
 
 jobs:
-  lint-and-test:
-    name: Lint, Test & Build Validation
+  lint-test-and-build:
+    name: Lint, Test & Build Monorepo
     runs-on: ubuntu-latest
-    timeout-minutes: 15
+    timeout-minutes: 20
 
     services:
       postgres:
@@ -31,8 +43,19 @@ jobs:
           --health-retries 5
 
     steps:
-      - name: Checkout Code Repository
+      - name: Checkout Code Repository (Exact Commit)
         uses: actions/checkout@v4
+        with:
+          ref: ${{ inputs.target_commit || github.sha }}
+
+      - name: Display Commit Verification Metadata
+        run: |
+          echo "=========================================================="
+          echo "CI Execution for Commit: $(git rev-parse HEAD)"
+          echo "Branch / Ref: ${{ github.ref }}"
+          echo "Event Name: ${{ github.event_name }}"
+          echo "Target Commit Input: ${{ inputs.target_commit }}"
+          echo "=========================================================="
 
       - name: Setup Node.js Runtime
         uses: actions/setup-node@v4
@@ -43,18 +66,21 @@ jobs:
       - name: Install Monorepo Dependencies
         run: npm ci
 
+      - name: Validate Prisma Database Schema
+        run: npx prisma validate --schema=./database/prisma/schema.prisma
+
       - name: Generate Prisma Database Client
         run: npx prisma generate --schema=./database/prisma/schema.prisma
 
-      - name: Run Database Migrations (Test DB)
+      - name: Synchronize Test Database Schema
         env:
           DATABASE_URL: postgresql://test_user:test_password@localhost:5432/borrowbuy_test_db?schema=public
         run: npx prisma db push --schema=./database/prisma/schema.prisma
 
-      - name: Execute Frontend Unit Tests
+      - name: Execute Frontend Unit Tests (Vitest)
         run: npm run test --workspace=frontend
 
-      - name: Execute Backend Integration & Unit Tests
+      - name: Execute Backend Unit & Integration Tests (103 Tests)
         env:
           DATABASE_URL: postgresql://test_user:test_password@localhost:5432/borrowbuy_test_db?schema=public
           JWT_SECRET: ci-test-jwt-secret-borrowbuy-32chars-min
@@ -64,13 +90,19 @@ jobs:
           PAYMENT_DRIVER: simulation
         run: npm run test --workspace=backend
 
-      - name: Compile Frontend Production Bundle
+      - name: Compile Frontend Production SPA Bundle
         run: npm run build --workspace=frontend
 
-      - name: Compile Backend TypeScript
+      - name: Compile Backend TypeScript Application
         run: npm run build --workspace=backend
 
-      - name: Validate Terraform Infrastructure Configuration
+      - name: Verify Build Artifacts Generation
+        run: |
+          test -f backend/dist/server.js || { echo "Missing backend/dist/server.js"; exit 1; }
+          test -f frontend/dist/index.html || { echo "Missing frontend/dist/index.html"; exit 1; }
+          echo "All required production artifacts verified successfully."
+
+      - name: Validate Terraform Infrastructure Code (No Apply)
         uses: hashicorp/setup-terraform@v3
         with:
           terraform_version: 1.17.0

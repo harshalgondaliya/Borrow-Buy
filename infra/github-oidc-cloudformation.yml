@@ -1,0 +1,113 @@
+
+AWSTemplateFormatVersion: '2010-09-09'
+
+Description: 'BorrowBuy - Secure GitHub Actions OIDC Authentication and Deployment Role'
+
+Parameters:
+  GitHubOrg:
+    Type: String
+    Default: 'harshalgondaliya'
+    Description: 'GitHub organization or username'
+
+  RepositoryName:
+    Type: String
+    Default: 'Borrow-Buy'
+    Description: 'GitHub repository name'
+
+  EC2InstanceId:
+    Type: String
+    Default: 'i-03347c2b6584c73cb'
+    Description: 'BorrowBuy EC2 instance in ap-south-1'
+
+Resources:
+
+  # 1. GitHub Actions OpenID Connect Provider
+  GitHubOIDCProvider:
+    Type: AWS::IAM::OIDCProvider
+    Properties:
+      Url: 'https://token.actions.githubusercontent.com'
+      ClientIdList:
+        - 'sts.amazonaws.com'
+
+  # 2. Restricted GitHub Actions Deployment Policy
+  GitHubActionsDeployPolicy:
+    Type: AWS::IAM::ManagedPolicy
+    Properties:
+      ManagedPolicyName: 'BorrowBuy-GitHubActions-Deploy-Policy'
+
+      Description: 'Allow GitHub Actions to inspect the BorrowBuy EC2 instance and execute deployments through SSM'
+
+      PolicyDocument:
+        Version: '2012-10-17'
+
+        Statement:
+
+          - Sid: CheckInstanceStateForCostSafety
+            Effect: Allow
+            Action:
+              - 'ec2:DescribeInstances'
+              - 'ec2:DescribeInstanceStatus'
+            Resource: '*'
+            Condition:
+              StringEquals:
+                aws:RequestedRegion: 'ap-south-1'
+
+          - Sid: SendCommandToBorrowBuyHostOnly
+            Effect: Allow
+            Action:
+              - 'ssm:SendCommand'
+            Resource:
+              - !Sub 'arn:aws:ec2:ap-south-1:${AWS::AccountId}:instance/${EC2InstanceId}'
+              - 'arn:aws:ssm:ap-south-1::document/AWS-RunShellScript'
+
+          - Sid: MonitorSSMDeploymentCommands
+            Effect: Allow
+            Action:
+              - 'ssm:GetCommandInvocation'
+              - 'ssm:ListCommandInvocations'
+              - 'ssm:ListCommands'
+            Resource: '*'
+            Condition:
+              StringEquals:
+                aws:RequestedRegion: 'ap-south-1'
+
+  # 3. Secure GitHub Actions Deployment Role
+  GitHubActionsDeployRole:
+    Type: AWS::IAM::Role
+
+    Properties:
+      RoleName: 'BorrowBuy-GitHubActions-Deploy-Role'
+
+      Description: 'IAM role assumed by BorrowBuy GitHub Actions through secure OIDC federation'
+
+      ManagedPolicyArns:
+        - !Ref GitHubActionsDeployPolicy
+
+      AssumeRolePolicyDocument:
+        Version: '2012-10-17'
+
+        Statement:
+
+          - Sid: AllowBorrowBuyProductionEnvironment
+            Effect: Allow
+
+            Principal:
+              Federated: !Ref GitHubOIDCProvider
+
+            Action:
+              - 'sts:AssumeRoleWithWebIdentity'
+
+            Condition:
+              StringEquals:
+                token.actions.githubusercontent.com:aud: 'sts.amazonaws.com'
+                token.actions.githubusercontent.com:sub: !Sub 'repo:${GitHubOrg}/${RepositoryName}:environment:production'
+
+Outputs:
+
+  RoleArn:
+    Description: 'BorrowBuy GitHub Actions Deployment Role ARN'
+    Value: !GetAtt GitHubActionsDeployRole.Arn
+
+  OIDCProviderArn:
+    Description: 'GitHub Actions OIDC Provider ARN'
+    Value: !Ref GitHubOIDCProvider
