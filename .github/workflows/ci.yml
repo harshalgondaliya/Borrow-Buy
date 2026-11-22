@@ -2,7 +2,7 @@
 name: BorrowBuy Continuous Integration (CI)
 
 on:
-  # Reusable workflow call from CD or other workflows
+  # Reusable workflow for deployment and other workflows
   workflow_call:
     inputs:
       target_commit:
@@ -11,13 +11,17 @@ on:
         type: string
         default: ''
 
-  # Direct pull request verification
+  # Run CI on pull requests
   pull_request:
-    branches: [main, master]
+    branches:
+      - main
+      - master
 
-  # Direct push verification on non-production branches
+  # Run CI directly on non-production branches
   push:
-    branches: [master, develop]
+    branches:
+      - master
+      - develop
 
 permissions:
   contents: read
@@ -28,10 +32,12 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 20
 
-    # FIX: Make the test database URL available to all CI steps
+    # Single job-level environment configuration
+    # Uses temporary GitHub Actions PostgreSQL, not AWS production
     env:
       DATABASE_URL: postgresql://test_user:test_password@localhost:5432/borrowbuy_test_db?schema=public
 
+    # Temporary PostgreSQL database for CI testing
     services:
       postgres:
         image: postgres:16-alpine
@@ -47,50 +53,67 @@ jobs:
           --health-timeout 5s
           --health-retries 5
 
-    env:
-      DATABASE_URL: postgresql://test_user:test_password@localhost:5432/borrowbuy_test_db?schema=public
-
     steps:
+
+      # Step 1: Checkout exact source commit
       - name: Checkout Code Repository (Exact Commit)
         uses: actions/checkout@v4
         with:
           ref: ${{ inputs.target_commit || github.sha }}
 
+      # Step 2: Display commit information
       - name: Display Commit Verification Metadata
+        env:
+          EXPECTED_COMMIT: ${{ inputs.target_commit || github.sha }}
         run: |
           echo "=========================================================="
           echo "CI Execution for Commit: $(git rev-parse HEAD)"
-          echo "Branch / Ref: ${{ github.ref }}"
-          echo "Event Name: ${{ github.event_name }}"
-          echo "Target Commit Input: ${{ inputs.target_commit }}"
+          echo "Branch / Ref: $GITHUB_REF"
+          echo "Event Name: $GITHUB_EVENT_NAME"
+          echo "Target Commit: $EXPECTED_COMMIT"
           echo "=========================================================="
 
+          ACTUAL_COMMIT=$(git rev-parse HEAD)
+
+          if [ "$ACTUAL_COMMIT" != "$(git rev-parse "$EXPECTED_COMMIT^{commit}")" ]; then
+            echo "::error::Checked-out commit does not match the requested commit."
+            exit 1
+          fi
+
+      # Step 3: Setup Node.js
       - name: Setup Node.js Runtime
         uses: actions/setup-node@v4
         with:
           node-version: 22
           cache: 'npm'
 
+      # Step 4: Install exact dependencies
       - name: Install Monorepo Dependencies
         run: npm ci
 
+      # Step 5: Validate Prisma schema
       - name: Validate Prisma Database Schema
         run: npx prisma validate --schema=./database/prisma/schema.prisma
 
+      # Step 6: Generate Prisma client
       - name: Generate Prisma Database Client
         run: npx prisma generate --schema=./database/prisma/schema.prisma
 
+      # Step 7: Create test database schema
       - name: Synchronize Test Database Schema
         run: npx prisma db push --schema=./database/prisma/schema.prisma
 
+      # Step 8: Seed isolated CI database
       - name: Seed Isolated Test Database (116 Products & Users)
         env:
           NODE_ENV: test
         run: npx tsx ./database/prisma/seed.ts
 
+      # Step 9: Execute frontend tests
       - name: Execute Frontend Unit Tests (Vitest)
         run: npm run test --workspace=frontend
 
+      # Step 10: Execute backend tests
       - name: Execute Backend Unit & Integration Tests (103 Tests)
         env:
           JWT_SECRET: ci-test-jwt-secret-borrowbuy-32chars-min
@@ -101,33 +124,55 @@ jobs:
           QUEUE_DRIVER: local
         run: npm run test --workspace=backend
 
+      # Step 11: Build React frontend
       - name: Compile Frontend Production SPA Bundle
         run: npm run build --workspace=frontend
 
+      # Step 12: Build Node.js backend
       - name: Compile Backend TypeScript Application
         run: npm run build --workspace=backend
 
+      # Step 13: Verify production artifacts
       - name: Verify Build Artifacts Generation
         run: |
-          test -f backend/dist/server.js || {
-            echo "Missing backend/dist/server.js"
+          if [ ! -f backend/dist/server.js ]; then
+            echo "::error::Missing backend/dist/server.js"
             exit 1
-          }
+          fi
 
-          test -f frontend/dist/index.html || {
-            echo "Missing frontend/dist/index.html"
+          if [ ! -f frontend/dist/index.html ]; then
+            echo "::error::Missing frontend/dist/index.html"
             exit 1
-          }
+          fi
 
           echo "All required production artifacts verified successfully."
 
+      # Step 14: Install Terraform CLI
       - name: Setup Terraform CLI
         uses: hashicorp/setup-terraform@v3
         with:
           terraform_version: 1.17.0
 
+      # Step 15: Validate Terraform without deployment
       - name: Validate Terraform Infrastructure Code (No Apply)
         run: |
           terraform -chdir=infra/terraform fmt -check
           terraform -chdir=infra/terraform init -backend=false
           terraform -chdir=infra/terraform validate
+
+      # Step 16: Final CI summary
+      - name: Generate CI Success Summary
+        if: success()
+        run: |
+          echo "## BorrowBuy CI Verification Passed" >> "$GITHUB_STEP_SUMMARY"
+          echo "" >> "$GITHUB_STEP_SUMMARY"
+          echo "- Commit: $GITHUB_SHA" >> "$GITHUB_STEP_SUMMARY"
+          echo "- Prisma schema: Validated" >> "$GITHUB_STEP_SUMMARY"
+          echo "- Test database: Seeded" >> "$GITHUB_STEP_SUMMARY"
+          echo "- Frontend tests: Passed" >> "$GITHUB_STEP_SUMMARY"
+          echo "- Backend tests: Passed" >> "$GITHUB_STEP_SUMMARY"
+          echo "- Frontend build: Passed" >> "$GITHUB_STEP_SUMMARY"
+          echo "- Backend build: Passed" >> "$GITHUB_STEP_SUMMARY"
+          echo "- Terraform validation: Passed" >> "$GITHUB_STEP_SUMMARY"
+          echo "" >> "$GITHUB_STEP_SUMMARY"
+          echo "CI completed successfully. Deployment may proceed." >> "$GITHUB_STEP_SUMMARY"
