@@ -10,6 +10,7 @@ import {
   PaymentStatus,
   DepositStatus,
   ReviewType,
+  DisputeStatus,
 } from '@prisma/client';
 import bcrypt from 'bcryptjs';
 
@@ -2798,6 +2799,429 @@ async function main() {
         message: 'Explore verified local equipment in Ahmedabad, Gandhinagar, Surat and nearby cities with secure deposit escrow.',
         type: 'SYSTEM_WELCOME',
       },
+    });
+  }
+
+  // --------------------------------------------------------------------------
+  // CANONICAL DEMO PERSONAS ENRICHMENT (Owner, Customer & Admin Portals)
+  // --------------------------------------------------------------------------
+  console.log('🌟 Enriching Canonical Demo Personas (owner@borrowbuy.in, customer@borrowbuy.in)...');
+  const demoOwner = await prisma.user.findUnique({ where: { email: 'owner@borrowbuy.in' } });
+  const demoCustomer = await prisma.user.findUnique({ where: { email: 'customer@borrowbuy.in' } });
+  const demoAdmin = await prisma.user.findUnique({ where: { email: adminEmail } });
+
+  if (demoOwner && demoCustomer) {
+    // Assign premier equipment to canonical demo owner so Owner Portal is packed with listings
+    const productsToAssign = await prisma.product.findMany({
+      take: 25,
+      orderBy: { id: 'asc' },
+    });
+    for (const prod of productsToAssign) {
+      await prisma.product.update({
+        where: { id: prod.id },
+        data: {
+          ownerId: demoOwner.id,
+          location: 'Navrangpura, Ahmedabad, Gujarat',
+        },
+      });
+    }
+
+    const demoBookingNumbers = [
+      'BB-DEMO-REQ-001',
+      'BB-DEMO-REQ-002',
+      'BB-DEMO-ACT-003',
+      'BB-DEMO-CMP-004',
+      'BB-CUST-ACT-101',
+      'BB-CUST-CNF-102',
+      'BB-CUST-CMP-103',
+    ];
+
+    await prisma.dispute.deleteMany({
+      where: { booking: { bookingNumber: { in: demoBookingNumbers } } },
+    });
+    await prisma.review.deleteMany({
+      where: { booking: { bookingNumber: { in: demoBookingNumbers } } },
+    });
+    await prisma.payment.deleteMany({
+      where: { booking: { bookingNumber: { in: demoBookingNumbers } } },
+    });
+    await prisma.securityDeposit.deleteMany({
+      where: { booking: { bookingNumber: { in: demoBookingNumbers } } },
+    });
+    await prisma.booking.deleteMany({
+      where: { bookingNumber: { in: demoBookingNumbers } },
+    });
+
+    const now = new Date();
+
+    // 1. Pending Request 1: Priya wants Sony A7 IV
+    const startReq1 = new Date(now.getTime() + 2 * 24 * 60 * 60 * 1000);
+    const endReq1 = new Date(now.getTime() + 5 * 24 * 60 * 60 * 1000);
+    await prisma.booking.create({
+      data: {
+        id: '00000003-0000-4000-8000-000000000001',
+        bookingNumber: 'BB-DEMO-REQ-001',
+        productId: productsToAssign[0].id,
+        customerId: primaryCustomer.id,
+        startDate: startReq1,
+        endDate: endReq1,
+        expectedReturnDate: endReq1,
+        totalDays: 3,
+        dailyPrice: 1200,
+        rentalTotal: 3600,
+        securityDeposit: 8000,
+        totalAmount: 11600,
+        status: BookingStatus.RESERVED,
+        pickupCode: 'PK-REQ-A7IV',
+        returnCode: 'RT-REQ-A7IV',
+      },
+    });
+
+    // 2. Pending Request 2: Customer wants Canon R6
+    const startReq2 = new Date(now.getTime() + 3 * 24 * 60 * 60 * 1000);
+    const endReq2 = new Date(now.getTime() + 6 * 24 * 60 * 60 * 1000);
+    await prisma.booking.create({
+      data: {
+        id: '00000003-0000-4000-8000-000000000002',
+        bookingNumber: 'BB-DEMO-REQ-002',
+        productId: productsToAssign[1].id,
+        customerId: seededCustomers[1]?.id || demoCustomer.id,
+        startDate: startReq2,
+        endDate: endReq2,
+        expectedReturnDate: endReq2,
+        totalDays: 3,
+        dailyPrice: 1300,
+        rentalTotal: 3900,
+        securityDeposit: 9000,
+        totalAmount: 12900,
+        status: BookingStatus.RESERVED,
+        pickupCode: 'PK-REQ-R6II',
+        returnCode: 'RT-REQ-R6II',
+      },
+    });
+
+    // 3. Ongoing Active Rental: GoPro 12
+    const startAct1 = new Date(now.getTime() - 2 * 24 * 60 * 60 * 1000);
+    const endAct1 = new Date(now.getTime() + 2 * 24 * 60 * 60 * 1000);
+    const actBooking1 = await prisma.booking.create({
+      data: {
+        id: '00000003-0000-4000-8000-000000000003',
+        bookingNumber: 'BB-DEMO-ACT-003',
+        productId: productsToAssign[3].id,
+        customerId: seededCustomers[2]?.id || demoCustomer.id,
+        startDate: startAct1,
+        endDate: endAct1,
+        expectedReturnDate: endAct1,
+        totalDays: 4,
+        dailyPrice: 500,
+        rentalTotal: 2000,
+        securityDeposit: 3000,
+        totalAmount: 5000,
+        status: BookingStatus.ACTIVE,
+        pickupCode: 'PK-GOPRO-ACT',
+        returnCode: 'RT-GOPRO-ACT',
+        pickupAt: startAct1,
+      },
+    });
+    await prisma.payment.create({
+      data: {
+        bookingId: actBooking1.id,
+        userId: seededCustomers[2]?.id || demoCustomer.id,
+        transactionId: 'TXN-SIM-ACT-GOPRO-003',
+        amount: 5000,
+        rentalAmount: 2000,
+        depositAmount: 3000,
+        paymentMethod: 'UPI_SIMULATED',
+        status: PaymentStatus.SUCCESSFUL,
+      },
+    });
+    await prisma.securityDeposit.create({
+      data: {
+        bookingId: actBooking1.id,
+        originalAmount: 3000,
+        deductionAmount: 0,
+        refundedAmount: 0,
+        status: DepositStatus.HELD,
+      },
+    });
+
+    // 4. Completed Rental: BenQ Projector
+    const startCmp1 = new Date(now.getTime() - 10 * 24 * 60 * 60 * 1000);
+    const endCmp1 = new Date(now.getTime() - 7 * 24 * 60 * 60 * 1000);
+    const cmpBooking1 = await prisma.booking.create({
+      data: {
+        id: '00000003-0000-4000-8000-000000000004',
+        bookingNumber: 'BB-DEMO-CMP-004',
+        productId: productsToAssign[15].id,
+        customerId: primaryCustomer.id,
+        startDate: startCmp1,
+        endDate: endCmp1,
+        expectedReturnDate: endCmp1,
+        actualReturnDate: endCmp1,
+        returnedAt: endCmp1,
+        totalDays: 3,
+        dailyPrice: 1600,
+        rentalTotal: 4800,
+        securityDeposit: 10000,
+        totalAmount: 14800,
+        status: BookingStatus.COMPLETED,
+        pickupCode: 'PK-BENQ-CMP',
+        returnCode: 'RT-BENQ-CMP',
+        pickupAt: startCmp1,
+      },
+    });
+    await prisma.payment.create({
+      data: {
+        bookingId: cmpBooking1.id,
+        userId: primaryCustomer.id,
+        transactionId: 'TXN-SIM-CMP-BENQ-004',
+        amount: 14800,
+        rentalAmount: 4800,
+        depositAmount: 10000,
+        paymentMethod: 'NET_BANKING_SIMULATED',
+        status: PaymentStatus.SUCCESSFUL,
+      },
+    });
+    await prisma.securityDeposit.create({
+      data: {
+        bookingId: cmpBooking1.id,
+        originalAmount: 10000,
+        deductionAmount: 0,
+        refundedAmount: 10000,
+        status: DepositStatus.FULLY_REFUNDED,
+        releasedAt: endCmp1,
+      },
+    });
+    await prisma.review.create({
+      data: {
+        bookingId: cmpBooking1.id,
+        reviewerId: primaryCustomer.id,
+        revieweeId: demoOwner.id,
+        rating: 5,
+        comment: 'Super sharp 4K projector! Punctual handover, clean HDMI cables and fast deposit release.',
+        type: ReviewType.CUSTOMER_TO_OWNER,
+      },
+    });
+
+    // Sample Dispute for Admin Governance
+    if (demoAdmin) {
+      await prisma.dispute.create({
+        data: {
+          bookingId: cmpBooking1.id,
+          raisedById: demoOwner.id,
+          resolvedById: demoAdmin.id,
+          claimAmount: 500,
+          reason: 'HDMI cable connector check',
+          description: 'Minor inspection note regarding HDMI pin. Cleared upon testing with original cable box.',
+          status: DisputeStatus.RESOLVED,
+          resolutionNotes: 'Dispute amicably resolved. 100% security deposit released to renter.',
+          deductedFromDeposit: 0,
+          resolvedAt: endCmp1,
+        },
+      });
+    }
+
+    // Customer Portal: Active, Confirmed, and Completed Bookings
+    const custActStart = new Date(now.getTime() - 1 * 24 * 60 * 60 * 1000);
+    const custActEnd = new Date(now.getTime() + 3 * 24 * 60 * 60 * 1000);
+    const custActBooking = await prisma.booking.create({
+      data: {
+        id: '00000004-0000-4000-8000-000000000101',
+        bookingNumber: 'BB-CUST-ACT-101',
+        productId: productsToAssign[2].id,
+        customerId: demoCustomer.id,
+        startDate: custActStart,
+        endDate: custActEnd,
+        expectedReturnDate: custActEnd,
+        totalDays: 4,
+        dailyPrice: 750,
+        rentalTotal: 3000,
+        securityDeposit: 6000,
+        totalAmount: 9000,
+        status: BookingStatus.ACTIVE,
+        pickupCode: 'PK-70200-CUST',
+        returnCode: 'RT-70200-CUST',
+        pickupAt: custActStart,
+      },
+    });
+    await prisma.payment.create({
+      data: {
+        bookingId: custActBooking.id,
+        userId: demoCustomer.id,
+        transactionId: 'TXN-CUST-ACT-70200-101',
+        amount: 9000,
+        rentalAmount: 3000,
+        depositAmount: 6000,
+        paymentMethod: 'UPI_SIMULATED',
+        status: PaymentStatus.SUCCESSFUL,
+      },
+    });
+    await prisma.securityDeposit.create({
+      data: {
+        bookingId: custActBooking.id,
+        originalAmount: 6000,
+        deductionAmount: 0,
+        refundedAmount: 0,
+        status: DepositStatus.HELD,
+      },
+    });
+
+    const custCnfStart = new Date(now.getTime() + 1 * 24 * 60 * 60 * 1000);
+    const custCnfEnd = new Date(now.getTime() + 4 * 24 * 60 * 60 * 1000);
+    const custCnfBooking = await prisma.booking.create({
+      data: {
+        id: '00000004-0000-4000-8000-000000000102',
+        bookingNumber: 'BB-CUST-CNF-102',
+        productId: productsToAssign[19].id,
+        customerId: demoCustomer.id,
+        startDate: custCnfStart,
+        endDate: custCnfEnd,
+        expectedReturnDate: custCnfEnd,
+        totalDays: 3,
+        dailyPrice: 950,
+        rentalTotal: 2850,
+        securityDeposit: 7000,
+        totalAmount: 9850,
+        status: BookingStatus.CONFIRMED,
+        pickupCode: 'PK-BOSE-CUST',
+        returnCode: 'RT-BOSE-CUST',
+      },
+    });
+    await prisma.payment.create({
+      data: {
+        bookingId: custCnfBooking.id,
+        userId: demoCustomer.id,
+        transactionId: 'TXN-CUST-CNF-BOSE-102',
+        amount: 9850,
+        rentalAmount: 2850,
+        depositAmount: 7000,
+        paymentMethod: 'CARD_SIMULATED',
+        status: PaymentStatus.SUCCESSFUL,
+      },
+    });
+    await prisma.securityDeposit.create({
+      data: {
+        bookingId: custCnfBooking.id,
+        originalAmount: 7000,
+        deductionAmount: 0,
+        refundedAmount: 0,
+        status: DepositStatus.HELD,
+      },
+    });
+
+    const custCmpStart = new Date(now.getTime() - 14 * 24 * 60 * 60 * 1000);
+    const custCmpEnd = new Date(now.getTime() - 11 * 24 * 60 * 60 * 1000);
+    const custCmpBooking = await prisma.booking.create({
+      data: {
+        id: '00000004-0000-4000-8000-000000000103',
+        bookingNumber: 'BB-CUST-CMP-103',
+        productId: productsToAssign[4].id,
+        customerId: demoCustomer.id,
+        startDate: custCmpStart,
+        endDate: custCmpEnd,
+        expectedReturnDate: custCmpEnd,
+        actualReturnDate: custCmpEnd,
+        returnedAt: custCmpEnd,
+        totalDays: 3,
+        dailyPrice: 150,
+        rentalTotal: 450,
+        securityDeposit: 1000,
+        totalAmount: 1450,
+        status: BookingStatus.COMPLETED,
+        pickupCode: 'PK-TRIPOD-CUST',
+        returnCode: 'RT-TRIPOD-CUST',
+        pickupAt: custCmpStart,
+      },
+    });
+    await prisma.payment.create({
+      data: {
+        bookingId: custCmpBooking.id,
+        userId: demoCustomer.id,
+        transactionId: 'TXN-CUST-CMP-TRIPOD-103',
+        amount: 1450,
+        rentalAmount: 450,
+        depositAmount: 1000,
+        paymentMethod: 'UPI_SIMULATED',
+        status: PaymentStatus.SUCCESSFUL,
+      },
+    });
+    await prisma.securityDeposit.create({
+      data: {
+        bookingId: custCmpBooking.id,
+        originalAmount: 1000,
+        deductionAmount: 0,
+        refundedAmount: 1000,
+        status: DepositStatus.FULLY_REFUNDED,
+        releasedAt: custCmpEnd,
+      },
+    });
+    await prisma.review.create({
+      data: {
+        bookingId: custCmpBooking.id,
+        reviewerId: demoCustomer.id,
+        revieweeId: demoOwner.id,
+        rating: 5,
+        comment: 'Tripod was extremely sturdy and easy to use. Great lender!',
+        type: ReviewType.CUSTOMER_TO_OWNER,
+      },
+    });
+
+    // In-App Notifications
+    await prisma.notification.deleteMany({
+      where: { userId: { in: [demoOwner.id, demoCustomer.id] } },
+    });
+
+    await prisma.notification.createMany({
+      data: [
+        {
+          userId: demoOwner.id,
+          title: 'New Rental Request Received',
+          message: 'Priya Shah has requested to rent your Sony Alpha a7 IV for 3 days.',
+          type: 'BOOKING_REQUEST',
+          referenceId: 'BB-DEMO-REQ-001',
+          isRead: false,
+        },
+        {
+          userId: demoOwner.id,
+          title: 'Equipment Picked Up',
+          message: 'Neha Trivedi has completed pickup for GoPro HERO 12. Rental is ACTIVE.',
+          type: 'PICKUP_VERIFIED',
+          referenceId: 'BB-DEMO-ACT-003',
+          isRead: false,
+        },
+        {
+          userId: demoOwner.id,
+          title: '5-Star Review Received',
+          message: 'Priya Shah left a 5-star review for BenQ 4K Projector. Trust score updated to 5.0!',
+          type: 'REVIEW_RECEIVED',
+          referenceId: 'BB-DEMO-CMP-004',
+          isRead: false,
+        },
+        {
+          userId: demoCustomer.id,
+          title: 'Rental Booking Active',
+          message: 'Your rental for Sony FE 70-200mm f/2.8 GM II is now ACTIVE. Enjoy your gear!',
+          type: 'PICKUP_VERIFIED',
+          referenceId: 'BB-CUST-ACT-101',
+          isRead: false,
+        },
+        {
+          userId: demoCustomer.id,
+          title: 'Booking Confirmed & Paid',
+          message: 'Your booking for Bose S1 Pro+ is confirmed. Security deposit of ₹7,000 is safely held.',
+          type: 'BOOKING_CONFIRMED',
+          referenceId: 'BB-CUST-CNF-102',
+          isRead: false,
+        },
+        {
+          userId: demoCustomer.id,
+          title: 'Security Deposit Refunded',
+          message: '100% of your ₹1,000 security deposit for Manfrotto Tripod has been released.',
+          type: 'DEPOSIT_REFUNDED',
+          referenceId: 'BB-CUST-CMP-103',
+          isRead: false,
+        },
+      ],
     });
   }
 

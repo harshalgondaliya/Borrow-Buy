@@ -4,12 +4,27 @@
 
 const STORAGE_KEY = 'borrowbuy_wishlist_ids';
 
+// Default premier gear IDs to show when storage is fresh/uninitialized
+const DEFAULT_WISHLIST_IDS = [
+  '00000001-0000-4000-8000-000000000001', // Sony Alpha a7 IV
+  '00000001-0000-4000-8000-000000000004', // GoPro HERO 12 Black
+];
+
 export function getWishlistIds(): string[] {
   try {
     const raw = localStorage.getItem(STORAGE_KEY);
-    return raw ? JSON.parse(raw) : [];
+    if (raw !== null) {
+      return JSON.parse(raw);
+    }
+    // Initialize default wishlist items so user does not see an empty state
+    try {
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(DEFAULT_WISHLIST_IDS));
+    } catch {
+      // ignore
+    }
+    return DEFAULT_WISHLIST_IDS;
   } catch {
-    return [];
+    return DEFAULT_WISHLIST_IDS;
   }
 }
 
