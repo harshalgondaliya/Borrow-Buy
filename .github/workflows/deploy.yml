@@ -1,8 +1,10 @@
+
 name: BorrowBuy Continuous Deployment (CD)
 
 on:
   push:
-    branches: [main]
+    branches:
+      - main
     paths:
       - 'backend/**'
       - 'frontend/**'
@@ -11,6 +13,7 @@ on:
       - 'package.json'
       - 'package-lock.json'
       - '.github/workflows/**'
+
   workflow_dispatch:
     inputs:
       action:
@@ -22,161 +25,359 @@ on:
           - deploy
           - rollback
           - health-check
+
       target_commit:
         description: 'Target Git commit SHA (7-40 hex chars; leave empty for latest commit)'
         required: false
         default: ''
         type: string
 
+# Required for GitHub OIDC authentication
 permissions:
-  id-token: write   # Required for requesting AWS OIDC token
-  contents: read    # Required for actions/checkout
+  id-token: write
+  contents: read
 
+# Prevent overlapping production deployments
 concurrency:
   group: production-deployment
   cancel-in-progress: false
 
 jobs:
-  # ============================================================================
-  # 1. CI VALIDATION GATE: Required CI must succeed before deployment begins
-  # ============================================================================
+
+  # ==========================================================
+  # PHASE 1: CONTINUOUS INTEGRATION
+  # ==========================================================
+
   validate-and-test:
     name: Execute Full Monorepo CI
-    # Run CI for all push events or when action is 'deploy'
-    if: github.event_name == 'push' || (github.event_name == 'workflow_dispatch' && (github.event.inputs.action == 'deploy' || github.event.inputs.action == ''))
+
+    if: >-
+      github.event_name == 'push' ||
+      (
+        github.event_name == 'workflow_dispatch' &&
+        (
+          github.event.inputs.action == 'deploy' ||
+          github.event.inputs.action == ''
+        )
+      )
+
     uses: ./.github/workflows/ci.yml
+
     with:
       target_commit: ${{ github.event.inputs.target_commit || github.sha }}
 
-  # ============================================================================
-  # 2. PRODUCTION DEPLOYMENT: Only runs after CI succeeds for exact target commit
-  # ============================================================================
+  # ==========================================================
+  # PHASE 2: CONTINUOUS DEPLOYMENT
+  # ==========================================================
+
   deploy-production:
     name: Deploy to AWS EC2 (Mumbai ap-south-1)
-    needs: [validate-and-test]
-    # Deployment proceeds ONLY if CI passed, OR if manual action is rollback/health-check
+
+    needs:
+      - validate-and-test
+
+    # Normal deployment requires successful CI.
+    # Manual rollback and health checks can bypass CI.
     if: |
       always() &&
       (
         needs.validate-and-test.result == 'success' ||
-        (github.event_name == 'workflow_dispatch' && github.event.inputs.action != 'deploy' && github.event.inputs.action != '')
+        (
+          github.event_name == 'workflow_dispatch' &&
+          (
+            github.event.inputs.action == 'rollback' ||
+            github.event.inputs.action == 'health-check'
+          )
+        )
       )
+
     runs-on: ubuntu-latest
     environment: production
     timeout-minutes: 20
 
     steps:
-      - name: Validate Target Commit Input (Prevent Command Injection)
+
+      # ======================================================
+      # STEP 1: VALIDATE TARGET COMMIT
+      # ======================================================
+
+      - name: Validate Target Commit Input
         id: validate-target
+
+        env:
+          RAW_COMMIT: ${{ github.event.inputs.target_commit || '' }}
+
+        shell: bash
+
         run: |
-          RAW_COMMIT="${{ github.event.inputs.target_commit }}"
+          set -euo pipefail
+
           if [ -n "$RAW_COMMIT" ]; then
-            # Validate commit SHA contains only 7 to 40 hexadecimal characters
+
             if [[ ! "$RAW_COMMIT" =~ ^[0-9a-fA-F]{7,40}$ ]]; then
-              echo "::error::Invalid target_commit '$RAW_COMMIT'. Must be a 7-40 character hexadecimal Git commit SHA."
+              echo "::error::Invalid target_commit."
+              echo "Expected a Git commit SHA containing 7-40 hexadecimal characters."
               exit 1
             fi
-            echo "target_commit=$RAW_COMMIT" >> $GITHUB_OUTPUT
-            echo "Verified target commit SHA: $RAW_COMMIT"
+
+            echo "target_commit=$RAW_COMMIT" >> "$GITHUB_OUTPUT"
+
+            echo "Requested commit: $RAW_COMMIT"
+
           else
-            echo "target_commit=${{ github.sha }}" >> $GITHUB_OUTPUT
-            echo "Using current commit SHA: ${{ github.sha }}"
+
+            echo "target_commit=$GITHUB_SHA" >> "$GITHUB_OUTPUT"
+
+            echo "Using triggering commit: $GITHUB_SHA"
+
           fi
+
+      # ======================================================
+      # STEP 2: CHECKOUT SOURCE CODE
+      # ======================================================
 
       - name: Checkout Code Repository (Target Commit)
         uses: actions/checkout@v4
+
         with:
           ref: ${{ steps.validate-target.outputs.target_commit }}
 
+      - name: Resolve Exact Deployment Commit
+        id: resolve-commit
+
+        shell: bash
+
+        run: |
+          set -euo pipefail
+
+          DEPLOY_SHA=$(git rev-parse HEAD)
+
+          if [[ ! "$DEPLOY_SHA" =~ ^[0-9a-f]{40}$ ]]; then
+            echo "::error::Unable to resolve deployment commit."
+            exit 1
+          fi
+
+          echo "target_commit=$DEPLOY_SHA" >> "$GITHUB_OUTPUT"
+
+          echo "Exact deployment commit: $DEPLOY_SHA"
+
+      # ======================================================
+      # STEP 3: INSPECT GITHUB OIDC CLAIMS
+      # DIAGNOSTIC ONLY - NO TOKEN EXPOSURE
+      # ======================================================
+
+      - name: Inspect GitHub OIDC Identity
+        uses: actions/github-script@v7
+
+        with:
+          script: |
+            const jwt = await core.getIDToken('sts.amazonaws.com');
+
+            const encodedPayload = jwt.split('.')[1];
+
+            if (!encodedPayload) {
+              throw new Error('GitHub OIDC token has no payload');
+            }
+
+            const claims = JSON.parse(
+              Buffer.from(
+                encodedPayload,
+                'base64url'
+              ).toString('utf8')
+            );
+
+            core.info('========================================');
+            core.info('BorrowBuy GitHub OIDC Diagnostics');
+            core.info('========================================');
+
+            core.info(`OIDC Issuer: ${claims.iss}`);
+            core.info(`OIDC Audience: ${claims.aud}`);
+            core.info(`OIDC Subject: ${claims.sub}`);
+
+            core.info('========================================');
+            core.info('Only non-secret identity claims displayed.');
+            core.info('The complete JWT is NOT printed.');
+            core.info('========================================');
+
+      # ======================================================
+      # STEP 4: AUTHENTICATE WITH AWS USING OIDC
+      # ======================================================
+
       - name: Configure AWS Credentials using OpenID Connect (OIDC)
         uses: aws-actions/configure-aws-credentials@v4
+
         with:
           role-to-assume: ${{ secrets.AWS_GITHUB_ACTIONS_ROLE_ARN }}
           aws-region: ap-south-1
           audience: sts.amazonaws.com
 
+      # ======================================================
+      # STEP 5: VERIFY AWS IDENTITY
+      # ======================================================
+
       - name: Verify AWS Identity & Caller Credentials
         run: |
+          set -euo pipefail
+
+          echo "Verifying AWS identity..."
+
           aws sts get-caller-identity
+
+          echo "AWS OIDC authentication successful."
+
+      # ======================================================
+      # STEP 6: CHECK EC2 INSTANCE STATE
+      # ======================================================
 
       - name: Cost Safety Check (Verify EC2 Instance State)
         id: check-instance
+
         env:
           INSTANCE_ID: ${{ secrets.EC2_INSTANCE_ID || 'i-03347c2b6584c73cb' }}
+
+        shell: bash
+
         run: |
-          echo "Inspecting state of EC2 instance: $INSTANCE_ID..."
+          set -euo pipefail
+
+          echo "Checking BorrowBuy EC2 instance..."
+          echo "Instance ID: $INSTANCE_ID"
+
           INSTANCE_STATE=$(aws ec2 describe-instances \
             --instance-ids "$INSTANCE_ID" \
             --region ap-south-1 \
             --query "Reservations[0].Instances[0].State.Name" \
             --output text)
-          
-          echo "Current EC2 Instance State: $INSTANCE_STATE"
-          echo "instance_state=$INSTANCE_STATE" >> $GITHUB_OUTPUT
+
+          echo "EC2 state: $INSTANCE_STATE"
+
+          echo "instance_state=$INSTANCE_STATE" >> "$GITHUB_OUTPUT"
 
           if [ "$INSTANCE_STATE" != "running" ]; then
-            echo "=========================================================================="
-            echo "COST SAFETY NOTICE: EC2 instance is currently '$INSTANCE_STATE'."
-            echo "To protect your AWS budget (\$5/month ceiling), the pipeline will NOT"
-            echo "automatically start stopped instances."
-            echo "Deployment is SKIPPED. When you start the EC2 instance for evaluation,"
-            echo "trigger deployment manually via Workflow Dispatch or run scripts/deploy-ec2.sh."
-            echo "=========================================================================="
-            echo "### ⏸️ Deployment Skipped (EC2 Instance Stopped)" >> $GITHUB_STEP_SUMMARY
-            echo "- **EC2 Instance:** \`$INSTANCE_ID\` is currently in state \`$INSTANCE_STATE\`." >> $GITHUB_STEP_SUMMARY
-            echo "- **Reason:** Cost Safety Protection (\$5.00/month budget ceiling). Stopped instances are not started automatically." >> $GITHUB_STEP_SUMMARY
-            echo "- **Action Required:** Start the instance via AWS CLI/Console and trigger deployment when ready to demonstrate." >> $GITHUB_STEP_SUMMARY
-            exit 0
+
+            echo "========================================"
+            echo "BORROWBUY COST SAFETY"
+            echo "========================================"
+
+            echo "EC2 is currently: $INSTANCE_STATE"
+            echo "Automatic deployment will be skipped."
+            echo "EC2 will NOT be started automatically."
+            echo "AWS monthly budget: 5 USD."
+
+            echo "========================================"
+
+            {
+              echo "## BorrowBuy Deployment Skipped"
+              echo ""
+              echo "- EC2 Instance: $INSTANCE_ID"
+              echo "- Current State: $INSTANCE_STATE"
+              echo "- Reason: EC2 is not running."
+              echo "- Action: Start EC2 and manually rerun the deployment."
+            } >> "$GITHUB_STEP_SUMMARY"
+
+          else
+
+            echo "EC2 is running."
+            echo "Deployment is permitted to continue."
+
           fi
 
+      # ======================================================
+      # STEP 7: EXECUTE DEPLOYMENT THROUGH AWS SSM
+      # ======================================================
+
       - name: Execute Deployment via AWS Systems Manager (SSM)
+
         if: steps.check-instance.outputs.instance_state == 'running'
+
         env:
           INSTANCE_ID: ${{ secrets.EC2_INSTANCE_ID || 'i-03347c2b6584c73cb' }}
           ACTION: ${{ github.event.inputs.action || 'deploy' }}
-          TARGET_COMMIT: ${{ steps.validate-target.outputs.target_commit }}
+          TARGET_COMMIT: ${{ steps.resolve-commit.outputs.target_commit }}
+
+        shell: bash
+
         run: |
-          echo "Preparing SSM deployment execution..."
-          echo "Target EC2 Instance: $INSTANCE_ID"
+          set -euo pipefail
+
+          echo "========================================"
+          echo "BorrowBuy AWS Deployment"
+          echo "========================================"
+
+          echo "Instance: $INSTANCE_ID"
           echo "Action: $ACTION"
-          echo "Target Commit SHA: $TARGET_COMMIT"
+          echo "Commit: $TARGET_COMMIT"
 
           if [ "$ACTION" = "rollback" ]; then
+
             DEPLOY_CMD="bash /home/ec2-user/app/scripts/rollback-ec2.sh"
-            COMMENT="BorrowBuy Emergency Rollback triggered by ${{ github.actor }}"
+
+            COMMENT="BorrowBuy Emergency Rollback"
+
           elif [ "$ACTION" = "health-check" ]; then
+
             DEPLOY_CMD="bash /home/ec2-user/app/scripts/health-check.sh"
-            COMMENT="BorrowBuy Synthetic Health Verification probe"
+
+            COMMENT="BorrowBuy Health Verification"
+
           else
+
             DEPLOY_CMD="bash /home/ec2-user/app/scripts/deploy-ec2.sh $TARGET_COMMIT"
-            COMMENT="BorrowBuy Automated Deployment for commit $TARGET_COMMIT"
+
+            COMMENT="BorrowBuy Automated Deployment"
+
           fi
 
-          echo "Dispatching SSM command: $DEPLOY_CMD"
+          echo "Executing: $DEPLOY_CMD"
+
+          # Create a structured JSON file to avoid shell
+          # quoting issues with AWS CLI parameters.
+          PARAMS_FILE=$(mktemp)
+
+          trap 'rm -f "$PARAMS_FILE"' EXIT
+
+          jq -n \
+            --arg deploy_command "$DEPLOY_CMD" \
+            '{
+              commands: [
+                "set -e",
+                "export HOME=/home/ec2-user",
+                "export USER=ec2-user",
+                $deploy_command
+              ]
+            }' > "$PARAMS_FILE"
+
           COMMAND_ID=$(aws ssm send-command \
             --instance-ids "$INSTANCE_ID" \
             --document-name "AWS-RunShellScript" \
-            --parameters "commands=[\"export HOME=/home/ec2-user\", \"export USER=ec2-user\", \"$DEPLOY_CMD\"]" \
+            --parameters "file://$PARAMS_FILE" \
             --comment "$COMMENT" \
             --region ap-south-1 \
             --query "Command.CommandId" \
             --output text)
 
-          echo "Dispatched SSM Command ID: $COMMAND_ID"
+          echo "SSM Command ID: $COMMAND_ID"
 
-          echo "Waiting for deployment execution to complete on EC2..."
-          aws ssm wait command-executed \
+          echo "Waiting for SSM execution..."
+
+          if ! aws ssm wait command-executed \
             --command-id "$COMMAND_ID" \
             --instance-id "$INSTANCE_ID" \
-            --region ap-south-1
+            --region ap-south-1; then
 
-          echo "Retrieving execution logs from EC2..."
+            echo "::warning::SSM waiter did not confirm successful completion."
+            echo "Checking final command status..."
+
+          fi
+
+          echo "Retrieving deployment logs..."
+
           aws ssm get-command-invocation \
             --command-id "$COMMAND_ID" \
             --instance-id "$INSTANCE_ID" \
             --region ap-south-1 \
             --query "StandardOutputContent" \
-            --output text
+            --output text || true
 
           STATUS=$(aws ssm get-command-invocation \
             --command-id "$COMMAND_ID" \
@@ -192,30 +393,56 @@ jobs:
             --query "ResponseCode" \
             --output text)
 
-          echo "SSM Execution Result - Status: $STATUS | ResponseCode: $RESPONSE_CODE"
+          echo "========================================"
+          echo "SSM Deployment Result"
+          echo "========================================"
+
+          echo "Status: $STATUS"
+          echo "Response Code: $RESPONSE_CODE"
 
           if [ "$STATUS" != "Success" ] || [ "$RESPONSE_CODE" != "0" ]; then
-            echo "::error::Deployment failed on EC2 with Status '$STATUS' and Exit Code '$RESPONSE_CODE'!"
+
+            echo "::error::BorrowBuy deployment failed!"
+
             aws ssm get-command-invocation \
               --command-id "$COMMAND_ID" \
               --instance-id "$INSTANCE_ID" \
               --region ap-south-1 \
               --query "StandardErrorContent" \
-              --output text
+              --output text || true
+
             exit 1
+
           fi
 
-          echo "Deployment command completed successfully with exit code 0."
+          echo "BorrowBuy deployment completed successfully."
+
+      # ======================================================
+      # STEP 8: GENERATE DEPLOYMENT SUMMARY
+      # ======================================================
 
       - name: Generate Deployment Step Summary
+
         if: steps.check-instance.outputs.instance_state == 'running'
+
+        env:
+          TARGET_COMMIT: ${{ steps.resolve-commit.outputs.target_commit }}
+          ACTION: ${{ github.event.inputs.action || 'deploy' }}
+
+        shell: bash
+
         run: |
-          echo "### 🚀 BorrowBuy Deployment Successful!" >> $GITHUB_STEP_SUMMARY
-          echo "- **Target Region:** \`ap-south-1\` (Mumbai)" >> $GITHUB_STEP_SUMMARY
-          echo "- **EC2 Instance:** \`i-03347c2b6584c73cb\`" >> $GITHUB_STEP_SUMMARY
-          echo "- **Commit SHA:** \`${{ steps.validate-target.outputs.target_commit }}\`" >> $GITHUB_STEP_SUMMARY
-          echo "- **Triggered By:** \`${{ github.actor }}\`" >> $GITHUB_STEP_SUMMARY
-          echo "- **Backend Status:** \`Healthy (Express on port 5000)\`" >> $GITHUB_STEP_SUMMARY
-          echo "- **Frontend Status:** \`Live (Nginx Reverse Proxy on port 80)\`" >> $GITHUB_STEP_SUMMARY
-          echo "- **Database Status:** \`Connected (PostgreSQL on EBS)\`" >> $GITHUB_STEP_SUMMARY
-          echo "- **Catalog Items:** \`116 Equipment Products\`" >> $GITHUB_STEP_SUMMARY
+          {
+            echo "## BorrowBuy AWS Deployment Successful"
+            echo ""
+            echo "- Region: ap-south-1 (Mumbai)"
+            echo "- EC2 Instance: i-03347c2b6584c73cb"
+            echo "- Action: $ACTION"
+            echo "- Commit SHA: $TARGET_COMMIT"
+            echo "- Authentication: GitHub OIDC"
+            echo "- Deployment Method: AWS Systems Manager"
+            echo "- Deployment Command: Completed successfully"
+            echo ""
+            echo "### Deployment verification"
+            echo "SSM command finished with status Success and exit code 0."
+          } >> "$GITHUB_STEP_SUMMARY"
