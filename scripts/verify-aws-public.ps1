@@ -1,4 +1,4 @@
-﻿# ==============================================================================
+# ==============================================================================
 # BorrowBuy — Public AWS Cloud Infrastructure & Service Verification Script
 # ==============================================================================
 # Verifies all 9 AWS core services plus public CloudFront distribution and EC2 ingress.

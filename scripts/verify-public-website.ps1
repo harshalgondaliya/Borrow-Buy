@@ -1,4 +1,4 @@
-﻿# ==============================================================================
+# ==============================================================================
 # BorrowBuy — Public Website End-to-End Functional Verification Script
 # ==============================================================================
 # Tests the live public website URL (HTTPS CloudFront or HTTP origin):
