@@ -42,6 +42,7 @@ test-results/
 
 # Scratch scripts & temporary audit files
 scratch/
+.prev_commit
 
 # Terraform
 *.tfstate
