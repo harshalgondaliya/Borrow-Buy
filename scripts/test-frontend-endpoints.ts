@@ -5,10 +5,10 @@ async function testAllViews() {
   console.log('🧪 Testing Frontend Views API Endpoints for All Personas...\n');
 
   // 1. OWNER PORTAL
-  console.log('👑 1. Owner Portal (owner@borrowbuy.in):');
+  console.log('👑 1. Owner Portal (rajesh.owner@borrowbuy.in):');
   const ownerLogin = await request(app)
     .post('/api/auth/login')
-    .send({ email: 'owner@borrowbuy.in', password: 'Password123!' });
+    .send({ email: 'rajesh.owner@borrowbuy.in', password: 'Password123!' });
   const ownerToken = ownerLogin.body?.data?.token;
 
   if (!ownerToken) {
@@ -31,10 +31,10 @@ async function testAllViews() {
   console.log(`   - Notification Bell: ${ownerNotifs.body?.notifications?.length || 0} notifications, unread: ${ownerNotifs.body?.unreadCount} (Status: ${ownerNotifs.status})`);
 
   // 2. CUSTOMER PORTAL
-  console.log('\n🎒 2. Customer Portal (customer@borrowbuy.in):');
+  console.log('\n🎒 2. Customer Portal (priya.customer@borrowbuy.in):');
   const custLogin = await request(app)
     .post('/api/auth/login')
-    .send({ email: 'customer@borrowbuy.in', password: 'Password123!' });
+    .send({ email: 'priya.customer@borrowbuy.in', password: 'Password123!' });
   const custToken = custLogin.body?.data?.token;
 
   if (!custToken) {

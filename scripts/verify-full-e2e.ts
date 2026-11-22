@@ -42,12 +42,11 @@ async function runVerification() {
   console.log('📋 SECTION 1: AUTHENTICATION AUDIT (Customer, Owner, Admin)');
 
   const testAccounts = [
-    { email: 'customer@borrowbuy.in', expectedRole: 'CUSTOMER', label: 'Canonical Customer (.in)' },
-    { email: 'customer@borrowbuy.com', expectedRole: 'CUSTOMER', label: 'Canonical Customer (.com)' },
-    { email: 'owner@borrowbuy.in', expectedRole: 'OWNER', label: 'Canonical Owner (.in)' },
-    { email: 'owner@borrowbuy.com', expectedRole: 'OWNER', label: 'Canonical Owner (.com)' },
-    { email: 'admin@borrowbuy.in', expectedRole: 'ADMIN', label: 'System Administrator (.in)' },
-    { email: 'admin@borrowbuy.com', expectedRole: 'ADMIN', label: 'System Administrator (.com)' },
+    { email: 'priya.customer@borrowbuy.in', expectedRole: 'CUSTOMER', label: 'Canonical Customer (Priya Shah)' },
+    { email: 'rohan.gupta@borrowbuy.in', expectedRole: 'CUSTOMER', label: 'Registered Customer (Rohan Gupta)' },
+    { email: 'rajesh.owner@borrowbuy.in', expectedRole: 'OWNER', label: 'Canonical Owner (Rajesh Patel)' },
+    { email: 'priya.owner@borrowbuy.in', expectedRole: 'OWNER', label: 'Verified Owner (Priya Shah)' },
+    { email: 'admin@borrowbuy.in', expectedRole: 'ADMIN', label: 'System Administrator' },
   ];
 
   let customerToken = '';
@@ -70,8 +69,8 @@ async function runVerification() {
 
     console.log(`  ✅ [PASS] ${acc.label} (${acc.email}): Logged in as ${res.data.user.role} (User ID: ${res.data.user.id})`);
 
-    if (acc.email === 'customer@borrowbuy.in') customerToken = res.data.token;
-    if (acc.email === 'owner@borrowbuy.in') ownerToken = res.data.token;
+    if (acc.email === 'priya.customer@borrowbuy.in') customerToken = res.data.token;
+    if (acc.email === 'rajesh.owner@borrowbuy.in') ownerToken = res.data.token;
     if (acc.email === 'admin@borrowbuy.in') adminToken = res.data.token;
   }
 

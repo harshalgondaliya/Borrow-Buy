@@ -3,11 +3,15 @@ import { PrismaClient } from '@prisma/client';
 const prisma = new PrismaClient();
 
 async function main() {
-  const owner = await prisma.user.findUnique({ where: { email: 'owner@borrowbuy.in' } });
+  const owner = await prisma.user.findFirst({
+    where: { OR: [{ email: 'rajesh.owner@borrowbuy.in' }, { email: 'owner@borrowbuy.in' }] }
+  });
   const ownerProducts = await prisma.product.count({ where: { ownerId: owner?.id } });
   const ownerBookings = await prisma.booking.count({ where: { product: { ownerId: owner?.id } } });
 
-  const customer = await prisma.user.findUnique({ where: { email: 'customer@borrowbuy.in' } });
+  const customer = await prisma.user.findFirst({
+    where: { OR: [{ email: 'priya.customer@borrowbuy.in' }, { email: 'customer@borrowbuy.in' }] }
+  });
   const customerBookings = await prisma.booking.count({ where: { customerId: customer?.id } });
 
   const ownerNotifs = await prisma.notification.count({ where: { userId: owner?.id } });
