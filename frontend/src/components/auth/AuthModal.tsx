@@ -48,19 +48,37 @@ export const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose, initialTa
     setSuccessMsg(null);
   };
 
-  const handleDemoFill = (demoRole: 'CUSTOMER' | 'OWNER' | 'ADMIN') => {
-    if (demoRole === 'CUSTOMER') {
-      setEmail('customer@borrowbuy.com');
-      setPassword('Password123!');
-    } else if (demoRole === 'OWNER') {
-      setEmail('owner@borrowbuy.com');
-      setPassword('Password123!');
-    } else if (demoRole === 'ADMIN') {
-      setEmail('admin@borrowbuy.com');
-      setPassword('Password123!');
+  const extractErrorMessage = (err: any): string => {
+    if (err?.errors && Array.isArray(err.errors) && err.errors.length > 0) {
+      return err.errors.map((e: any) => e.message).join('. ');
     }
+    return err?.message || 'Operation failed. Please check your credentials and try again.';
+  };
+
+  const handleDemoFill = async (demoRole: 'CUSTOMER' | 'OWNER' | 'ADMIN', autoLogin: boolean = false) => {
+    const creds = {
+      CUSTOMER: { email: 'customer@borrowbuy.in', pass: 'Password123!' },
+      OWNER: { email: 'owner@borrowbuy.in', pass: 'Password123!' },
+      ADMIN: { email: 'admin@borrowbuy.in', pass: 'Password123!' },
+    }[demoRole];
+
+    setEmail(creds.email);
+    setPassword(creds.pass);
     setTab('login');
     resetForm();
+
+    if (autoLogin) {
+      setLoading(true);
+      try {
+        await login(creds.email, creds.pass);
+        success(`Welcome back as ${demoRole.toLowerCase()}!`, 'Signed In Successfully');
+        onClose();
+      } catch (err: any) {
+        setError(extractErrorMessage(err));
+      } finally {
+        setLoading(false);
+      }
+    }
   };
 
   const handleLogin = async (e: React.FormEvent) => {
@@ -68,11 +86,11 @@ export const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose, initialTa
     setLoading(true);
     setError(null);
     try {
-      await login(email, password);
+      await login(email.trim().toLowerCase(), password);
       success('Welcome back to BorrowBuy!', 'Signed In Successfully');
       onClose();
     } catch (err: any) {
-      setError(err.message || 'Login failed. Please check your email and password.');
+      setError(extractErrorMessage(err));
     } finally {
       setLoading(false);
     }
@@ -82,12 +100,36 @@ export const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose, initialTa
     e.preventDefault();
     setLoading(true);
     setError(null);
+
+    // Client-side quick check
+    if (password.length < 8) {
+      setError('Password must be at least 8 characters long.');
+      setLoading(false);
+      return;
+    }
+    if (!/[A-Z]/.test(password)) {
+      setError('Password must contain at least one uppercase letter (A-Z).');
+      setLoading(false);
+      return;
+    }
+    if (!/[0-9]/.test(password)) {
+      setError('Password must contain at least one number (0-9).');
+      setLoading(false);
+      return;
+    }
+
     try {
-      await register({ email, password, fullName, phone, role });
+      await register({
+        email: email.trim().toLowerCase(),
+        password,
+        fullName: fullName.trim(),
+        phone: phone.trim() ? phone.trim() : undefined,
+        role,
+      });
       success('Your BorrowBuy account is ready. Welcome!', 'Registration Complete');
       onClose();
     } catch (err: any) {
-      setError(err.message || 'Registration failed. Please check your details.');
+      setError(extractErrorMessage(err));
     } finally {
       setLoading(false);
     }
@@ -181,28 +223,32 @@ export const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose, initialTa
                 <div className="flex items-center justify-between mb-1.5 text-[11px] font-semibold text-[#66707A]">
                   <span className="flex items-center gap-1">
                     <Zap className="w-3.5 h-3.5 text-[#315CF5]" />
-                    <span>Quick Demo Sign In:</span>
+                    <span>Instant Demo Sign In:</span>
                   </span>
+                  <span className="text-[10px] text-[#315CF5] font-normal">Click role to auto-sign in</span>
                 </div>
                 <div className="grid grid-cols-3 gap-1.5">
                   <button
                     type="button"
-                    onClick={() => handleDemoFill('CUSTOMER')}
-                    className="py-1 px-2 text-[11px] font-medium rounded-md bg-white border border-[#E5E8EA] hover:border-[#315CF5] hover:text-[#315CF5] transition-colors text-center cursor-pointer"
+                    onClick={() => handleDemoFill('CUSTOMER', true)}
+                    className="py-1.5 px-2 text-[11px] font-semibold rounded-lg bg-white border border-[#E5E8EA] hover:border-[#315CF5] hover:bg-[#EFF3FE] hover:text-[#315CF5] transition-all text-center cursor-pointer shadow-2xs"
+                    title="Sign in instantly as customer@borrowbuy.in"
                   >
                     Customer
                   </button>
                   <button
                     type="button"
-                    onClick={() => handleDemoFill('OWNER')}
-                    className="py-1 px-2 text-[11px] font-medium rounded-md bg-white border border-[#E5E8EA] hover:border-[#315CF5] hover:text-[#315CF5] transition-colors text-center cursor-pointer"
+                    onClick={() => handleDemoFill('OWNER', true)}
+                    className="py-1.5 px-2 text-[11px] font-semibold rounded-lg bg-white border border-[#E5E8EA] hover:border-[#315CF5] hover:bg-[#EFF3FE] hover:text-[#315CF5] transition-all text-center cursor-pointer shadow-2xs"
+                    title="Sign in instantly as owner@borrowbuy.in"
                   >
                     Owner
                   </button>
                   <button
                     type="button"
-                    onClick={() => handleDemoFill('ADMIN')}
-                    className="py-1 px-2 text-[11px] font-medium rounded-md bg-white border border-[#E5E8EA] hover:border-[#315CF5] hover:text-[#315CF5] transition-colors text-center cursor-pointer"
+                    onClick={() => handleDemoFill('ADMIN', true)}
+                    className="py-1.5 px-2 text-[11px] font-semibold rounded-lg bg-white border border-[#E5E8EA] hover:border-[#315CF5] hover:bg-[#EFF3FE] hover:text-[#315CF5] transition-all text-center cursor-pointer shadow-2xs"
+                    title="Sign in instantly as admin@borrowbuy.in"
                   >
                     Admin
                   </button>
@@ -416,6 +462,24 @@ export const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose, initialTa
                       {showPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
                     </button>
                   </div>
+
+                  {/* Live Password Rules Checklist */}
+                  {password.length > 0 && (
+                    <div className="mt-2 p-2 bg-[#FAFAF8] rounded-lg border border-[#E5E8EA] space-y-1 text-[11px]">
+                      <div className={`flex items-center gap-1.5 ${password.length >= 8 ? 'text-[#13795B]' : 'text-[#66707A]'}`}>
+                        <CheckCircle2 className={`w-3.5 h-3.5 ${password.length >= 8 ? 'text-[#13795B]' : 'text-[#D0D5DD]'}`} />
+                        <span>At least 8 characters</span>
+                      </div>
+                      <div className={`flex items-center gap-1.5 ${/[A-Z]/.test(password) ? 'text-[#13795B]' : 'text-[#66707A]'}`}>
+                        <CheckCircle2 className={`w-3.5 h-3.5 ${/[A-Z]/.test(password) ? 'text-[#13795B]' : 'text-[#D0D5DD]'}`} />
+                        <span>At least one uppercase letter (A-Z)</span>
+                      </div>
+                      <div className={`flex items-center gap-1.5 ${/[0-9]/.test(password) ? 'text-[#13795B]' : 'text-[#66707A]'}`}>
+                        <CheckCircle2 className={`w-3.5 h-3.5 ${/[0-9]/.test(password) ? 'text-[#13795B]' : 'text-[#D0D5DD]'}`} />
+                        <span>At least one number (0-9)</span>
+                      </div>
+                    </div>
+                  )}
                 </div>
 
                 <button

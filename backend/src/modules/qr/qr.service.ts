@@ -1,7 +1,7 @@
 import QRCode from 'qrcode';
 import { prisma } from '../../shared/prisma.js';
 import { notificationService } from '../../integrations/notifications/index.js';
-import { BookingStatus, UserRole } from '@prisma/client';
+import { BookingStatus, UserRole, DepositStatus } from '@prisma/client';
 
 export class QRService {
   /**
@@ -167,6 +167,21 @@ export class QRService {
         customer: { select: { fullName: true } },
       },
     });
+
+    // Automatically settle and refund security deposit escrow upon verified return
+    if (booking.depositRecord) {
+      const origAmt = Number(booking.depositRecord.originalAmount);
+      const refundAmt = Math.max(0, origAmt - lateFeeCalculated);
+      await prisma.securityDeposit.update({
+        where: { id: booking.depositRecord.id },
+        data: {
+          deductionAmount: lateFeeCalculated,
+          refundedAmount: refundAmt,
+          status: lateFeeCalculated > 0 ? DepositStatus.DEDUCTED : DepositStatus.FULLY_REFUNDED,
+          releasedAt: new Date(),
+        },
+      });
+    }
 
     // Notify customer that return is verified
     await notificationService.sendNotification({

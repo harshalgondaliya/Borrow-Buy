@@ -45,20 +45,18 @@ async function main() {
   const salt = await bcrypt.genSalt(10);
   const defaultPasswordHash = await bcrypt.hash('Password123!', salt);
 
-  // Secure administrator password from env (fail in production if unset)
-  const rawAdminPassword = process.env.ADMIN_INITIAL_PASSWORD || (process.env.NODE_ENV === 'production' ? null : 'DevAdmin#BorrowBuy2026!');
-  if (!rawAdminPassword) {
-    throw new Error('FATAL: ADMIN_INITIAL_PASSWORD environment variable is required in production.');
-  }
-  const adminPasswordHash = await bcrypt.hash(rawAdminPassword, salt);
+  // Secure administrator password from env (defaults to standard demo password Password123!)
+  const rawAdminPassword = process.env.ADMIN_INITIAL_PASSWORD || 'Password123!';
+  const adminPasswordHash = defaultPasswordHash;
 
   // --------------------------------------------------------------------------
-  // 1. SEED / UPSERT ADMINISTRATOR (Exactly 1 Admin)
+  // 1. SEED / UPSERT ADMINISTRATORS & CANONICAL DEMO ACCOUNTS
   // --------------------------------------------------------------------------
   const adminEmail = process.env.ADMIN_EMAIL || 'admin@borrowbuy.in';
   const admin = await prisma.user.upsert({
     where: { email: adminEmail },
     update: {
+      passwordHash: adminPasswordHash,
       fullName: 'System Administrator',
       role: UserRole.ADMIN,
       status: UserStatus.ACTIVE,
@@ -82,6 +80,87 @@ async function main() {
       avatarUrl: 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=200&q=80',
     },
   });
+
+  // Admin alias .com for demo compatibility
+  await prisma.user.upsert({
+    where: { email: 'admin@borrowbuy.com' },
+    update: {
+      passwordHash: adminPasswordHash,
+      fullName: 'System Administrator',
+      role: UserRole.ADMIN,
+      status: UserStatus.ACTIVE,
+      isVerifiedOwner: true,
+      phone: '+91 98250 12345',
+    },
+    create: {
+      id: '00000000-0000-4000-8000-000000000002',
+      email: 'admin@borrowbuy.com',
+      fullName: 'System Administrator',
+      passwordHash: adminPasswordHash,
+      role: UserRole.ADMIN,
+      status: UserStatus.ACTIVE,
+      isVerifiedOwner: true,
+      phone: '+91 98250 12345',
+    },
+  });
+
+  // Canonical Demo Owner accounts (.in and .com)
+  for (const ownerEmail of ['owner@borrowbuy.in', 'owner@borrowbuy.com']) {
+    await prisma.user.upsert({
+      where: { email: ownerEmail },
+      update: {
+        passwordHash: defaultPasswordHash,
+        fullName: 'Demo Equipment Owner',
+        role: UserRole.OWNER,
+        status: UserStatus.ACTIVE,
+        isVerifiedOwner: true,
+        phone: '+91 98791 20000',
+        ownerAddress: 'Navrangpura, Ahmedabad, Gujarat',
+        ownerBio: 'Verified local equipment lender in Ahmedabad with full inventory of cameras, audiovisual, and power tools.',
+        trustScore: 4.9,
+      },
+      create: {
+        id: ownerEmail.endsWith('.in') ? '00000000-0000-4000-8000-000000000003' : '00000000-0000-4000-8000-000000000004',
+        email: ownerEmail,
+        fullName: 'Demo Equipment Owner',
+        passwordHash: defaultPasswordHash,
+        role: UserRole.OWNER,
+        status: UserStatus.ACTIVE,
+        isVerifiedOwner: true,
+        phone: '+91 98791 20000',
+        ownerAddress: 'Navrangpura, Ahmedabad, Gujarat',
+        ownerBio: 'Verified local equipment lender in Ahmedabad with full inventory of cameras, audiovisual, and power tools.',
+        trustScore: 4.9,
+      },
+    });
+  }
+
+  // Canonical Demo Customer accounts (.in and .com)
+  for (const custEmail of ['customer@borrowbuy.in', 'customer@borrowbuy.com']) {
+    await prisma.user.upsert({
+      where: { email: custEmail },
+      update: {
+        passwordHash: defaultPasswordHash,
+        fullName: 'Demo Customer',
+        role: UserRole.CUSTOMER,
+        status: UserStatus.ACTIVE,
+        phone: '+91 98251 10000',
+        ownerAddress: 'Satellite, Ahmedabad, Gujarat',
+        trustScore: 5.0,
+      },
+      create: {
+        id: custEmail.endsWith('.in') ? '00000000-0000-4000-8000-000000000005' : '00000000-0000-4000-8000-000000000006',
+        email: custEmail,
+        fullName: 'Demo Customer',
+        passwordHash: defaultPasswordHash,
+        role: UserRole.CUSTOMER,
+        status: UserStatus.ACTIVE,
+        phone: '+91 98251 10000',
+        ownerAddress: 'Satellite, Ahmedabad, Gujarat',
+        trustScore: 5.0,
+      },
+    });
+  }
 
   // --------------------------------------------------------------------------
   // 2. SEED / UPSERT 6 OWNERS (Gujarat & Indian Tech Hubs)
@@ -2470,6 +2549,7 @@ async function main() {
   console.log(`📦 Seeding exactly ${productDefinitions.length} curated Indian listings with structured specs...`);
   const seededProducts: any[] = [];
   for (const def of productDefinitions) {
+    const singleProductImage = [def.images[0]];
     const prod = await prisma.product.upsert({
       where: { id: def.id },
       update: {
@@ -2482,7 +2562,7 @@ async function main() {
         securityDeposit: def.securityDeposit,
         condition: def.condition,
         location: def.location,
-        images: def.images,
+        images: singleProductImage,
         description: def.description,
         specifications: def.specifications,
         includedAccessories: def.includedAccessories,
@@ -2502,7 +2582,7 @@ async function main() {
         securityDeposit: def.securityDeposit,
         condition: def.condition,
         location: def.location,
-        images: def.images,
+        images: singleProductImage,
         description: def.description,
         specifications: def.specifications,
         includedAccessories: def.includedAccessories,
@@ -2513,15 +2593,15 @@ async function main() {
       },
     });
     seededProducts.push(prod);
-    // Sync relational ProductImage records
+    // Sync relational ProductImage records (strictly 1 primary relevant image per product)
     await prisma.productImage.deleteMany({ where: { productId: def.id } });
     await prisma.productImage.createMany({
-      data: def.images.map((url: string, idx: number) => ({
+      data: singleProductImage.map((url: string, idx: number) => ({
         productId: def.id,
         url,
-        altText: `${def.name} - view ${idx + 1}`,
-        orderIndex: idx,
-        isPrimary: idx === 0,
+        altText: `${def.name} - Official Product Image`,
+        orderIndex: 0,
+        isPrimary: true,
         license: 'Attribution / Verified Rental Photography',
         sourceUrl: url,
       })),

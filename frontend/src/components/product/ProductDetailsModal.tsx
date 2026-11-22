@@ -10,8 +10,6 @@ import {
   Calendar,
   CheckCircle2,
   UserCheck,
-  ChevronLeft,
-  ChevronRight,
 } from 'lucide-react';
 import { resolveImageUrl } from '../../utils/apiUrl.js';
 
@@ -26,14 +24,13 @@ export const ProductDetailsModal: React.FC<ProductDetailsModalProps> = ({
   onClose,
   onBookNow,
 }) => {
-  const [selectedImageIndex, setSelectedImageIndex] = useState(0);
   const [activeTab, setActiveTab] = useState<'details' | 'specs' | 'accessories' | 'rules' | 'reviews'>('details');
 
   if (!product) return null;
 
-  const images = product.images && product.images.length > 0
-    ? product.images
-    : ['https://images.unsplash.com/photo-1516035069371-29a1b244cc32?auto=format&fit=crop&w=1200&q=80'];
+  const primaryImage = product.images && product.images.length > 0
+    ? product.images[0]
+    : 'https://images.unsplash.com/photo-1516035069371-29a1b244cc32?auto=format&fit=crop&w=1200&q=80';
 
   const getImageUrl = (url: string) => resolveImageUrl(url);
 
@@ -74,73 +71,24 @@ export const ProductDetailsModal: React.FC<ProductDetailsModalProps> = ({
             <X className="w-5 h-5" />
           </button>
 
-          {/* Grid Layout: Left Gallery + Right Information */}
+          {/* Grid Layout: Left Single Product Image + Right Information */}
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-7">
-            {/* LEFT: Image Gallery */}
+            {/* LEFT: Single 100% Relevant Hero Image */}
             <div className="lg:col-span-7 space-y-3.5">
-              <div className="relative aspect-[4/3] rounded-xl overflow-hidden bg-[#F1F3F3] border border-[#E5E8EA] group">
+              <div className="relative aspect-[4/3] rounded-xl overflow-hidden bg-[#F1F3F3] border border-[#E5E8EA] group shadow-2xs">
                 <img
-                  src={getImageUrl(images[selectedImageIndex])}
-                  alt={`${product.name} - View ${selectedImageIndex + 1}`}
+                  src={getImageUrl(primaryImage)}
+                  alt={product.name}
                   className="w-full h-full object-cover"
                 />
-                <div className="absolute bottom-2.5 left-2.5 px-2.5 py-1 bg-white/95 backdrop-blur-sm rounded-md text-xs font-semibold text-[#17191C] border border-[#E5E8EA]">
-                  {product.category?.name || 'Equipment'}
+                <div className="absolute bottom-2.5 left-2.5 px-2.5 py-1 bg-white/95 backdrop-blur-sm rounded-md text-xs font-semibold text-[#17191C] border border-[#E5E8EA] shadow-2xs flex items-center gap-1.5">
+                  <span className="w-2 h-2 rounded-full bg-[#13795B]" />
+                  <span>{product.category?.name || 'Equipment'}</span>
                 </div>
-
-                {images.length > 1 && (
-                  <div className="absolute bottom-2.5 right-2.5 px-2 py-0.5 bg-[#17191C]/80 backdrop-blur-sm rounded text-[10px] font-medium text-white">
-                    {selectedImageIndex + 1} / {images.length}
-                  </div>
-                )}
-
-                {images.length > 1 && (
-                  <>
-                    <button
-                      type="button"
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        setSelectedImageIndex((prev) => (prev > 0 ? prev - 1 : images.length - 1));
-                      }}
-                      className="absolute left-2.5 top-1/2 -translate-y-1/2 w-7 h-7 rounded-full bg-white/90 hover:bg-white text-[#17191C] shadow-xs flex items-center justify-center transition-colors cursor-pointer"
-                      aria-label="Previous image"
-                    >
-                      <ChevronLeft className="w-4 h-4" />
-                    </button>
-                    <button
-                      type="button"
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        setSelectedImageIndex((prev) => (prev < images.length - 1 ? prev + 1 : 0));
-                      }}
-                      className="absolute right-2.5 top-1/2 -translate-y-1/2 w-7 h-7 rounded-full bg-white/90 hover:bg-white text-[#17191C] shadow-xs flex items-center justify-center transition-colors cursor-pointer"
-                      aria-label="Next image"
-                    >
-                      <ChevronRight className="w-4 h-4" />
-                    </button>
-                  </>
-                )}
+                <div className="absolute top-2.5 right-2.5 px-2.5 py-1 bg-[#17191C]/85 backdrop-blur-sm rounded-md text-xs font-medium text-white shadow-xs">
+                  {conditionLabels[product.condition] || 'Good Condition'}
+                </div>
               </div>
-
-              {/* Thumbnails row */}
-              {images.length > 1 && (
-                <div className="grid grid-cols-4 gap-2">
-                  {images.map((img, idx) => (
-                    <button
-                      key={idx}
-                      type="button"
-                      onClick={() => setSelectedImageIndex(idx)}
-                      className={`relative aspect-4/3 rounded-lg overflow-hidden border bg-[#F1F3F3] transition-colors cursor-pointer ${
-                        selectedImageIndex === idx
-                          ? 'border-[#315CF5] ring-2 ring-[#315CF5]/20'
-                          : 'border-[#E5E8EA] hover:border-[#66707A]'
-                      }`}
-                    >
-                      <img src={getImageUrl(img)} alt={`Thumb ${idx + 1}`} className="w-full h-full object-cover" />
-                    </button>
-                  ))}
-                </div>
-              )}
 
               {/* Trust Badge Bar */}
               <div className="p-3 bg-[#FAFAF8] rounded-xl border border-[#E5E8EA] flex items-center justify-between text-xs text-[#13795B]">
@@ -148,13 +96,13 @@ export const ProductDetailsModal: React.FC<ProductDetailsModalProps> = ({
                   <ShieldCheck className="w-4 h-4" />
                   <span>Refundable Escrow</span>
                 </div>
-                <div className="flex items-center gap-1.5 font-medium">
+                <div className="flex items-center gap-1.5 font-medium text-[#315CF5]">
                   <CheckCircle2 className="w-4 h-4" />
-                  <span>Single-Use Pass QR</span>
+                  <span>Verified Gear</span>
                 </div>
-                <div className="flex items-center gap-1.5 font-medium">
-                  <CheckCircle2 className="w-4 h-4" />
-                  <span>Verified Identity</span>
+                <div className="flex items-center gap-1.5 font-medium text-[#66707A]">
+                  <MapPin className="w-4 h-4" />
+                  <span className="truncate max-w-[130px]">{product.location || 'Gujarat'}</span>
                 </div>
               </div>
             </div>
