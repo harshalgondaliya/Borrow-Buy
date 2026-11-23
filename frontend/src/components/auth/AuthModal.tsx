@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
+import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../../features/auth/AuthContext';
 import { useToast } from '../../features/toast/ToastContext';
 import { authService } from '../../services/auth';
@@ -16,7 +17,6 @@ import {
   KeyRound,
   Eye,
   EyeOff,
-  Zap,
 } from 'lucide-react';
 
 interface AuthModalProps {
@@ -26,6 +26,7 @@ interface AuthModalProps {
 }
 
 export const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose, initialTab = 'login' }) => {
+  const navigate = useNavigate();
   const { login, register } = useAuth();
   const { success } = useToast();
   const [tab, setTab] = useState<'login' | 'register' | 'forgot'>(initialTab);
@@ -55,40 +56,21 @@ export const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose, initialTa
     return err?.message || 'Operation failed. Please check your credentials and try again.';
   };
 
-  const handleDemoFill = async (demoRole: 'CUSTOMER' | 'OWNER' | 'ADMIN', autoLogin: boolean = false) => {
-    const creds = {
-      CUSTOMER: { email: 'customer@borrowbuy.in', pass: 'Password123!' },
-      OWNER: { email: 'owner@borrowbuy.in', pass: 'Password123!' },
-      ADMIN: { email: 'admin@borrowbuy.in', pass: 'Password123!' },
-    }[demoRole];
-
-    setEmail(creds.email);
-    setPassword(creds.pass);
-    setTab('login');
-    resetForm();
-
-    if (autoLogin) {
-      setLoading(true);
-      try {
-        await login(creds.email, creds.pass);
-        success(`Welcome back as ${demoRole.toLowerCase()}!`, 'Signed In Successfully');
-        onClose();
-      } catch (err: any) {
-        setError(extractErrorMessage(err));
-      } finally {
-        setLoading(false);
-      }
-    }
-  };
-
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);
     setError(null);
     try {
-      await login(email.trim().toLowerCase(), password);
+      const loggedInUser = await login(email.trim().toLowerCase(), password);
       success('Welcome back to BorrowBuy!', 'Signed In Successfully');
       onClose();
+      if (loggedInUser.role === 'ADMIN') {
+        navigate('/admin');
+      } else if (loggedInUser.role === 'OWNER') {
+        navigate('/owner');
+      } else {
+        navigate('/bookings');
+      }
     } catch (err: any) {
       setError(extractErrorMessage(err));
     } finally {
@@ -119,7 +101,7 @@ export const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose, initialTa
     }
 
     try {
-      await register({
+      const newUser = await register({
         email: email.trim().toLowerCase(),
         password,
         fullName: fullName.trim(),
@@ -128,6 +110,11 @@ export const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose, initialTa
       });
       success('Your BorrowBuy account is ready. Welcome!', 'Registration Complete');
       onClose();
+      if (newUser.role === 'OWNER') {
+        navigate('/owner');
+      } else {
+        navigate('/browse');
+      }
     } catch (err: any) {
       setError(extractErrorMessage(err));
     } finally {
@@ -217,36 +204,6 @@ export const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose, initialTa
               </div>
             )}
 
-            {/* Demo Quick-Fill Bar */}
-            {tab === 'login' && (
-              <div className="mb-4 p-2.5 bg-[#FAFAF8] rounded-xl border border-[#E5E8EA]">
-                <div className="flex items-center justify-between mb-1.5 text-[11px] font-semibold text-[#66707A]">
-                  <span className="flex items-center gap-1">
-                    <Zap className="w-3.5 h-3.5 text-[#315CF5]" />
-                    <span>Demo Accounts (Ahmedabad Hub):</span>
-                  </span>
-                  <span className="text-[10px] text-[#315CF5] font-normal">Pre-loaded inventory</span>
-                </div>
-                <div className="grid grid-cols-2 gap-2">
-                  <button
-                    type="button"
-                    onClick={() => handleDemoFill('CUSTOMER', true)}
-                    className="py-1.5 px-2 text-[11px] font-semibold rounded-lg bg-white border border-[#E5E8EA] hover:border-[#315CF5] hover:bg-[#EFF3FE] hover:text-[#315CF5] transition-all text-center cursor-pointer shadow-2xs"
-                    title="Sign in as customer@borrowbuy.in"
-                  >
-                    Demo Customer
-                  </button>
-                  <button
-                    type="button"
-                    onClick={() => handleDemoFill('OWNER', true)}
-                    className="py-1.5 px-2 text-[11px] font-semibold rounded-lg bg-white border border-[#E5E8EA] hover:border-[#315CF5] hover:bg-[#EFF3FE] hover:text-[#315CF5] transition-all text-center cursor-pointer shadow-2xs"
-                    title="Sign in as owner@borrowbuy.in (25 active listings)"
-                  >
-                    Demo Owner
-                  </button>
-                </div>
-              </div>
-            )}
 
             {/* Error / Alert Messages */}
             {error && (

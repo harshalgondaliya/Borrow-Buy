@@ -280,6 +280,79 @@ async function runVerification() {
   const adminBookings = await api('/admin/bookings', {}, adminToken);
   console.log(`  📋 Admin Bookings Governance: Found ${adminBookings.data.length} bookings managed by platform.`);
 
+  // -------------------------------------------------------------------------
+  // SECTION 5: RBAC & NEGATIVE SECURITY AUTHORIZATION AUDIT
+  // -------------------------------------------------------------------------
+  console.log('\n🛡️ SECTION 5: RBAC & NEGATIVE SECURITY AUTHORIZATION AUDIT');
+
+  // Test 5.1: Customer attempting to create product listing (Forbidden)
+  try {
+    await api('/products', {
+      method: 'POST',
+      body: JSON.stringify({
+        name: 'Unauthorized Camera Listing',
+        description: 'Should fail',
+        categoryId: targetProduct.categoryId,
+        pricePerDay: 500,
+        securityDeposit: 1000,
+        condition: 'LIKE_NEW',
+        location: 'Ahmedabad',
+      }),
+    }, customerToken);
+    throw new Error('Security Breach: Customer was allowed to create a product listing!');
+  } catch (err: any) {
+    if (err.message.includes('403') || err.message.includes('Forbidden')) {
+      console.log('  ✅ [PASS] Customer product creation blocked: 403 Forbidden');
+    } else {
+      throw err;
+    }
+  }
+
+  // Test 5.2: Customer attempting to access Admin Console (Forbidden)
+  try {
+    await api('/admin/stats', {}, customerToken);
+    throw new Error('Security Breach: Customer was allowed to access Admin stats!');
+  } catch (err: any) {
+    if (err.message.includes('403') || err.message.includes('Forbidden')) {
+      console.log('  ✅ [PASS] Customer access to Admin Console blocked: 403 Forbidden');
+    } else {
+      throw err;
+    }
+  }
+
+  // Test 5.3: Owner attempting to access Admin Console (Forbidden)
+  try {
+    await api('/admin/stats', {}, ownerToken);
+    throw new Error('Security Breach: Owner was allowed to access Admin stats!');
+  } catch (err: any) {
+    if (err.message.includes('403') || err.message.includes('Forbidden')) {
+      console.log('  ✅ [PASS] Owner access to Admin Console blocked: 403 Forbidden');
+    } else {
+      throw err;
+    }
+  }
+
+  // -------------------------------------------------------------------------
+  // SECTION 6: SIMPLIFIED PRODUCT NAMING QUALITY AUDIT
+  // -------------------------------------------------------------------------
+  console.log('\n🏷️ SECTION 6: SIMPLIFIED PRODUCT NAMING QUALITY AUDIT');
+
+  const freshProducts = await prisma.product.findMany({ select: { name: true } });
+  let nonCompliantNames = 0;
+  for (const p of freshProducts) {
+    const wordCount = p.name.trim().split(/\s+/).length;
+    if (wordCount < 2 || wordCount > 6) {
+      nonCompliantNames++;
+      console.warn(`  ⚠️ Product '${p.name}' has non-standard word count (${wordCount})`);
+    }
+  }
+
+  if (nonCompliantNames === 0) {
+    console.log(`  ✅ [PASS] All ${freshProducts.length} products have natural 2–6 word simplified titles (100% compliant).`);
+  } else {
+    throw new Error(`${nonCompliantNames} products have non-compliant titles`);
+  }
+
   console.log('\n================================================================');
   console.log('🎉 ALL AUDITS AND END-TO-END VERIFICATIONS PASSED WITH 100% SUCCESS!');
   console.log('================================================================');

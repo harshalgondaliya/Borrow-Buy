@@ -6,14 +6,14 @@ interface AuthContextType {
   token: string | null;
   isAuthenticated: boolean;
   isLoading: boolean;
-  login: (email: string, password: string) => Promise<void>;
+  login: (email: string, password: string) => Promise<User>;
   register: (data: {
     email: string;
     password: string;
     fullName: string;
     phone?: string;
     role?: 'CUSTOMER' | 'OWNER';
-  }) => Promise<void>;
+  }) => Promise<User>;
   logout: () => void;
   refreshUser: () => Promise<void>;
   upgradeToOwner: (data: { ownerBio: string; ownerAddress: string; phone: string }) => Promise<void>;
@@ -50,11 +50,12 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     fetchCurrentUser();
   }, []);
 
-  const login = async (email: string, password: string) => {
+  const login = async (email: string, password: string): Promise<User> => {
     const res = await authService.login({ email, password });
     localStorage.setItem('borrowbuy_token', res.data.token);
     setToken(res.data.token);
     setUser(res.data.user);
+    return res.data.user;
   };
 
   const register = async (data: {
@@ -63,11 +64,12 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     fullName: string;
     phone?: string;
     role?: 'CUSTOMER' | 'OWNER';
-  }) => {
+  }): Promise<User> => {
     const res = await authService.register(data);
     localStorage.setItem('borrowbuy_token', res.data.token);
     setToken(res.data.token);
     setUser(res.data.user);
+    return res.data.user;
   };
 
   const logout = () => {

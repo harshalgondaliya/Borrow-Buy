@@ -129,7 +129,8 @@ export class ProductsController {
         req.user.id,
         req.params.id,
         validated,
-        files
+        files,
+        req.user.role
       );
 
       res.status(200).json({
@@ -146,7 +147,8 @@ export class ProductsController {
         });
         return;
       }
-      res.status(400).json({
+      const statusCode = error.message.includes('Forbidden') ? 403 : error.message.includes('not found') ? 404 : 400;
+      res.status(statusCode).json({
         success: false,
         message: error.message || 'Failed to update product',
       });
@@ -160,14 +162,15 @@ export class ProductsController {
         return;
       }
 
-      const result = await ProductsService.deleteProduct(req.user.id, req.params.id);
+      const result = await ProductsService.deleteProduct(req.user.id, req.params.id, req.user.role);
 
       res.status(200).json({
         success: true,
         ...result,
       });
     } catch (error: any) {
-      res.status(400).json({
+      const statusCode = error.message.includes('Forbidden') ? 403 : error.message.includes('not found') ? 404 : 400;
+      res.status(statusCode).json({
         success: false,
         message: error.message || 'Failed to deactivate product',
       });

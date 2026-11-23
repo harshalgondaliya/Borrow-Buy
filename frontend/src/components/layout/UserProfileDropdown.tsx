@@ -1,5 +1,6 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
+import { useNavigate } from 'react-router-dom';
 import { User } from '../../services/auth';
 import {
   User as UserIcon,
@@ -35,6 +36,7 @@ export const UserProfileDropdown: React.FC<UserProfileDropdownProps> = ({
   onOpenAbout,
   onNavigateToView,
 }) => {
+  const navigate = useNavigate();
   const [isOpen, setIsOpen] = useState(false);
   const dropdownRef = useRef<HTMLDivElement>(null);
 
@@ -215,6 +217,25 @@ export const UserProfileDropdown: React.FC<UserProfileDropdownProps> = ({
                 </div>
                 <span>Saved Wishlist</span>
               </button>
+
+              {/* CUSTOMER specific: Become an Owner */}
+              {user.role === 'CUSTOMER' && (
+                <button
+                  onClick={() => {
+                    setIsOpen(false);
+                    navigate('/become-owner');
+                  }}
+                  className="w-full flex items-center gap-3 px-3.5 py-2.5 text-xs font-semibold text-blue-700 hover:bg-blue-50/80 rounded-xl transition"
+                >
+                  <div className="w-7 h-7 rounded-lg bg-blue-100 text-blue-700 flex items-center justify-center">
+                    <Wrench className="w-3.5 h-3.5" />
+                  </div>
+                  <div className="flex-1 text-left flex items-center justify-between">
+                    <span className="font-bold">Become an Owner</span>
+                    <ArrowRight className="w-3.5 h-3.5 text-blue-500" />
+                  </div>
+                </button>
+              )}
 
               {/* OWNER specific options */}
               {(user.role === 'OWNER' || user.role === 'ADMIN') && (

@@ -11,7 +11,9 @@ import {
   MapPin,
   Star,
   Save,
-  Lock
+  Lock,
+  Sparkles,
+  ShieldCheck,
 } from 'lucide-react';
 
 interface UserProfileModalProps {
@@ -20,7 +22,7 @@ interface UserProfileModalProps {
 }
 
 export const UserProfileModal: React.FC<UserProfileModalProps> = ({ isOpen, onClose }) => {
-  const { user, refreshUser } = useAuth();
+  const { user, refreshUser, upgradeToOwner } = useAuth();
   const { success, error: toastError } = useToast();
 
   const [fullName, setFullName] = useState(user?.fullName || '');
@@ -28,6 +30,8 @@ export const UserProfileModal: React.FC<UserProfileModalProps> = ({ isOpen, onCl
   const [ownerAddress, setOwnerAddress] = useState(user?.ownerAddress || '');
   const [ownerBio, setOwnerBio] = useState(user?.ownerBio || '');
   const [saving, setSaving] = useState(false);
+  const [showUpgradeForm, setShowUpgradeForm] = useState(false);
+  const [upgrading, setUpgrading] = useState(false);
 
   // Sync state if user changes
   React.useEffect(() => {
@@ -58,6 +62,37 @@ export const UserProfileModal: React.FC<UserProfileModalProps> = ({ isOpen, onCl
       toastError(err.message || 'Failed to update profile.', 'Error');
     } finally {
       setSaving(false);
+    }
+  };
+
+  const handleUpgrade = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!ownerBio || ownerBio.trim().length < 10) {
+      toastError('Owner bio must be at least 10 characters long.', 'Validation');
+      return;
+    }
+    if (!ownerAddress || ownerAddress.trim().length < 5) {
+      toastError('Please provide your Gujarat locality or city address.', 'Validation');
+      return;
+    }
+    if (!phone || phone.trim().length < 5) {
+      toastError('Please provide a valid contact phone number.', 'Validation');
+      return;
+    }
+    setUpgrading(true);
+    try {
+      await upgradeToOwner({
+        ownerBio: ownerBio.trim(),
+        ownerAddress: ownerAddress.trim(),
+        phone: phone.trim(),
+      });
+      success('Congratulations! Your account has been upgraded to Verified Equipment Owner.', 'Owner Onboarding Complete');
+      setShowUpgradeForm(false);
+      onClose();
+    } catch (err: any) {
+      toastError(err.message || 'Failed to complete owner onboarding.', 'Error');
+    } finally {
+      setUpgrading(false);
     }
   };
 
@@ -191,6 +226,85 @@ export const UserProfileModal: React.FC<UserProfileModalProps> = ({ isOpen, onCl
                     className="w-full p-3 bg-white border border-bb-border rounded-xl focus:ring-2 focus:ring-bb-accent focus:outline-none transition font-medium text-bb-text-primary"
                   />
                 </div>
+              </div>
+            )}
+
+            {/* Customer-to-Owner Onboarding Banner / Flow */}
+            {user.role === 'CUSTOMER' && (
+              <div className="mt-4 p-4 rounded-2xl bg-gradient-to-r from-blue-50 to-indigo-50 border border-blue-200">
+                <div className="flex items-start justify-between">
+                  <div className="flex items-start gap-2.5">
+                    <div className="w-8 h-8 rounded-xl bg-blue-600 text-white flex items-center justify-center shrink-0 mt-0.5">
+                      <Sparkles className="w-4 h-4" />
+                    </div>
+                    <div>
+                      <h4 className="text-xs font-bold text-slate-900">Become an Equipment Owner</h4>
+                      <p className="text-[11px] text-slate-600 mt-0.5 leading-relaxed">
+                        List your cameras, power tools, electronics, and audiovisual gear. Earn monthly rental income protected by platform escrow.
+                      </p>
+                    </div>
+                  </div>
+                  <button
+                    type="button"
+                    onClick={() => setShowUpgradeForm(!showUpgradeForm)}
+                    className="px-3 py-1.5 bg-blue-600 hover:bg-blue-700 text-white font-bold rounded-lg text-xs transition shrink-0 ml-3 cursor-pointer shadow-xs"
+                  >
+                    {showUpgradeForm ? 'Hide Form' : 'Apply Now'}
+                  </button>
+                </div>
+
+                {showUpgradeForm && (
+                  <div className="mt-4 pt-4 border-t border-blue-200/80 space-y-3">
+                    <div>
+                      <label className="block text-[11px] font-bold text-slate-800 mb-1">
+                        Equipment Care & Lender Bio (min. 10 chars)
+                      </label>
+                      <textarea
+                        rows={2}
+                        required
+                        value={ownerBio}
+                        onChange={(e) => setOwnerBio(e.target.value)}
+                        placeholder="E.g. Professional filmmaker renting Sony bodies and GM primes. Thoroughly maintained after each rental."
+                        className="w-full p-2.5 text-xs bg-white border border-blue-200 rounded-lg focus:ring-2 focus:ring-blue-500 focus:outline-none"
+                      />
+                    </div>
+                    <div>
+                      <label className="block text-[11px] font-bold text-slate-800 mb-1">
+                        Gujarat Locality Address (Pickup Hub)
+                      </label>
+                      <input
+                        type="text"
+                        required
+                        value={ownerAddress}
+                        onChange={(e) => setOwnerAddress(e.target.value)}
+                        placeholder="E.g. Vastrapur, Ahmedabad, Gujarat"
+                        className="w-full p-2 text-xs bg-white border border-blue-200 rounded-lg focus:ring-2 focus:ring-blue-500 focus:outline-none"
+                      />
+                    </div>
+                    <div>
+                      <label className="block text-[11px] font-bold text-slate-800 mb-1">
+                        Contact Phone (+91)
+                      </label>
+                      <input
+                        type="tel"
+                        required
+                        value={phone}
+                        onChange={(e) => setPhone(e.target.value)}
+                        placeholder="+91 98250 12345"
+                        className="w-full p-2 text-xs bg-white border border-blue-200 rounded-lg focus:ring-2 focus:ring-blue-500 focus:outline-none"
+                      />
+                    </div>
+                    <button
+                      type="button"
+                      disabled={upgrading}
+                      onClick={handleUpgrade}
+                      className="w-full py-2 bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-xs rounded-lg transition flex items-center justify-center gap-2 cursor-pointer shadow-xs disabled:opacity-50"
+                    >
+                      <ShieldCheck className="w-4 h-4" />
+                      <span>{upgrading ? 'Upgrading...' : 'Confirm & Upgrade to Verified Owner'}</span>
+                    </button>
+                  </div>
+                )}
               </div>
             )}
 

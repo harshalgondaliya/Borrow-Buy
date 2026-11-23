@@ -11,6 +11,8 @@ import { AdminPage } from './pages/AdminPage';
 import { CloudOperationsPage } from './pages/CloudOperationsPage';
 import { SettingsPage } from './pages/SettingsPage';
 import { HelpPage } from './pages/HelpPage';
+import { LoginPage } from './pages/LoginPage';
+import { BecomeOwnerPage } from './pages/BecomeOwnerPage';
 import { NotFoundPage } from './pages/NotFoundPage';
 
 export function App() {
@@ -22,9 +24,12 @@ export function App() {
             <Routes>
               <Route path="/" element={<AppLayout />}>
                 <Route index element={<HomePage />} />
+                <Route path="login" element={<LoginPage />} />
                 <Route path="browse" element={<BrowsePage />} />
                 <Route path="bookings" element={<BookingsPage />} />
                 <Route path="dashboard" element={<DashboardPage />} />
+                <Route path="owner" element={<DashboardPage />} />
+                <Route path="become-owner" element={<BecomeOwnerPage />} />
                 <Route path="admin" element={<AdminPage />} />
                 <Route path="cloud" element={<CloudOperationsPage />} />
                 <Route path="settings" element={<SettingsPage />} />

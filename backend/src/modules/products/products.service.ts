@@ -4,7 +4,8 @@ import {
   ProductCondition, 
   ListingStatus, 
   ApprovalStatus, 
-  BookingStatus 
+  BookingStatus,
+  UserRole
 } from '@prisma/client';
 
 export class ProductsService {
@@ -344,7 +345,8 @@ export class ProductsService {
       rentalInstructions?: string | null;
       listingStatus: ListingStatus;
     }>,
-    files: Express.Multer.File[] = []
+    files: Express.Multer.File[] = [],
+    role?: UserRole
   ) {
     const existing = await prisma.product.findUnique({
       where: { id: productId },
@@ -354,7 +356,7 @@ export class ProductsService {
       throw new Error('Product not found.');
     }
 
-    if (existing.ownerId !== ownerId) {
+    if (role !== UserRole.ADMIN && existing.ownerId !== ownerId) {
       throw new Error('Forbidden: You can only edit your own listings.');
     }
 
@@ -405,7 +407,7 @@ export class ProductsService {
     return updated;
   }
 
-  static async deleteProduct(ownerId: string, productId: string) {
+  static async deleteProduct(ownerId: string, productId: string, role?: UserRole) {
     const product = await prisma.product.findUnique({
       where: { id: productId },
       include: {
@@ -428,7 +430,7 @@ export class ProductsService {
       throw new Error('Product not found.');
     }
 
-    if (product.ownerId !== ownerId) {
+    if (role !== UserRole.ADMIN && product.ownerId !== ownerId) {
       throw new Error('Forbidden: You can only delete your own listings.');
     }
 
