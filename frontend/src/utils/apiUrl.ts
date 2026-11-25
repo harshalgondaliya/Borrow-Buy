@@ -29,6 +29,14 @@ export function resolveImageUrl(url?: string): string {
   if (!url) {
     return 'https://images.unsplash.com/photo-1516035069371-29a1b244cc32?auto=format&fit=crop&w=800&q=80';
   }
+  if (url.startsWith('blob:') || url.startsWith('data:')) {
+    return url;
+  }
+  // Normalize private S3 bucket URLs through the backend /api/media proxy
+  const s3Match = url.match(/^https:\/\/[^/]+\.s3(?:\.[^.]+)?\.amazonaws\.com\/(products|user-uploads)\/([^/?#]+)/);
+  if (s3Match) {
+    return `${API_HOST}/api/media/${s3Match[1]}/${s3Match[2]}`;
+  }
   if (url.startsWith('http://') || url.startsWith('https://')) {
     return url;
   }

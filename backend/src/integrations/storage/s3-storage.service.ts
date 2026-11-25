@@ -2,8 +2,9 @@ import { S3Client, PutObjectCommand, DeleteObjectCommand, GetObjectCommand } fro
 import { getSignedUrl } from '@aws-sdk/s3-request-presigner';
 import crypto from 'crypto';
 import path from 'path';
+import type { Readable } from 'stream';
 import { env } from '../../config/env.js';
-import { IStorageService, UploadedFileResult } from './storage.interface.js';
+import { FileStreamResult, IStorageService, UploadedFileResult } from './storage.interface.js';
 
 export class S3StorageService implements IStorageService {
   private s3Client: S3Client;
@@ -35,12 +36,25 @@ export class S3StorageService implements IStorageService {
 
     await this.s3Client.send(command);
 
-    // If CloudFront is configured, deliver via CloudFront domain, else S3 standard URL
-    const url = env.CLOUDFRONT_DOMAIN
-      ? `https://${env.CLOUDFRONT_DOMAIN}/${key}`
-      : `https://${this.bucketName}.s3.${env.AWS_REGION}.amazonaws.com/${key}`;
+    // Serve private S3 uploads through the backend /api/media proxy so S3 stays private (all public access blocked)
+    const url = `/api/media/${key}`;
 
     return { url, key };
+  }
+
+  public async getFileStream(key: string): Promise<FileStreamResult> {
+    const command = new GetObjectCommand({
+      Bucket: this.bucketName,
+      Key: key,
+    });
+    const response = await this.s3Client.send(command);
+    if (!response.Body) {
+      throw new Error('Empty object body from S3');
+    }
+    return {
+      stream: response.Body as Readable,
+      contentType: response.ContentType || 'application/octet-stream',
+    };
   }
 
   public async deleteFile(key: string): Promise<void> {

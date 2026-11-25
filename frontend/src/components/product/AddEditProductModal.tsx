@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Category, Product, productsService } from '../../services/products';
+import { resolveImageUrl } from '../../utils/apiUrl';
 import {
   X,
   Upload,
@@ -344,7 +345,7 @@ export const AddEditProductModal: React.FC<AddEditProductModalProps> = ({
                       key={i}
                       className="w-16 h-16 rounded-xl overflow-hidden border border-bb-border shrink-0 shadow-sm"
                     >
-                      <img src={url} alt="" className="w-full h-full object-cover" />
+                      <img src={resolveImageUrl(url)} alt="" className="w-full h-full object-cover" />
                     </div>
                   ))}
                 </div>

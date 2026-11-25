@@ -31,11 +31,15 @@ export class CloudOperationsController {
       const freeMem = os.freemem();
       const usedMem = totalMem - freeMem;
 
-      const hasAwsCredentials = Boolean(
+      const hasStaticAwsCredentials = Boolean(
         process.env.AWS_ACCESS_KEY_ID &&
           process.env.AWS_SECRET_ACCESS_KEY &&
           !process.env.AWS_ACCESS_KEY_ID.includes('MOCK')
       );
+      const isEc2IamRuntime =
+        env.NODE_ENV === 'production' &&
+        (env.STORAGE_DRIVER === 's3' || env.QUEUE_DRIVER === 'sqs' || Boolean(process.env.AWS_EXECUTION_ENV));
+      const hasAwsCredentials = hasStaticAwsCredentials || isEc2IamRuntime;
 
       // 4. Honest AWS Services Inventory Matrix (distinguishing Local Fallback vs Live AWS)
       const serviceCatalog = [
@@ -244,11 +248,14 @@ export class CloudOperationsController {
   public static async getAuditLogs(_req: Request, res: Response): Promise<void> {
     try {
       const logs = await dynamoDbService.listRecentAuditLogs(30);
+      const isAwsAuditMode =
+        Boolean(process.env.AWS_ACCESS_KEY_ID && !process.env.AWS_ACCESS_KEY_ID.includes('MOCK')) ||
+        (env.NODE_ENV === 'production' && (env.STORAGE_DRIVER === 's3' || env.QUEUE_DRIVER === 'sqs'));
       res.status(200).json({
         success: true,
         count: logs.length,
         source: 'Amazon DynamoDB Document Client (BorrowBuy-RentalAuditLogs)',
-        mode: process.env.AWS_ACCESS_KEY_ID ? 'AWS_DYNAMODB_LIVE' : 'LOCAL_IN_MEMORY_FALLBACK',
+        mode: isAwsAuditMode ? 'AWS_DYNAMODB_LIVE' : 'LOCAL_IN_MEMORY_FALLBACK',
         data: logs,
       });
     } catch (err: any) {

@@ -140,4 +140,18 @@ describe('AWS Cloud Service Adapters & Integration Tests', () => {
       expect(Array.isArray(res.body.data)).toBe(true);
     });
   });
+
+  describe('Media Proxy Streaming Endpoint (/api/media)', () => {
+    it('should reject disallowed folders with 400 Bad Request', async () => {
+      const res = await request(app).get('/api/media/private-secrets/test.png');
+      expect(res.status).toBe(400);
+      expect(res.body.success).toBe(false);
+    });
+
+    it('should return 404 for nonexistent media objects', async () => {
+      const res = await request(app).get('/api/media/products/does-not-exist-999.webp');
+      expect(res.status).toBe(404);
+      expect(res.body.success).toBe(false);
+    });
+  });
 });

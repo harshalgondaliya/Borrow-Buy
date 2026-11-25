@@ -16,6 +16,7 @@ import notificationRoutes from './modules/notifications/notifications.routes.js'
 import adminRoutes from './modules/admin/admin.routes.js';
 import cloudRoutes from './modules/cloud/cloud.routes.js';
 import { cloudWatchService } from './integrations/monitoring/cloudwatch.service.js';
+import { storageService } from './integrations/storage/index.js';
 
 const app: Application = express();
 
@@ -57,6 +58,39 @@ app.use(cookieParser());
 
 // Static file serving for local image uploads
 app.use('/uploads', express.static(uploadsDir));
+
+// Secure private-S3 & local media streaming endpoint
+app.get('/api/media/:folder/:filename', async (req: Request, res: Response) => {
+  try {
+    const { folder, filename } = req.params;
+    const allowedFolders = ['products', 'user-uploads'];
+    if (!allowedFolders.includes(folder) || !/^[a-zA-Z0-9._-]+$/.test(filename)) {
+      res.status(400).json({ success: false, message: 'Invalid media path' });
+      return;
+    }
+
+    if (!storageService.getFileStream) {
+      res.status(501).json({ success: false, message: 'Media streaming not supported' });
+      return;
+    }
+
+    const { stream, contentType } = await storageService.getFileStream(`${folder}/${filename}`);
+    res.setHeader('Content-Type', contentType);
+    res.setHeader('Cache-Control', 'public, max-age=31536000, immutable');
+    stream.on('error', () => {
+      if (!res.headersSent) {
+        res.status(404).json({ success: false, message: 'Media not found' });
+      }
+    });
+    stream.pipe(res);
+  } catch (err: any) {
+    const status = err?.name === 'NoSuchKey' || err?.$metadata?.httpStatusCode === 404 ? 404 : 500;
+    res.status(status).json({
+      success: false,
+      message: status === 404 ? 'Media not found' : 'Failed to stream media',
+    });
+  }
+});
 
 // API Routes
 app.use('/api/auth', authRoutes);

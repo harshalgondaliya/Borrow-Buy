@@ -1,7 +1,7 @@
 import fs from 'fs';
 import path from 'path';
 import crypto from 'crypto';
-import { IStorageService, UploadedFileResult } from './storage.interface.js';
+import { FileStreamResult, IStorageService, UploadedFileResult } from './storage.interface.js';
 
 export class LocalStorageService implements IStorageService {
   private baseUploadDir: string;
@@ -26,11 +26,33 @@ export class LocalStorageService implements IStorageService {
     await fs.promises.writeFile(destinationPath, file.buffer);
 
     const relativeKey = `${folder}/${uniqueFileName}`;
-    const url = `/uploads/${relativeKey}`;
+    const url = `/api/media/${relativeKey}`;
 
     return {
       url,
       key: relativeKey,
+    };
+  }
+
+  async getFileStream(key: string): Promise<FileStreamResult> {
+    const filePath = path.resolve(this.baseUploadDir, key);
+    if (!filePath.startsWith(this.baseUploadDir) || !fs.existsSync(filePath)) {
+      const err: any = new Error('File not found');
+      err.name = 'NoSuchKey';
+      throw err;
+    }
+    const ext = path.extname(filePath).toLowerCase();
+    const mimeMap: Record<string, string> = {
+      '.webp': 'image/webp',
+      '.png': 'image/png',
+      '.jpg': 'image/jpeg',
+      '.jpeg': 'image/jpeg',
+      '.gif': 'image/gif',
+      '.svg': 'image/svg+xml',
+    };
+    return {
+      stream: fs.createReadStream(filePath),
+      contentType: mimeMap[ext] || 'application/octet-stream',
     };
   }
 

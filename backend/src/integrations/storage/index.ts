@@ -21,6 +21,6 @@ class StorageFactory {
 }
 
 export const storageService = StorageFactory.getStorageService();
-export { IStorageService, UploadedFileResult } from './storage.interface.js';
+export { IStorageService, UploadedFileResult, FileStreamResult } from './storage.interface.js';
 export { S3StorageService } from './s3-storage.service.js';
 export { LocalStorageService } from './local-storage.service.js';
