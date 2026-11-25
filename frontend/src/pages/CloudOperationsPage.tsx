@@ -221,11 +221,11 @@ export const CloudOperationsPage: React.FC = () => {
           <div className="mt-2 text-xs text-bb-text-secondary space-y-1">
             <div className="flex justify-between">
               <span>S3 Bucket:</span>
-              <strong className="text-emerald-700 truncate max-w-[140px]" title="borrowbuy-product-assets-767579108846">borrowbuy-assets</strong>
+              <strong className="text-emerald-700 truncate max-w-[140px]" title="borrowbuy-dev-assets">borrowbuy-dev-assets</strong>
             </div>
             <div className="flex justify-between">
               <span>SQS Event Queue:</span>
-              <strong className="text-bb-text-primary truncate max-w-[140px]" title="borrowbuy-booking-events">booking-events</strong>
+              <strong className="text-bb-text-primary truncate max-w-[140px]" title="borrowbuy-dev-events">borrowbuy-dev-events</strong>
             </div>
           </div>
           <div className="mt-3 pt-3 border-t border-bb-border text-[11px] text-bb-text-secondary flex justify-between">
@@ -294,7 +294,7 @@ export const CloudOperationsPage: React.FC = () => {
             {
               id: '01',
               name: 'Amazon EC2',
-              role: 'AL2023 t3.micro application host running Express API, Vite static frontend, and PostgreSQL',
+              role: 'AL2023 t3.small application host running Express API, Vite static frontend, and PostgreSQL',
               status: 'LIVE (i-03347c2b6584c73cb)',
               tag: 'Compute',
               badge: 'bg-emerald-50 text-emerald-800 border-emerald-200'
@@ -326,16 +326,16 @@ export const CloudOperationsPage: React.FC = () => {
             {
               id: '05',
               name: 'Amazon S3',
-              role: 'Encrypted object storage for equipment photos and inspection evidence with CORS policy',
-              status: 'LIVE (borrowbuy-assets)',
+              role: 'Encrypted private object storage for uploaded equipment photos served securely via /api/media',
+              status: 'LIVE (borrowbuy-dev-assets)',
               tag: 'Storage',
               badge: 'bg-emerald-50 text-emerald-800 border-emerald-200'
             },
             {
               id: '06',
               name: 'Amazon SQS',
-              role: 'Decoupled Standard FIFO-compatible queue for asynchronous booking lifecycle and payment events',
-              status: 'LIVE (booking-events)',
+              role: 'Decoupled queue with DLQ redrive for asynchronous booking lifecycle and payment events',
+              status: 'LIVE (borrowbuy-dev-events)',
               tag: 'Messaging',
               badge: 'bg-emerald-50 text-emerald-800 border-emerald-200'
             },
@@ -343,14 +343,14 @@ export const CloudOperationsPage: React.FC = () => {
               id: '07',
               name: 'AWS Lambda',
               role: 'Serverless Node.js 20 function calculating duration tiers, GST taxation, and refundable deposits',
-              status: 'LIVE (quote-calculator)',
+              status: 'LIVE (borrowbuy-quote-calculator-dev)',
               tag: 'Serverless',
               badge: 'bg-emerald-50 text-emerald-800 border-emerald-200'
             },
             {
               id: '08',
               name: 'Amazon CloudWatch',
-              role: 'Centralized log groups (/aws/borrowbuy/app), custom metrics, and CPU & disk alarm monitors',
+              role: 'Centralized log group (/borrowbuy/application-logs), custom metrics, and CPU & status alarms',
               status: 'LIVE (Logs & 2 Alarms)',
               tag: 'Observability',
               badge: 'bg-emerald-50 text-emerald-800 border-emerald-200'

@@ -57,7 +57,7 @@ export class DynamoDbService {
       ttl: Math.floor(Date.now() / 1000) + 90 * 86400, // 90-day retention
     };
 
-    if (this.docClient && process.env.NODE_ENV === 'production') {
+    if (this.docClient && process.env.NODE_ENV === 'production' && process.env.DYNAMODB_TABLE_NAME) {
       try {
         await this.docClient.send(
           new PutCommand({
@@ -78,7 +78,7 @@ export class DynamoDbService {
   }
 
   public async getAuditLogsForBooking(bookingId: string): Promise<any[]> {
-    if (this.docClient && process.env.NODE_ENV === 'production') {
+    if (this.docClient && process.env.NODE_ENV === 'production' && process.env.DYNAMODB_TABLE_NAME) {
       try {
         const response = await this.docClient.send(
           new QueryCommand({
@@ -100,7 +100,7 @@ export class DynamoDbService {
   }
 
   public async listRecentAuditLogs(limit = 20): Promise<any[]> {
-    if (this.docClient && process.env.NODE_ENV === 'production') {
+    if (this.docClient && process.env.NODE_ENV === 'production' && process.env.DYNAMODB_TABLE_NAME) {
       try {
         const response = await this.docClient.send(
           new ScanCommand({
