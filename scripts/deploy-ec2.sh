@@ -178,6 +178,7 @@ if [ -f "${ORIGIN_SECRET_FILE}" ] && [ -s "${ORIGIN_SECRET_FILE}" ]; then
 server {
     listen 80;
     server_name _;
+    client_max_body_size 20M;
 
     location / {
         if (\$http_x_origin_verify != "${ORIGIN_SECRET}") {
@@ -207,6 +208,7 @@ else
 server {
     listen 80;
     server_name _;
+    client_max_body_size 20M;
 
     location / {
         root /usr/share/nginx/html;
